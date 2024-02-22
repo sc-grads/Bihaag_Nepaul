@@ -1,0 +1,10 @@
+MSSQL is a suite of database software published by Microsoft and used extensively in
+enterprise world
+It includes:
+A relational database engine, which stores data in tables, columns and rows.
+• Integration Services (SSIS), which is a data movement tool for importing, exporting
+and transforming data
+• Reporting Services (SSRS), which is used to create reports and serve reports to end
+users
+• Analysis Services (SSAS), which is a multidimensional database used to query data
+from the main database engine.
