@@ -14,9 +14,8 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up MS SQL Server
-      uses: microsoft/mssql-action/setup-msft-mssql@v2
+      uses: microsoft/mssql-scripter@v1.0.0a23
       with:
-        repository: microsoft/setup-msft-mssql
         server-url: 'jdbc:sqlserver://localhost:1433'
         server-admin-password: ${{ secrets.DB_PASSWORD }} 
         database-name: 'EmployeeHub'
