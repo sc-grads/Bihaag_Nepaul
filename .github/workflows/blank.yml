@@ -1,0 +1,30 @@
+name: Database Actions
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up MS SQL Server
+      uses: microsoft/mssql-action/setup-msft-mssql@v1
+      with:
+        server-url: 'jdbc:sqlserver://localhost:1433'
+        server-admin-password: ${{ secrets.DB_PASSWORD }} 
+        database-name: 'EmployeeHub'
+
+    - name: Run SQL scripts
+      run: |
+        # Execute your SQL scripts here
+        # Example: sqlcmd -S localhost -U sa -P ${{ secrets.DB_PASSWORD }} -d EmployeeHub -i DatabaseAdministration/DataOps/SQLScripts/Emp_script1.sql
+
+    - name: Complete the workflow
+      run: echo "Database actions completed successfully"
+
