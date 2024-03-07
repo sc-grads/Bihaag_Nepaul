@@ -24,7 +24,6 @@ jobs:
 
     - name: Run SQL scripts
       run: |
-        # Execute your SQL scripts here using sqlcmd or other tools
         sqlcmd -S localhost -U sa -P ${{ secrets.DB_PASSWORD }} -d EmployeeHub -i DatabaseAdministration/DataOps/SQLScripts/Emp_script1.sql
 
     - name: Complete the workflow
