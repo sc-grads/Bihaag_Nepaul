@@ -1,0 +1,30 @@
+
+name: Set up MS SQL Server and Run SQL Scripts
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up MS SQL Server
+      uses: potatoqualitee/mssqlsuite@v1.7
+      with:
+        install: sqlengine, sqlclient, sqlpackage, localdb
+        sa-password: ilcbtfmo247  # Use GitHub Secrets for secure password storage
+        collation: Latin1_General_CI_AS  # Customize collation if needed
+        version: 2022  # Specify the SQL Server version
+        show-log: true  # Optional, set to true to show logs
+
+    - name: Run SQL scripts
+      run: |
+        sqlcmd -S DESKTOP-6JDNS4N -U sa -P ilcbtfmo247 -d EmployeeHub -Q "SELECT * FROM EmployeeHub"
+    - name: Complete the workflow
+      run: echo "Database actions completed successfully"
