@@ -16,7 +16,6 @@ jobs:
     - name: Set up MS SQL Server
       uses: potatoqualitee/mssqlsuite@v1.7
       with:
-        install: sqlengine, sqlclient, sqlpackage, localdb
         sa-password: ilcbtfmo247  # Use GitHub Secrets for secure password storage
         collation: Latin1_General_CI_AS  # Customize collation if needed
         version: 2022  # Specify the SQL Server version
