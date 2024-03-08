@@ -24,7 +24,7 @@ jobs:
 
     - name: Run SQL scripts
       run: |
-        sqlcmd -S localhost -U sa -P ilcbtfmo247 -d EmployeeHub -Q "SELECT * FROM EmployeeHub"
+        sqlcmd -S DESKTOP-6JDNS4N -U sa -P ilcbtfmo247 -d EmployeeHub -Q "SELECT * FROM EmployeeHub"
 
     - name: Complete the workflow
       run: echo "Database actions completed successfully"
