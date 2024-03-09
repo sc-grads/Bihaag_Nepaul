@@ -24,10 +24,10 @@ jobs:
 
       # Publish artifact
       - name: Upload Artifact
-        uses: actions/download-artifact@v3.1.2
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: SQLDB
-          path: ${{ github.workspace }}/bin/Debug/ 
+          path: ${{ github.workspace }}/GA-SQLServer2022-SDK-DBProject/bin/Release
 
   # Deploy dacpac job
   DeploySQL2022Updates:
@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: Download artifact containing dacpac
         # Downloads Data artifact to dacpac folder
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v3.0.2
         with:
           name: SQLDB
 
