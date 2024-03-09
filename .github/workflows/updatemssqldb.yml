@@ -56,4 +56,4 @@ jobs:
           # The connection string, including authentication information, for the Azure SQL Database.
           connection-string: '${{ secrets.SQLDB_CONNECTION_STRING }}'
           # Name of the dacpac file in the artifact
-          dacpac-package: 'GA-SQLServer2022-SDK-DBProject'
+          dacpac-package: 'GA-SQLServer2022-SDK-DBProject.dacpac'
