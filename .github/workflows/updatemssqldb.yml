@@ -42,4 +42,5 @@ jobs:
         with:
           server-name: '${{ secrets.SQLDB_SERVER }}'
           connection-string: '${{ secrets.SQLDB_CONNECTION_STRING }}'
+          path: C:\Users\Bihaag Nepaul\.dotnet\tools\sqlpackage.exe
           dacpac-package: 'GA-SQLServer2022-SDK-DBProject.dacpac'
