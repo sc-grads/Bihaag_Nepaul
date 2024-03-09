@@ -2,7 +2,7 @@ name: Update SQL Server 2022 database
 
 on:
   push:
-    branches: 
+    branches:
       - main
 
 jobs:
@@ -36,11 +36,10 @@ jobs:
         with:
           name: SQLDB
 
-    
+      - name: Echo .dotnet/tools contents
+        run: |
+          dir "C:\Users\Bihaag Nepaul\.dotnet\tools"
+
       - name: Azure SQL Deploy
-        uses: Azure/sql-action@v1.3
-        with:
-          server-name: '${{ secrets.SQLDB_SERVER }}'
-          connection-string: '${{ secrets.SQLDB_CONNECTION_STRING }}'
-          path: C:\Users\Bihaag Nepaul\.dotnet\tools\sqlpackage.exe
-          dacpac-package: 'GA-SQLServer2022-SDK-DBProject.dacpac'
+        run: |
+          "C:\Users\Bihaag Nepaul\.dotnet\tools\sqlpackage.exe" /Action:Publish "/TargetConnectionString:${{ secrets.SQLDB_CONNECTION_STRING }}" /SourceFile:GA-SQLServer2022-SDK-DBProject.dacpac
