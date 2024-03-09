@@ -24,7 +24,7 @@ jobs:
       - uses: actions/upload-artifact@v3.1.2
         with:
           name: SQLDB
-          path: ${{ github.workspace }}/bin/Debug/ 
+          path: ${{ github.workspace }}/Bihaag_Nepaul/GA-SQLServer2022-SDK-DBProject/
 
 # Deploy dacpac job
   DeploySQL2022Updates:
