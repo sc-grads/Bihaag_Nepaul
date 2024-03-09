@@ -1,4 +1,5 @@
-Use UserDatabase
+USE UserDatabase;
+GO
 
 CREATE TABLE users (
     user_id INT PRIMARY KEY,
@@ -6,3 +7,4 @@ CREATE TABLE users (
     email VARCHAR(100) UNIQUE,
     birthdate DATE
 );
+GO
