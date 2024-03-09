@@ -24,7 +24,7 @@ jobs:
 
       # Publish artifact
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/download-artifact@v3.1.2
         with:
           name: SQLDB
           path: ${{ github.workspace }}/bin/Debug/ 
