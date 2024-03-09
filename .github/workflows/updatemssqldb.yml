@@ -1,13 +1,12 @@
 name: Update SQL Server 2022 database
 
-#Sets the trigger to update when update is pushed to a sql-action-v1-feature branch
+# Sets the trigger to update when there is a push to the main branch
 on:
   push:
     branches: 
       - main
 
 jobs:
-
   # Job to build and publish the dacpac
   BuildDacpac:
     runs-on: self-hosted
@@ -16,17 +15,21 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3.3.0
+
       # Build dacpac using dotnet build
       - name: Build Database project
         run: |
-          dotnet build
+          cd ${{ github.workspace }}/Bihaag_Nepaul/GA-SQLServer2022-SDK-DBProject
+          dotnet build GA-SQLServer2022-SDK-DBProject.sqlproj 
+
       # Publish artifact
-      - uses: actions/upload-artifact@v3.1.2
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: SQLDB
-          path: ${{ github.workspace }}/Bihaag_Nepaul/GA-SQLServer2022-SDK-DBProject/
+          path: ${{ github.workspace }}/bin/Debug/ 
 
-# Deploy dacpac job
+  # Deploy dacpac job
   DeploySQL2022Updates:
     # Set the dependency for the build job
     needs: BuildDacpac
@@ -35,12 +38,12 @@ jobs:
 
     # Steps to deploy the updates to a SQL Server 2022 Database
     steps:
-      - name: download artifact containing dacpac
-        # Dowloads Data artifact to dacpac folder
+      - name: Download artifact containing dacpac
+        # Downloads Data artifact to dacpac folder
         uses: actions/download-artifact@v3.0.2
         with:
           name: SQLDB
-                    
+
       # Installs dacpac
       # For this to work you MUST have two secrets specified, defaults in my repo are blank
       # One called SQLDB_SERVER which contains your logical SQL Server name
