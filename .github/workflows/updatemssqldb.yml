@@ -44,6 +44,10 @@ jobs:
         with:
           name: SQLDB
 
+      - name: Install SqlPackage.exe
+        run: |
+          dotnet tool install -g microsoft.sqlpackage
+
       # Installs dacpac
       # For this to work you MUST have two secrets specified, defaults in my repo are blank
       # One called SQLDB_SERVER which contains your logical SQL Server name
