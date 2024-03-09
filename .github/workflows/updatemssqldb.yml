@@ -16,11 +16,11 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3.3.0
 
-      # Build dacpac using dotnet build
+      # Build dacpac using msbuild
       - name: Build Database project
         run: |
           cd ${{ github.workspace }}/Bihaag_Nepaul/GA-SQLServer2022-SDK-DBProject
-          dotnet build -c Release
+          msbuild.exe GA-SQLServer2022-SDK-DBProject.sqlproj /p:Configuration=Release
 
       # Publish artifact
       - name: Upload Artifact
