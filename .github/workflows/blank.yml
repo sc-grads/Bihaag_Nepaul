@@ -1,30 +1,30 @@
-name: Set up MS SQL Server and Run SQL Scripts
+name: Connect to Local Database
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
-  build:
-    runs-on: windows-latest
+  connect-to-db:
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout Repository
       uses: actions/checkout@v2
 
     - name: Set up MS SQL Server
-      uses: potatoqualitee/mssqlsuite@v1.7
-      with:
-        install: sqlengine, sqlclient, sqlpackage, localdb
-        sa-password: MyP@ssw0rd2022@BEEBOI@PASSWORD # Use GitHub Secrets for secure password storage
-        collation: Latin1_General_CI_AS  # Customize collation if needed
-        version: 2022  # Specify the SQL Server version
-        show-log: true  # Optional, set to true to show logs
-
-    - name: Run SQL scripts
       run: |
-        sqlcmd -S 127.0.0.1 -U ad -P "MyP@ssw0rd2022@BEEBOI@PASSWORD" -d EmployeeHub -Q "SELECT * FROM EmployeeHub"
-    - name: Complete the workflow
-      run: echo "Database actions completed successfully"
+        # Start MS SQL Server (replace with your actual start command)
+        docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=MyP@ssw0rd2022@BEEBOI@PASSWORDY' -p 1433:1433 -d mcr.microsoft.com/mssql/server
 
+    - name: Wait for MS SQL Server to start
+      run: sleep 15  # Adjust as needed to wait for the server to initialize
+
+    - name: Connect to Database
+      run: |
+        # Example connection string
+        CONNECTION_STRING="Server=localhost,1433;Database=EmployeeHub;User Id=sa;Password=MyP@ssw0rd2022@BEEBOI@PASSWORDY;"
+
+        # Use the connection string in your scripts or commands
+        echo "Connection String: $CONNECTION_STRING"
+
+        # Run your database-related commands or tests here
+        # For example: dotnet ef database update
