@@ -1,7 +1,12 @@
-CREATE TABLE users (
-    user_id INT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
-    email VARCHAR(100) UNIQUE,
-    birthdate DATE
-);
+CREATE TABLE [dbo].[Tablea] (
+    [col1] INT NOT NULL,
+    [colb] VARCHAR (10) NULL
+)
+
+
+
+GO
+
+
+
 GO
