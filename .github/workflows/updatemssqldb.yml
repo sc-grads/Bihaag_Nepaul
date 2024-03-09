@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: Download artifact containing dacpac
         # Downloads Data artifact to dacpac folder
-        uses: actions/download-artifact@v3.0.2
+        uses: actions/download-artifact@v3
         with:
           name: SQLDB
 
