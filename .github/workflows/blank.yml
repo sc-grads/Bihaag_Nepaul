@@ -6,7 +6,7 @@ name: build
 
 jobs:
   connect-to-db:
-    runs-on: windows-latest
+    runs-on: self-hosted
     name: example
     services:
       mssql:
