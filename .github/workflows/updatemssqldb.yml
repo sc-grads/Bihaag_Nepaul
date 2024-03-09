@@ -19,8 +19,7 @@ jobs:
       # Build dacpac using msbuild
       - name: Build Database project
         run: |
-          cd ${{ github.workspace }}_work/Bihaag_Nepaul/Bihaag_Nepaul/GA-SQLServer2022-SDK-DBProject
-          msbuild.exe GA-SQLServer2022-SDK-DBProject.sqlproj /p:Configuration=Release
+          dotnet build
 
       # Publish artifact
       - name: Upload Artifact
