@@ -24,7 +24,7 @@ jobs:
 
     - name: Run SQL scripts
       run: |
-        sqlcmd -S 127.0.0.1 -U ad -P MyP@ssw0rd2022@BEEBOI@PASSWORD -d EmployeeHub -Q "SELECT * FROM EmployeeHub"
+        sqlcmd -S 127.0.0.1 -U ad -P "MyP@ssw0rd2022@BEEBOI@PASSWORD" -d EmployeeHub -Q "SELECT * FROM EmployeeHub"
     - name: Complete the workflow
       run: echo "Database actions completed successfully"
 
