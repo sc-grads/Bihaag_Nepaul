@@ -42,4 +42,4 @@ jobs:
 
       - name: Azure SQL Deploy
         run: |
-          "C:\Users\Bihaag Nepaul\.dotnet\tools\sqlpackage.exe" /Action:Publish "/TargetConnectionString:${{ secrets.SQLDB_CONNECTION_STRING }}" /SourceFile:GA-SQLServer2022-SDK-DBProject.dacpac
+          & "C:\Users\Bihaag Nepaul\.dotnet\tools\sqlpackage.exe" /Action:Publish "/TargetConnectionString:${{ secrets.SQLDB_CONNECTION_STRING }}" /SourceFile:GA-SQLServer2022-SDK-DBProject.dacpac
