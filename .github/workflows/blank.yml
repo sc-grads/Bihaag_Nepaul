@@ -13,7 +13,7 @@ jobs:
     - name: Set up MS SQL Server
       run: |
         # Start MS SQL Server (replace with your actual start command)
-        docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=MyP@ssw0rd2022@BEEBOI@PASSWORDY' -p 1433:1433 -d mcr.microsoft.com/mssql/server
+        docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=MyP@ssw0rd2022@BEEBOI@PASSWORD' -p 1433:1433 -d mcr.microsoft.com/mssql/server
 
     - name: Wait for MS SQL Server to start
       run: sleep 15  # Adjust as needed to wait for the server to initialize
@@ -21,9 +21,9 @@ jobs:
     - name: Connect to Database
       run: |
         # Example connection string
-        CONNECTION_STRING="Server=localhost,1433;Database=EmployeeHub;User Id=sa;Password=MyP@ssw0rd2022@BEEBOI@PASSWORDY;"
+        CONNECTION_STRING="Server=localhost,1433;Database=EmployeeHub;User Id=ad;Password=MyP@ssw0rd2022@BEEBOI@PASSWORD;"
         # Run a simple query using sqlcmd
-        echo "SELECT 'Connection established' AS Result" | sqlcmd -S localhost,1433 -U sa -P MyP@ssw0rd2022@BEEBOI@PASSWORDY -d EmployeeHub
+        echo "SELECT 'Connection established' AS Result" | sqlcmd -S localhost,1433 -U sa -P MyP@ssw0rd2022@BEEBOI@PASSWORD -d EmployeeHub
         # Output a marker
         echo "::set-output name=connection_status::connected"
         # Use the connection status in subsequent steps or for debugging
