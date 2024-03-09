@@ -20,7 +20,7 @@ jobs:
       - name: Build Database project
         run: |
           cd ${{ github.workspace }}/Bihaag_Nepaul/GA-SQLServer2022-SDK-DBProject
-          dotnet build GA-SQLServer2022-SDK-DBProject.sqlproj 
+          dotnet build -c Release
 
       # Publish artifact
       - name: Upload Artifact
