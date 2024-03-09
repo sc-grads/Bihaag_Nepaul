@@ -22,9 +22,9 @@ jobs:
       run: |
         # Example connection string
         CONNECTION_STRING="Server=localhost,1433;Database=EmployeeHub;User Id=sa;Password=MyP@ssw0rd2022@BEEBOI@PASSWORDY;"
-
-        # Use the connection string in your scripts or commands
-        echo "Connection String: $CONNECTION_STRING"
-
-        # Run your database-related commands or tests here
-        # For example: dotnet ef database update
+        # Run a simple query using sqlcmd
+        echo "SELECT 'Connection established' AS Result" | sqlcmd -S localhost,1433 -U sa -P MyP@ssw0rd2022@BEEBOI@PASSWORDY -d EmployeeHub
+        # Output a marker
+        echo "::set-output name=connection_status::connected"
+        # Use the connection status in subsequent steps or for debugging
+        echo "Connection Status: ${{ steps.connect_to_db.outputs.connection_status }}"
