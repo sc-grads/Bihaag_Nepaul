@@ -1,6 +1,5 @@
 name: Update SQL Server 2022 database
 
-# Sets the trigger to update when there is a push to the main branch
 on:
   push:
     branches: 
@@ -11,18 +10,15 @@ jobs:
   BuildDacpac:
     runs-on: self-hosted
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3.3.0
+      - name: Checkout repository
+        uses: actions/checkout@v3.3.0
 
-      # Build dacpac using msbuild
       - name: Build Database project
         run: |
           cd ${{ github.workspace }}/GA-SQLServer2022-SDK-DBProject
           dotnet build -c Release
 
-      # Publish artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v3.1.2
         with:
@@ -31,33 +27,22 @@ jobs:
 
   # Deploy dacpac job
   DeploySQL2022Updates:
-    # Set the dependency for the build job
     needs: BuildDacpac
-    # Easier to use Github-hosted runner if updating in GitHub
     runs-on: self-hosted
 
-    # Steps to deploy the updates to a SQL Server 2022 Database
     steps:
       - name: Download artifact containing dacpac
-        # Downloads Data artifact to dacpac folder
         uses: actions/download-artifact@v3.0.2
         with:
           name: SQLDB
 
-      - name: Install SqlPackage.exe
+      - name: Azure SQL Deploy
         run: |
-          dotnet tool install -g microsoft.sqlpackage
+          "C:\Users\Bihaag Nepaul\.dotnet\tools\sqlpackage.exe" /Action:Publish "/TargetConnectionString:${{ secrets.SQLDB_CONNECTION_STRING }}" /SourceFile:GA-SQLServer2022-SDK-DBProject.dacpac
 
-      # Installs dacpac
-      # For this to work you MUST have two secrets specified, defaults in my repo are blank
-      # One called SQLDB_SERVER which contains your logical SQL Server name
-      # Requires a secret SQLDB_CONNECTION_STRING which contains connection string to your SQL Server 2022 database
       - name: Azure SQL Deploy
         uses: Azure/sql-action@v1.3
         with:
-          # The logical SQL Server name
           server-name: '${{ secrets.SQLDB_SERVER }}'
-          # The connection string, including authentication information, for the Azure SQL Database.
           connection-string: '${{ secrets.SQLDB_CONNECTION_STRING }}'
-          # Name of the dacpac file in the artifact
           dacpac-package: 'GA-SQLServer2022-SDK-DBProject.dacpac'
