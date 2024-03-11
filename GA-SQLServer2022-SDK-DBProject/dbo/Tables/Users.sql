@@ -1,6 +1,5 @@
-CREATE TABLE [dbo].[Users] (
-    [UserID] INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
-    [FirstName] VARCHAR(50) NOT NULL,
-    [LastName] VARCHAR(50) NOT NULL,
-    [Email] VARCHAR(100) NOT NULL
-);
+INSERT INTO [dbo].[Users] ([FirstName], [LastName], [Email])
+VALUES 
+    ('John', 'Doe', 'john.doe@example.com'),
+    ('Jane', 'Smith', 'jane.smith@example.com'),
+    ('Alice', 'Johnson', 'alice.johnson@example.com');
