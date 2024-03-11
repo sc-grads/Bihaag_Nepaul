@@ -7,9 +7,18 @@
     <ModelCollation>1033, CI</ModelCollation>
   </PropertyGroup>
 
-<ItemGroup>
-  <None Update="dbo\Tables\Users.sql">
-    <BuildAction>None</BuildAction>
-  </None>
-</ItemGroup>
+  <ItemGroup>
+    <!-- Include the Users.sql file in the build process -->
+    <None Include="GA-SQLServer2022-SDK-DBProject\dbo\Tables\Users.sql" />
+  </ItemGroup>
 
+  <ItemGroup>
+    <!-- Specify any post-deployment scripts here -->
+    <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
+    <!-- Exclude the specific script you want to remove from build -->
+    <Build Remove="Scripts\Script.PostDeployment.Persistence.sql" />
+    <!-- Keep the script in the project without including it in the build -->
+    <None Include="Scripts\Script.PostDeployment.Persistence.sql" />
+  </ItemGroup>
+
+</Project>
