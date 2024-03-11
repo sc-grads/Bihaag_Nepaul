@@ -1,5 +1,6 @@
-CREATE TABLE [dbo].[Tablea] (
-    [col1] INT NOT NULL,
-    [colb] VARCHAR (10) NULL
+CREATE TABLE [dbo].[Users] (
+    [UserID] INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    [FirstName] VARCHAR(50) NOT NULL,
+    [LastName] VARCHAR(50) NOT NULL,
+    [Email] VARCHAR(100) NOT NULL
 );
-GO
