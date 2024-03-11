@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Build Remove="Scripts\Script.PostDeployment.Persistence.sql" />
-    <None Include="Scripts\Script.PostDeployment.Persistence.sql" />
+    <Build Remove="Scripts\Users.sql" />
+    <None Include="Scripts\Script.PostDeployment.Users.sql" />
   </ItemGroup>
 </Project>
