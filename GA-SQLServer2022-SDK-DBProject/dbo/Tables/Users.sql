@@ -1,4 +1,4 @@
-INSERT INTO [dbo].[Users] (FirstName, LastName, Email)
-VALUES 
-    ('Ndivu', 'Bro', 'Ndivu.bro@example.com');
-
+  CREATE TABLE [dbo].[UserNames] (
+    [FirstName] VARCHAR(50) NOT NULL,
+    [LastName] VARCHAR(50) NOT NULL,
+);
