@@ -1,4 +1,1 @@
-Insert into [dbo].[UserNames] (FirstName,LastName)
-VALUES ('Probablility','Lamar');
-
-GO
+EXEC InsertUserName @FirstName = 'Bob', @LastName = 'TheBUILDER';
