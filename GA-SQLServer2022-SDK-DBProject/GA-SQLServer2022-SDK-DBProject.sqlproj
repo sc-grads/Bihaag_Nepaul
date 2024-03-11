@@ -6,4 +6,19 @@
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Include the Users.sql file in the build process -->
+    <None Include="dbo\Tables\Users.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Specify any post-deployment scripts here -->
+    <PostDeploy Include="dbo\Tables\Users.sql" />
+    <!-- Exclude the specific script you want to remove from build -->
+    <Build Remove="dbo\Tables\Users.sql" />
+    <!-- Keep the script in the project without including it in the build -->
+    <None Include="dbo\Tables\Users.sql" />
+  </ItemGroup>
+
 </Project>
