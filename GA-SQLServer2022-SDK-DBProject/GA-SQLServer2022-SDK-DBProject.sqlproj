@@ -6,4 +6,9 @@
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Build Remove="Scripts\Script.PostDeployment.Persistence.sql" />
+    <None Include="Scripts\Script.PostDeployment.Persistence.sql" />
+  </ItemGroup>
 </Project>
