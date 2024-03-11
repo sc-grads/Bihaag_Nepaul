@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Build Remove="Scripts\Users.sql" />
-    <None Include="Scripts\Script.PostDeployment.Users.sql" />
+    <Build Remove="GA-SQLServer2022-SDK-DBProject/dbo/Tables/Users.sql" />
+    <None Include="GA-SQLServer2022-SDK-DBProject/dbo/Tables/Users.sql" />
   </ItemGroup>
 </Project>
