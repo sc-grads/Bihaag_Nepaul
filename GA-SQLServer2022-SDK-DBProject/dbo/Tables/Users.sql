@@ -1,5 +1,4 @@
--- Insert a new employee into [EmployeeHub].[dbo].[employees]
-USE EmployeeHub
+USE EmployeeHub;
 
-INSERT INTO [EmployeeHub].[dbo].[employees] (FirstName, LastName, Email, Department, Position, Salary)
-VALUES ('John', 'Doe', 'john.doe@example.com', 'IT', 'Software Developer', 80000);
+INSERT INTO [EmployeeHub].[dbo].[employees] (EmployeeID, FirstName, LastName, Email, Department, Position, Salary)
+VALUES (11, 'John', 'Doe', 'john.doe@example.com', 'IT', 'Software Developer', 80000);
