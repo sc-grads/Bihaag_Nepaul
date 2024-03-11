@@ -7,9 +7,9 @@
     <ModelCollation>1033, CI</ModelCollation>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Update="GA-SQLServer2022-SDK-DBProject\dbo\Tables\Users.sql">
-      <BuildAction>None</BuildAction>
-    </None>
-  </ItemGroup>
-</Project>
+<ItemGroup>
+  <None Update="dbo\Tables\Users.sql">
+    <BuildAction>None</BuildAction>
+  </None>
+</ItemGroup>
+
