@@ -23,4 +23,4 @@ jobs:
 
     - name: Run database query from file
       run: |
-        sqlcmd -S localhost -U SA -P YourStrong@Password122 -i DatabaseAdministration/SQLStatements/mysqlscript.sql
+        sqlcmd -S ${{ secrets.SQLDB_SERVER }} -U DA -P ${{ secrets.USER_PASSWORD }} -i DatabaseAdministration/SQLStatements/mysqlscript.sql
