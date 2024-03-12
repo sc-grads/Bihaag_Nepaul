@@ -1,7 +1,7 @@
 CREATE DATABASE NewDatabase;
 
 
---Use NewDatabase;
+USE NewDatabase;
 
 
 -----CREATE TABLE [dbo].[employees](
