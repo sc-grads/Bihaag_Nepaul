@@ -1,5 +1,6 @@
 CREATE DATABASE NewDatabase;
 
+GO
 
 USE NewDatabase;
 
