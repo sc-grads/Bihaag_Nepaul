@@ -14,19 +14,20 @@
 --Insert into [dbo].[employees] (EmployeeID,FirstName,LastName)
 --VALUES (2,'Bongani','Mondlane');
 
-USE NewDatabase;
-GO
+--USE NewDatabase;
+--GO
 
-CREATE PROCEDURE InsertEmployee
-    @EmployeeID INT,
-    @FirstName VARCHAR(50),
-    @LastName VARCHAR(50)
-AS
-BEGIN
-    INSERT INTO [dbo].[employees] (EmployeeID, FirstName, LastName)
-    VALUES (@EmployeeID, @FirstName, @LastName);
-END;
+--CREATE PROCEDURE InsertEmployee
+  --  @EmployeeID INT,
+    --@FirstName VARCHAR(50),
+    --@LastName VARCHAR(50)
+--AS
+--BEGIN
+    --INSERT INTO [dbo].[employees] (EmployeeID, FirstName, LastName)
+    --VALUES (@EmployeeID, @FirstName, @LastName);
+--END;
 
+EXEC InsertEmployee @EmployeeID = 4, @FirstName = 'John', @LastName = 'Bonez';
 
 
 ---SELECT * FROM employees;
