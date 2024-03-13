@@ -29,7 +29,7 @@ END;
 
 
 
---SELECT * FROM employees;
+---SELECT * FROM employees;
   
 --SELECT name
 --FROM sys.databases;
