@@ -27,7 +27,7 @@ USE NewDatabase;
     --VALUES (@EmployeeID, @FirstName, @LastName);
 --END;
 
-EXEC InsertEmployee @EmployeeID = 4, @FirstName = 'John', @LastName = 'Bonez';
+EXEC InsertEmployee @EmployeeID = 5, @FirstName = 'Bongani', @LastName = 'Mondlane';
 
 
 ---SELECT * FROM employees;
