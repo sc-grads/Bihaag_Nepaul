@@ -2,7 +2,7 @@
 
 --GO
 
---USE NewDatabase;
+USE NewDatabase;
 
 
 --CREATE TABLE [dbo].[employees](
