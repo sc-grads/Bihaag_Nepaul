@@ -2,9 +2,9 @@
 
 --GO
 
-USE NewDatabase;
+USE EmployeeHub;
 
-
+Select * from [dbo].[GenderAvg];
 --CREATE TABLE [dbo].[employees](
 --[EmployeeID] [int] NOT NULL,
 --[FirstName] [varchar](50) NULL,
@@ -27,7 +27,7 @@ USE NewDatabase;
     --VALUES (@EmployeeID, @FirstName, @LastName);
 --END;
 
-EXEC InsertEmployee @EmployeeID = 5, @FirstName = 'Bongani', @LastName = 'Mondlane';
+--EXEC InsertEmployee @EmployeeID = 5, @FirstName = 'Bongani', @LastName = 'Mondlane';
 
 
 ----SELECT * FROM employees;
