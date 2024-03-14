@@ -6,16 +6,16 @@ on:
       - main
 
 jobs:
-  check_database:
-    runs-on: ubuntu-latest
-    steps:
+  check_database:  # Defines a job named "check_database".
+    runs-on: ubuntu-latest  # Specifies that the job will run on the latest version of Ubuntu OS environment.
+    steps: #By default GitHub Actions workflows run in a virtual environment based on the operating system specified
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2  # Uses the "actions/checkout@v2" action to fetch the code in our repository.
 
     - name: Download and run MSSQL Docker container
-      run: |
+      run: |   # Uses the "run" key to execute a Bash shell command that downloads and runs an MSSQL Docker container.
         sudo docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=YourStrong@Password122' -p 1433:1433 -d --name mssql-server -v $(pwd):/scripts mcr.microsoft.com/mssql/server:2019-latest
-
+        
     - name: Wait for MSSQL to start
       run: |
         echo "Waiting for MSSQL server to start..."
@@ -24,3 +24,5 @@ jobs:
     - name: Run database query from file
       run: |
         sqlcmd -S ${{ secrets.SQLDB_SERVER }} -U ${{ secrets.USER_NAME }} -P ${{ secrets.USER_PASSWORD }} -i DatabaseAdministration/SQLStatements/EmployeeAnalysis.sql
+      # Uses the "run" key to execute a shell command that runs a database query using sqlcmd.
+      # Executes SQL script "EmployeeAnalysis.sql" located in "DatabaseAdministration/SQLStatements" directory.
