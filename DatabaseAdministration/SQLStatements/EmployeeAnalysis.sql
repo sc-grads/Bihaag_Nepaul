@@ -40,7 +40,7 @@ CREATE TABLE [dbo].[GenderAvg](
 
 GO*/
 ----------------------------------------------------------Populate Table
-INSERT INTO EmployeeDatabase.dbo.EmployeeData (
+/*INSERT INTO EmployeeDatabase.dbo.EmployeeData (
     BusinessEntityID,
     NationalIDNumber,
     LoginID,
@@ -114,9 +114,9 @@ BEGIN
 	@query = 'USE EmployeeHub SELECT * FROM [dbo].[GenderAvg];';
 
 END;
+*/
 
-
----EXEC [GetGenderAverageSalary]; Executing Stored Procedure
+EXEC [GetGenderAverageSalary]; --Executing Stored Procedure
 
 
 
