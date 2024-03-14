@@ -23,9 +23,4 @@ jobs:
 
     - name: Run database query from file
       run: |
-        sqlcmd -S ${{ secrets.SQLDB_SERVER }} -U ${{ secrets.USER_NAME }} -P ${{ secrets.USER_PASSWORD }} -i DatabaseAdministration/SQLStatements/mysqlscript.sql
-        
-    - name: Run database query from file
-      run: |
-        sqlcmd -S ${{ secrets.SQLDB_SERVER }} -U ${{ secrets.USER_NAME }} -P ${{ secrets.USER_PASSWORD }} -i DatabaseAdministration/SQLStatements/email.sql
-
+        sqlcmd -S ${{ secrets.SQLDB_SERVER }} -U ${{ secrets.USER_NAME }} -P ${{ secrets.USER_PASSWORD }} -i DatabaseAdministration/SQLStatements/EmployeeAnalysis.sql
