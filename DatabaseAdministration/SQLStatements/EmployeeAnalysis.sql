@@ -1,5 +1,5 @@
---Create Database EmployeeDatabase;
---GO
+Create Database EmployeeDatabase;
+GO
 Use EmployeeDatabase;
 GO
 --------------------------------------------------Create Table 1
@@ -116,7 +116,66 @@ BEGIN
 END;
 */
 
-EXEC [GetGenderAverageSalary]; --Executing Stored Procedure
+------------------------------------------------------------------ Inserting A record Into Table
+/*
+
+INSERT INTO [EmployeeDatabase].[dbo].[EmployeeData] (
+    [BusinessEntityID],
+    [NationalIDNumber],
+    [LoginID],
+    [JobTitle],
+    [BirthDate],
+    [MaritalStatus],
+    [Gender],
+    [HireDate],
+    [SalariedFlag],
+    [VacationHours],
+    [SickLeaveHours],
+    [DepartmentID],
+    [ShiftID],
+    [StartDate],
+    [EndDate],
+    [RateChangeDate],
+    [Rate],
+    [PayFrequency],
+    [JobCandidateID],
+    [ShiftName],
+    [DepartmentName],
+    [DepartmentGroupName],
+    [ModifiedDate]
+) 
+VALUES (
+    19,
+    '112233445',
+    'adventure-works\mike0',
+    'Lead Software Engineer',
+    '1980-04-18',
+    'M',
+    'M',
+    '2023-03-05',
+    1,
+    20,
+    20,
+    1,
+    1,
+    '2023-03-05',
+    NULL,
+    '2023-03-05 00:00:00.000',
+    100.00,
+    2,
+    NULL,
+    'Day',
+    'Engineering',
+    'Research and Development',
+    '2024-03-14 00:00:00.000'
+);
+
+DELETE FROM [EmployeeDatabase].[dbo].[EmployeeData]
+WHERE [BusinessEntityID] = 19;
+
+*/
+
+--EXEC [GetGenderAverageSalary]; --Executing Stored Procedure
 
 
 
