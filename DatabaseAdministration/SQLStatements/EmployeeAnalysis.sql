@@ -1,9 +1,9 @@
-Create Database EmployeeDatabase;
-GO
+--Create Database EmployeeDatabase;
+--GO
 Use EmployeeDatabase;
 GO
 --------------------------------------------------Create Table 1
-CREATE TABLE [dbo].[EmployeeData](
+/*CREATE TABLE [dbo].[EmployeeData](
 	[BusinessEntityID] [int] NOT NULL,
 	[NationalIDNumber] [nvarchar](15) NOT NULL,
 	[LoginID] [nvarchar](256) NOT NULL,
@@ -38,9 +38,9 @@ CREATE TABLE [dbo].[GenderAvg](
 	[AverageSalary] [decimal](18, 4) NULL
 )
 
-GO
+GO*/
 ----------------------------------------------------------Populate Table
-/*INSERT INTO EmployeeDatabase.dbo.EmployeeData (
+INSERT INTO EmployeeDatabase.dbo.EmployeeData (
     BusinessEntityID,
     NationalIDNumber,
     LoginID,
@@ -89,10 +89,11 @@ SELECT
     DepartmentName,
     DepartmentGroupName,
     ModifiedDate
-FROM [AdventureWorks2022].[dbo].[HRAnalysisTable];*/
+FROM [AdventureWorks2022].[dbo].[HRAnalysisTable];
 
+GO
 --------------------------------------------------------------------- Stored Procedure
-/*
+
 CREATE PROCEDURE [dbo].[GetGenderAverageSalary]
 AS
 BEGIN
@@ -113,7 +114,7 @@ BEGIN
 	@query = 'USE EmployeeHub SELECT * FROM [dbo].[GenderAvg];';
 
 END;
-*/
+
 
 ---EXEC [GetGenderAverageSalary]; Executing Stored Procedure
 
