@@ -30,7 +30,7 @@ Select * from [dbo].[GenderAvg];
 --EXEC InsertEmployee @EmployeeID = 5, @FirstName = 'Bongani', @LastName = 'Mondlane';
 
 
------SELECT * FROM employees;
+----SELECT * FROM employees;
   
 --SELECT name
 --FROM sys.databases;
