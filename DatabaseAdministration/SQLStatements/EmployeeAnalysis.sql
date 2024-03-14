@@ -115,7 +115,7 @@ BEGIN
 END;
 */
 
---EXEC [GetGenderAverageSalary]; Executing Stored Procedure
+---EXEC [GetGenderAverageSalary]; Executing Stored Procedure
 
 
 
