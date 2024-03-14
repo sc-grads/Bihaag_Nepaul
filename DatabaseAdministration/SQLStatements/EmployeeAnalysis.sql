@@ -1,9 +1,9 @@
 Create Database EmployeeDatabase;
-
+GO
 Use EmployeeDatabase;
-
+GO
 --------------------------------------------------Create Table 1
-/*CREATE TABLE [dbo].[EmployeeData](
+CREATE TABLE [dbo].[EmployeeData](
 	[BusinessEntityID] [int] NOT NULL,
 	[NationalIDNumber] [nvarchar](15) NOT NULL,
 	[LoginID] [nvarchar](256) NOT NULL,
@@ -28,15 +28,15 @@ Use EmployeeDatabase;
 	[DepartmentGroupName] [nvarchar](50) NULL,
 	[ModifiedDate] [datetime] NOT NULL
 )
-*/
+
 
 GO
 --------------------------------------------------Create Table 2
 
-/*CREATE TABLE [dbo].[GenderAvg](
+CREATE TABLE [dbo].[GenderAvg](
 	[Gender] [nvarchar](20) NULL,
 	[AverageSalary] [decimal](18, 4) NULL
-)*/
+)
 
 GO
 ----------------------------------------------------------Populate Table
@@ -119,4 +119,4 @@ END;
 
 
 
-DROP DATABASE EmployeeDatabase;
+
