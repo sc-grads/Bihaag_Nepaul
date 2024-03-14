@@ -4,7 +4,7 @@
 
 USE EmployeeHub;
 
-Select * from [dbo].[GenderAvg];
+EXEC [DepartmentJobEarnings];
 --CREATE TABLE [dbo].[employees](
 --[EmployeeID] [int] NOT NULL,
 --[FirstName] [varchar](50) NULL,
