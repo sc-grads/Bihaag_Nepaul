@@ -1,6 +1,6 @@
-Create Database EmployeeDatabase;
+Create Database EmployeeDatabaseTest;
 GO
-Use EmployeeDatabase;
+Use EmployeeDatabaseTest;
 GO
 --------------------------------------------------Create Table 1
 /*CREATE TABLE [dbo].[EmployeeData](
