@@ -2,6 +2,8 @@ name: Check MSSQL Database
 
 on:
   push:
+    paths:
+      - 'DatabaseAdministration/SQLStatements/**'
     branches:
       - main
 
