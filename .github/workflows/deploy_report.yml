@@ -20,4 +20,4 @@ jobs:
       - name: Run PowerShell script
         shell: pwsh
         run: |
-          ./PublishReports.ps1
+          ./PublishReport.ps1
