@@ -28,4 +28,4 @@ jobs:
               [string] $ReportServerUri = "http://desktop-6jdns4n/ReportServer",
               [string] $TargetFolder = "/SharedReports"
           )
-          .\DepReportNew.ps1 -ReportPath $ReportPath -ReportServerUri $ReportServerUri -TargetFolder $TargetFolder
+          .\PublishReports.ps1 -ReportPath $ReportPath -ReportServerUri $ReportServerUri -TargetFolder $TargetFolder
