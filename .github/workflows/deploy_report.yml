@@ -1,0 +1,31 @@
+name: Deploy Report to Report Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy_report:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up PowerShell environment
+        uses: microsoft/powershell@v1
+
+      - name: Install ReportingServicesTools module
+        shell: pwsh
+        run: |
+          Install-Module -Name ReportingServicesTools -Scope CurrentUser -Force
+
+      - name: Run PowerShell script
+        shell: pwsh
+        run: |
+          param (
+              [string] $ReportPath = "./DatabaseAdministration/SSRS/Reports/DepReportNew.rdl",
+              [string] $ReportServerUri = "http://desktop-6jdns4n/ReportServer",
+              [string] $TargetFolder = "/SharedReports"
+          )
+          .\DepReportNew.ps1 -ReportPath $ReportPath -ReportServerUri $ReportServerUri -TargetFolder $TargetFolder
