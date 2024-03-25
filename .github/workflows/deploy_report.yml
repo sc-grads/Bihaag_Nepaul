@@ -23,9 +23,4 @@ jobs:
       - name: Run PowerShell script
         shell: pwsh
         run: |
-          param (
-              [string] $ReportPath = "./DatabaseAdministration/SSRS/Reports/DepReportNew.rdl",
-              [string] $ReportServerUri = "http://desktop-6jdns4n/ReportServer",
-              [string] $TargetFolder = "/SharedReports"
-          )
-          .\PublishReports.ps1 -ReportPath $ReportPath -ReportServerUri $ReportServerUri -TargetFolder $TargetFolder
+          ./PublishReports.ps1
