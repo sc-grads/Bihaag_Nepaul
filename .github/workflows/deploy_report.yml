@@ -12,9 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up PowerShell environment
-        uses: microsoft/powershell@v1
-
       - name: Install ReportingServicesTools module
         shell: pwsh
         run: |
@@ -23,9 +20,4 @@ jobs:
       - name: Run PowerShell script
         shell: pwsh
         run: |
-          param (
-              [string] $ReportPath = "./DatabaseAdministration/SSRS/Reports/DepReportNew.rdl",
-              [string] $ReportServerUri = "http://desktop-6jdns4n/ReportServer",
-              [string] $TargetFolder = "/SharedReports"
-          )
-          .\DepReportNew.ps1 -ReportPath $ReportPath -ReportServerUri $ReportServerUri -TargetFolder $TargetFolder
+          ./PublishReport.ps1
