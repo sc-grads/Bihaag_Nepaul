@@ -1,6 +1,6 @@
 param (
     [string] $ReportPath = "DatabaseAdministration/SSRS/Reports/DepReportNew.rdl",
-    [string] $ReportServerUri = "http://desktop-6jdns4n/ReportServer",
+    [string] $ReportServerUri = "http://localhost/ReportServer",
     [string] $TargetFolder = "/SharedReports"
 )
 
