@@ -1,11 +1,11 @@
 
 Use AdventureWorks2022
 
---Solution 1 
+--Solution 1**
 
-Select * from [HumanResources].[Employee];
+Select * from [HumanResources].[Employee] order by jobtitle;
 
---Solution 2
+--Solution 2**
 
 Select * from [Person].[Person] ORDER BY LastName;
 
@@ -15,7 +15,7 @@ SELECT FirstName,Lastname,BusinessEntityID AS employee_id From [Person].[Person]
 
 --Solution 4
 
-SELECT ProductID, ProductNumber,Name from [Production].[Product] where sellstartdate IS NOT NULL and productline = 'T' ORDER BY Name ASC;
+SELECT ProductID, ProductNumber,Name as producname from [Production].[Product] where sellstartdate IS NOT NULL and productline = 'T' ORDER BY Name ASC;
 
 --Solution 5
 
@@ -38,7 +38,7 @@ Order by CustomerID desc;
 
 --Solution 9
 
-SELECT productid, sum(quantity) AS total_quantity from production.productinventory 
+SELECT productid, sum(quantity) AS total_quantity from [Production].[Productinventory] 
 where Shelf in ('A','C','H')
 GROUP BY productid
 HAVING sum(quantity) > 500
@@ -46,7 +46,7 @@ ORDER BY productid ASC;
 
 --Solution 10
 
-Select SUM(Quantity) as total_quantity from production.productinventory GROUP BY (locationid * 10);
+Select SUM(Quantity) as total_quantity from [Production].[Productinventory] GROUP BY (locationid * 10);
 
 --Solution 11
 
@@ -74,7 +74,8 @@ GROUP BY ROLLUP (salespersonid, customerid);
 
 --Solution 13**
 select locationid, shelf, SUM(quantity) as totalquantity from [Production].[ProductInventory]
-Group by cube (locationid, shelf);
+Group by rollup (locationid, shelf)
+order by locationId;
 
 --tried also using rollup
 
@@ -85,8 +86,7 @@ Group by grouping sets (rollup (locationId,shelf), CUBE (locationid,shelf));
 
 --Solution 15**
 
-select locationid, SUM(Quantity) as TotalQuantity 
-from [Production].[ProductInventory] GROUP BY GROUPING SETS (locationid);
+SELECT LocationID, SUM(Quantity) AS TotalQuantity FROM Production.ProductInventory GROUP BY rollup (LocationID)
 
 --Solution 16
  select * from [Person].[BusinessEntityAddress]
@@ -214,7 +214,7 @@ select SalesOrderID,ProductID,OrderQty,
 
 SUM(OrderQty) over (PARTITION BY Salesorderid) as "TotalQuantity",
 
-AVG(OrderQty) over (PARTITION BY salesorderid) as "No of Orders",
+AVG(cast(OrderQty as decimal(10,4))) over (PARTITION BY salesorderid) as "No of Orders",
 
 count(OrderQty) over (PARTITION BY salesorderid) as "No of Orders",
 
@@ -224,6 +224,7 @@ max(OrderQty) over (PARTITION BY salesorderid) as "Max Quantity"
 from [Sales].[SalesOrderDetail]
 
 where SalesOrderID IN (43659,43664);
+
 
 
 
