@@ -22,7 +22,6 @@ jobs:
           echo "Waiting for MSSQL server to start..."
           sleep 10  # Wait for 10 seconds
 
-
       - name: Install PowerShell Core
         run: |
           sudo apt-get update
@@ -33,8 +32,60 @@ jobs:
         run: |
           Install-Module -Name SQLServer -Scope CurrentUser -Force
 
-
       - name: Run PowerShell script
+        shell: pwsh
         run: |
-          # Execute your PowerShell script here
-          pwsh -File ./SSISDeployment.ps1
+          # Import the SqlServer module
+          Import-Module SqlServer -Force
+
+          # Variables
+          $SSISNamespace = "Microsoft.SqlServer.Management.IntegrationServices"
+          $TargetServerName = "0.tcp.eu.ngrok.io,12490"
+          $TargetFolderName = "SSIS-DataFlowAuditing"
+          $ProjectFilePath = "DatabaseAdministration/SSIS/Ispac/SSIS-DataFlowAuditing.ispac"
+          $ProjectName = "SSIS-DataFlowAuditing"
+
+          # Find the assembly using PowerShell cmdlets
+          $assemblyPath = (Get-Module -Name SqlServer).Path
+          $assemblyFile = Join-Path -Path $assemblyPath -ChildPath "Microsoft.SqlServer.Management.IntegrationServices.dll"
+
+          if (-not (Test-Path $assemblyFile -PathType Leaf)) {
+            Write-Host "Error: Assembly file not found at path: $assemblyFile"
+            exit 1  # Exit with an error code if assembly file is not found
+          }
+
+          # Load the IntegrationServices assembly
+          $loadStatus = [System.Reflection.Assembly]::LoadFrom($assemblyFile)
+
+          if (-not $loadStatus) {
+            Write-Host "Failed to load assembly."
+            exit 1  # Exit with an error code if assembly loading fails
+          }
+
+          # Create a connection to the server
+          $sqlConnectionString = "Data Source=$TargetServerName;Initial Catalog=master;Integrated Security=SSPI;"
+          $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+
+          # Create the Integration Services object
+          $integrationServices = New-Object "$SSISNamespace.IntegrationServices" $sqlConnection
+
+          # Get the Integration Services catalog
+          $catalog = $integrationServices.Catalogs["SSISDB"]
+
+          if (-not $catalog) {
+            Write-Host "Failed to get SSISDB catalog."
+            exit 1  # Exit with an error code if catalog retrieval fails
+          }
+
+          # Create the target folder
+          $folder = New-Object "$SSISNamespace.CatalogFolder" ($catalog, $TargetFolderName, "Folder description")
+          $folder.Create()
+
+          Write-Host "Deploying $ProjectName project ..."
+
+          # Read the project file and deploy it
+          $projectFile = [System.IO.File]::ReadAllBytes($ProjectFilePath)
+          $folder.DeployProject($ProjectName, $projectFile)
+
+          Write-Host "Done."
+
