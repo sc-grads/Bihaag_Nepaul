@@ -21,7 +21,7 @@ jobs:
       - name: Convert SSIS package to .ispac
         run: |
           # Replace 'path/to/your/package.dtsx' with the actual path to your SSIS package
-          dtutil /file "path/to/your/package.dtsx" /copy file;"converted.ispac"
+          "/opt/mssql-tools/bin/dtutil" /file "DatabaseAdministration/SSIS/UpdateData.dtsx /copy file;"converted.ispac"
       
       - name: Deploy SSIS package
         env:
