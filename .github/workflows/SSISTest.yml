@@ -17,11 +17,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mssql-tools unixodbc-dev
           sudo apt-get install -y --no-install-recommends msodbcsql17
-          sudo apt-get install -y --no-install-recommends ssisdt
-
+          
       - name: Deploy SSIS package
         env:
-          SERVER_NAME: '0.tcp.eu.ngrok.io:12490'
+          SERVER_NAME: '0.tcp.eu.ngrok.io,12490'
           SQL_USER: 'AutomationUser'
           SQL_PASSWORD: 'MyP@ssw0rd2022@BEEBOI@PASSWORDff'
           PACKAGE_PATH: 'DatabaseAdministration/SSIS/UpdateData.dtsx'
