@@ -12,9 +12,6 @@ $ProjectName = "SSIS-DataFlowAuditing"
 $assemblyPath = "DLL/Microsoft.SqlServer.Management.IntegrationServices"
 $loadStatus = [System.Reflection.Assembly]::LoadFrom($assemblyPath)
 
-# Load the IntegrationServices assembly
-$loadStatus = [System.Reflection.Assembly]::Load("Microsoft.SQLServer.Management.IntegrationServices, "+
-    "Version=16.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL")
 
 if ($loadStatus) {
     Write-Host "Assembly loaded successfully."
