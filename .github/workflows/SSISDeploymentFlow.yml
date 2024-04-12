@@ -34,4 +34,4 @@ jobs:
 
       - name: Run PowerShell script
         run: |
-          ./SSISDeployment.ps1
+          sudo ./SSISDeployment.ps1 
