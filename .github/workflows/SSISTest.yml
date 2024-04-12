@@ -24,7 +24,7 @@ jobs:
           SQL_USER: 'AutomationUser'
           SQL_PASSWORD: 'MyP@ssw0rd2022@BEEBOI@PASSWORDff'
           PACKAGE_PATH: 'DatabaseAdministration/SSIS/UpdateData.dtsx'
-          DEST_FOLDER: 'SSISDB/TimesheetCatalog'
+          DEST_FOLDER: 'SSISDB/TimesheetCatalog/Projects/Packages'
         run: |
           echo "Deploying SSIS package..."
           sqlcmd -S $SERVER_NAME -U $SQL_USER -P $SQL_PASSWORD -Q "EXEC SSISDB.catalog.deploy_project '$DEST_FOLDER', '$PACKAGE_PATH', 'NULL', 'NULL', NULL"
