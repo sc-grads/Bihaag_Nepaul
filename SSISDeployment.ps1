@@ -3,7 +3,17 @@ Import-Module SqlServer -Force
 
 # Get the directory where SqlServer module is installed
 $modulePath = (Get-Module -Name SqlServer).Path
+
+# Construct the full path to the IntegrationServices assembly
 $assemblyPath = Join-Path -Path $modulePath -ChildPath "Microsoft.SqlServer.Management.IntegrationServices.dll"
+
+# Check if the assembly file exists
+if (Test-Path $assemblyPath -PathType Leaf) {
+    Write-Host "Assembly file found at: $assemblyPath"
+} else {
+    Write-Host "Error: Assembly file not found at path: $assemblyPath"
+    exit 1  # Exit with an error code if assembly file is not found
+}
 
 # Load the assembly
 $loadStatus = [System.Reflection.Assembly]::LoadFrom($assemblyPath)
@@ -15,7 +25,6 @@ if ($loadStatus) {
     Write-Host "Failed to load assembly."
     exit 1  # Exit with an error code if assembly loading fails
 }
-
 # Variables
 $SSISNamespace = "Microsoft.SqlServer.Management.IntegrationServices"
 $TargetServerName = "0.tcp.eu.ngrok.io,12490"
