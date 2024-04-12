@@ -17,7 +17,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mssql-tools unixodbc-dev
           sudo apt-get install -y --no-install-recommends msodbcsql17
-
+          sudo apt-get install -y mssql-tools
+          
       - name: Deploy SSIS package
         env:
           SERVER_NAME: '0.tcp.eu.ngrok.io,12490'
@@ -26,8 +27,11 @@ jobs:
           PACKAGE_PATH: 'DatabaseAdministration/SSIS/UpdateData.dtsx'
           DEST_FOLDER: 'SSISDB/TimesheetCatalog'
         run: |
+          # Convert .dtsx to .ispac (assuming you have ispacbuilder on your machine)
+          ispacbuilder build "/project:$PACKAGE_PATH" "/dest:converted.ispac"
+
           # Read the content of the .ispac file and convert it to base64
-          $content = [System.IO.File]::ReadAllBytes("DatabaseAdministration/SSIS/Ispac/SSIS-DataFlowAuditing.ispac")
+          $content = [System.IO.File]::ReadAllBytes("converted.ispac")
           $base64 = [System.Convert]::ToBase64String($content)
 
           # Deploy the package using sqlcmd
