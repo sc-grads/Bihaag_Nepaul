@@ -22,10 +22,17 @@ jobs:
           echo "Waiting for MSSQL server to start..."
           sleep 10  # Wait for 10 seconds
 
+
       - name: Install PowerShell Core
         run: |
           sudo apt-get update
           sudo apt-get install -y powershell
+
+      - name: Install SQLServer module
+        shell: pwsh
+        run: |
+          Install-Module -Name SQLServer-Scope CurrentUser -Force
+
 
       - name: Run PowerShell script
         run: |
