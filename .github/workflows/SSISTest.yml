@@ -27,4 +27,4 @@ jobs:
           DEST_FOLDER: 'SSISDB/TestFolder'
         run: |
           echo "Deploying SSIS package..."
-          sudo dtutil /FILE $PACKAGE_PATH /COPY SQL;"\${SERVER_NAME}";"/SSISDB/$DEST_FOLDER" /QUIET /CHECKPOINTING OFF /COPYF
+          sqlpackage /Action:Publish /SourceFile:$PACKAGE_PATH /TargetServerName:${SERVER_NAME} /TargetDatabase:SSISDB /TargetUser:${SQL_USER} /TargetPassword:${SQL_PASSWORD} /TargetFolder:$DEST_FOLDER
