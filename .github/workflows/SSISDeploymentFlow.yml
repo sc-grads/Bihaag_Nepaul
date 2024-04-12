@@ -30,4 +30,4 @@ jobs:
       - name: Run PowerShell script
         run: |
           # Execute your PowerShell script here
-          pwsh -File ./DeplomentSSIS.ps1
+          pwsh -File ./SSISDeployment.ps1
