@@ -17,14 +17,23 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mssql-tools unixodbc-dev
           sudo apt-get install -y --no-install-recommends msodbcsql17
-          
+
+      - name: Convert SSIS package to .ispac
+        run: |
+          # Replace 'path/to/your/package.dtsx' with the actual path to your SSIS package
+          dtutil /file "path/to/your/package.dtsx" /copy file;"converted.ispac"
+      
       - name: Deploy SSIS package
         env:
           SERVER_NAME: '0.tcp.eu.ngrok.io,12490'
           SQL_USER: 'AutomationUser'
           SQL_PASSWORD: 'MyP@ssw0rd2022@BEEBOI@PASSWORDff'
           PACKAGE_PATH: 'DatabaseAdministration/SSIS/UpdateData.dtsx'
-          DEST_FOLDER: 'SSISDB/TimesheetCatalog/Projects/Packages'
+          DEST_FOLDER: 'SSISDB/TimesheetCatalog'
         run: |
-          echo "Deploying SSIS package..."
-          sqlcmd -S $SERVER_NAME -U $SQL_USER -P $SQL_PASSWORD -Q "EXEC SSISDB.catalog.deploy_project '$DEST_FOLDER', '$PACKAGE_PATH', 'NULL', 'NULL', NULL"
+          # Read the content of the .ispac file and convert it to base64
+          $content = [System.IO.File]::ReadAllBytes("converted.ispac")
+          $base64 = [System.Convert]::ToBase64String($content)
+
+          # Deploy the package using sqlcmd
+          sqlcmd -S $SERVER_NAME -U $SQL_USER -P $SQL_PASSWORD -Q "EXEC SSISDB.catalog.deploy_project '$DEST_FOLDER', $base64"
