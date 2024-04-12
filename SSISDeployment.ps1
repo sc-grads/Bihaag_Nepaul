@@ -2,7 +2,7 @@
 $SSISNamespace = "Microsoft.SqlServer.Management.IntegrationServices"
 $TargetServerName = "DESKTOP-6JDNS4N"
 $TargetFolderName = "SSIS-DataFlowAuditing"
-$ProjectFilePath = "C:\Users\Bihaag Nepaul\Desktop\GitHub Reponew\Bihaag_Nepaul\DatabaseAdministration\SSIS\Ispac\SSIS-DataFlowAuditing.ispac"
+$ProjectFilePath = "DatabaseAdministration/SSIS/Ispac/SSIS-DataFlowAuditing.ispac"
 
 $ProjectName = "SSIS-DataFlowAuditing"
 
