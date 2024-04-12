@@ -1,4 +1,4 @@
-name: Deploy Report to Report Server
+name: Deploy SSIS Project
 
 on:
   push:
