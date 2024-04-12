@@ -7,34 +7,64 @@ on:
 
 jobs:
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download SQL Server installer
+      - name: Install SQL Server command-line tools
         run: |
-          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=866662" -OutFile SQLServer2019-x64-ENU.exe
+          sudo apt-get update
+          sudo apt-get install -y curl
+          curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+          curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
 
-      - name: Install SQL Server
+      - name: Verify SQL Server command-line tools installation
         run: |
-          Start-Process -Wait -FilePath "SQLServer2019-x64-ENU.exe" -ArgumentList "/ConfigurationFile=ConfigurationFile.ini /IAcceptSQLServerLicenseTerms"
-
-      - name: Verify SQL Server installation
-        run: |
-          sqlcmd -S localhost -U SA -P '<YourStrongPassword>' -Q "SELECT @@VERSION"
-
-      - name: Wait for MSSQL to start
-        run: |
-          echo "Waiting for MSSQL server to start..."
-          Start-Sleep -Seconds 10  # Wait for 10 seconds
+          sqlcmd -?
+          bcp -?
 
       - name: Run PowerShell script
-        shell: pwsh
-        run: |
-          Install-Module -Name SQLServer -Scope CurrentUser -Force
+        uses: microsoft/powershell@v1
+        with:
+          pwsh: pwsh
+          inlineScript: |
+            Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
 
-      - name: Run PowerShell script
-        shell: pwsh
-        run: |
-          ./SSISDeployment.ps1
+      - name: Run SSIS Deployment script
+        uses: microsoft/powershell@v1
+        with:
+          pwsh: pwsh
+          inlineScript: |
+            # Import the SqlServer module
+            Import-Module SqlServer -Force
+
+            # Set the SQL Server instance name and other variables
+            $TargetServerName = "localhost,1433"
+            $TargetFolderName = "SSIS-DataFlowAuditing"
+            $ProjectFilePath = "DatabaseAdministration/SSIS/Ispac/SSIS-DataFlowAuditing.ispac"
+            $ProjectName = "SSIS-DataFlowAuditing"
+
+            # Create a connection to the SQL Server instance
+            $sqlConnectionString = "Data Source=$TargetServerName;Initial Catalog=master;Integrated Security=SSPI;"
+            $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+
+            # Create the Integration Services object
+            $integrationServices = New-Object "Microsoft.SqlServer.Management.IntegrationServices.IntegrationServices" $sqlConnection
+
+            # Get the Integration Services catalog
+            $catalog = $integrationServices.Catalogs["SSISDB"]
+
+            # Create the target folder
+            $folder = New-Object "Microsoft.SqlServer.Management.IntegrationServices.CatalogFolder" ($catalog, $TargetFolderName, "Folder description")
+            $folder.Create()
+
+            Write-Host "Deploying $ProjectName project ..."
+
+            # Read the project file and deploy it
+            $projectFile = [System.IO.File]::ReadAllBytes($ProjectFilePath)
+            $folder.DeployProject($ProjectName, $projectFile)
+
+            Write-Host "Done."
