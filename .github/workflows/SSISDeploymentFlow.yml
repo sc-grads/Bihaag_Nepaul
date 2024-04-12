@@ -1,70 +1,33 @@
-name: Deploy SSIS Project
+name: SSIS Deployment Workflow
 
 on:
   push:
     branches:
-      - main
+      - main  # Change this to match your main branch name
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Specify the operating system you want to run your script on
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2  # This step checks out your repository's code
 
-      - name: Install SQL Server command-line tools
+      - name: Download and run MSSQL Docker container
+        run: |
+          sudo docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=YourStrong@Password122' -p 1433:1433 -d --name mssql-server -v $(pwd):/scripts mcr.microsoft.com/mssql/server:2019-latest
+
+      - name: Wait for MSSQL to start
+        run: |
+          echo "Waiting for MSSQL server to start..."
+          sleep 10  # Wait for 10 seconds
+
+      - name: Install PowerShell Core
         run: |
           sudo apt-get update
-          sudo apt-get install -y curl
-          curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-          curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
-          sudo apt-get update
-          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
-
-      - name: Verify SQL Server command-line tools installation
-        run: |
-          sqlcmd -?
-          bcp -?
+          sudo apt-get install -y powershell
 
       - name: Run PowerShell script
-        uses: microsoft/powershell@v1
-        with:
-          pwsh: pwsh
-          inlineScript: |
-            Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
-
-      - name: Run SSIS Deployment script
-        uses: microsoft/powershell@v1
-        with:
-          pwsh: pwsh
-          inlineScript: |
-            # Import the SqlServer module
-            Import-Module SqlServer -Force
-
-            # Set the SQL Server instance name and other variables
-            $TargetServerName = "localhost,1433"
-            $TargetFolderName = "SSIS-DataFlowAuditing"
-            $ProjectFilePath = "DatabaseAdministration/SSIS/Ispac/SSIS-DataFlowAuditing.ispac"
-            $ProjectName = "SSIS-DataFlowAuditing"
-
-            # Create a connection to the SQL Server instance
-            $sqlConnectionString = "Data Source=$TargetServerName;Initial Catalog=master;Integrated Security=SSPI;"
-            $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-
-            # Create the Integration Services object
-            $integrationServices = New-Object "Microsoft.SqlServer.Management.IntegrationServices.IntegrationServices" $sqlConnection
-
-            # Get the Integration Services catalog
-            $catalog = $integrationServices.Catalogs["SSISDB"]
-
-            # Create the target folder
-            $folder = New-Object "Microsoft.SqlServer.Management.IntegrationServices.CatalogFolder" ($catalog, $TargetFolderName, "Folder description")
-            $folder.Create()
-
-            Write-Host "Deploying $ProjectName project ..."
-
-            # Read the project file and deploy it
-            $projectFile = [System.IO.File]::ReadAllBytes($ProjectFilePath)
-            $folder.DeployProject($ProjectName, $projectFile)
-
-            Write-Host "Done."
+        run: |
+          # Execute your PowerShell script here
+          pwsh -File PwrShellScripts/DeplomentSSIS.ps1
