@@ -32,7 +32,10 @@ jobs:
         run: |
           Install-Module -Name SQLServer -Scope CurrentUser -Force
 
-      - name: Run PowerShell script
-        shell: pwsh
+      - name: Build custom Docker image with SSIS
         run: |
-            ./SSISDeployment.ps1 -RunAsAdmin
+          docker build -t custom-mssql-ssis .
+
+      - name: Run PowerShell script inside custom Docker image
+        run: |
+          docker run --rm custom-mssql-ssis pwsh -File /scripts/SSISDeployment.ps1 -RunAsAdmin
