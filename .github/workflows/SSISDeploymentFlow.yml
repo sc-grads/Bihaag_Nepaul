@@ -1,0 +1,24 @@
+name: Deploy SSIS Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy_report:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+        
+      - name: Run PowerShell script
+        shell: pwsh
+        run: |
+          Install-Module -Name SQLServer -Scope CurrentUser -Force
+
+      - name: Run PowerShell script
+        shell: pwsh
+        run: |
+          ./SSISDeployment.ps1
