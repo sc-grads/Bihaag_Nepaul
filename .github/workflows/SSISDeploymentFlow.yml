@@ -6,13 +6,21 @@ on:
       - main
 
 jobs:
-  deploy_report:
+  deploy_:
     runs-on: windows-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-        
+      - name: Download and run MSSQL Docker container
+        run: |   # Uses the "run" key to execute a Bash shell command that downloads and runs an MSSQL Docker container.
+          sudo docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=YourStrong@Password122' -p 1433:1433 -d --name mssql-server -v $(pwd):/scripts mcr.microsoft.com/mssql/server:2022-latest
+
+      - name: Wait for MSSQL to start
+        run: |
+          echo "Waiting for MSSQL server to start..."
+          sleep 10  # Wait for 10 seconds
+    
       - name: Run PowerShell script
         shell: pwsh
         run: |
