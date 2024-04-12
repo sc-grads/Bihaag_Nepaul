@@ -12,15 +12,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download and run MSSQL Docker container
+      - name: Download SQL Server installer
         run: |
-          docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=YourStrong@Password122' -p 1433:1433 -d --name mssql-server -v "$(pwd):/scripts" mcr.microsoft.com/mssql/server:2019-latest
+          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=866662" -OutFile SQLServer2019-x64-ENU.exe
+
+      - name: Install SQL Server
+        run: |
+          Start-Process -Wait -FilePath "SQLServer2019-x64-ENU.exe" -ArgumentList "/ConfigurationFile=ConfigurationFile.ini /IAcceptSQLServerLicenseTerms"
+
+      - name: Verify SQL Server installation
+        run: |
+          sqlcmd -S localhost -U SA -P '<YourStrongPassword>' -Q "SELECT @@VERSION"
 
       - name: Wait for MSSQL to start
         run: |
           echo "Waiting for MSSQL server to start..."
           Start-Sleep -Seconds 10  # Wait for 10 seconds
-    
+
       - name: Run PowerShell script
         shell: pwsh
         run: |
