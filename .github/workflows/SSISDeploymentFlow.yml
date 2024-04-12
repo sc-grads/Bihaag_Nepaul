@@ -31,7 +31,7 @@ jobs:
       - name: Install SQLServer module
         shell: pwsh
         run: |
-          Install-Module -Name SQLServer-Scope CurrentUser -Force
+          Install-Module -Name SQLServer -Scope CurrentUser -Force
 
 
       - name: Run PowerShell script
