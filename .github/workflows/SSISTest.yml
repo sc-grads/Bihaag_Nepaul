@@ -17,6 +17,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mssql-tools unixodbc-dev
           sudo apt-get install -y --no-install-recommends msodbcsql17
+          sudo apt-get install -y --no-install-recommends ssisdt
 
       - name: Deploy SSIS package
         env:
