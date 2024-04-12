@@ -9,7 +9,7 @@ $ProjectFilePath = "DatabaseAdministration/SSIS/Ispac/SSIS-DataFlowAuditing.ispa
 $ProjectName = "SSIS-DataFlowAuditing"
 
 # Load the IntegrationServices assembly
-$assemblyPath = "DLL/Microsoft.SqlServer.Dmf.Common.DLL"
+$assemblyPath = "DLL/Microsoft.SqlServer.Management.IntegrationServices"
 $loadStatus = [System.Reflection.Assembly]::LoadFrom($assemblyPath)
 
 # Load the IntegrationServices assembly
