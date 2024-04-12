@@ -35,4 +35,4 @@ jobs:
       - name: Run PowerShell script
         shell: pwsh
         run: |
-            ./SSISDeployment.ps1
+            ./SSISDeployment.ps1 -RunAsAdmin
