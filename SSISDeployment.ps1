@@ -6,20 +6,13 @@ $SSISNamespace = "Microsoft.SqlServer.Management.IntegrationServices"
 $TargetServerName = "0.tcp.eu.ngrok.io,12490"
 $TargetFolderName = "SSIS-DataFlowAuditing"
 $ProjectFilePath = "DatabaseAdministration/SSIS/Ispac/SSIS-DataFlowAuditing.ispac"
+
 $ProjectName = "SSIS-DataFlowAuditing"
 
 # Load the IntegrationServices assembly
-$assemblyPath = "DLL/Microsoft.SqlServer.Management.IntegrationServices"
-$loadStatus = [System.Reflection.Assembly]::LoadFrom($assemblyPath)
-
-
-if ($loadStatus) {
-    Write-Host "Assembly loaded successfully."
-} else {
-    Write-Host "Failed to load assembly."
-    exit 1  # Exit with an error code if assembly loading fails
-}
-
+$loadStatus = [System.Reflection.Assembly]::Load("Microsoft.SQLServer.Management.IntegrationServices, "+
+    "Version=16.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL")
+    
 # Create a connection to the server
 $sqlConnectionString = "Data Source=$TargetServerName;Initial Catalog=master;Integrated Security=SSPI;"
 $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
@@ -27,18 +20,8 @@ $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionSt
 # Create the Integration Services object
 $integrationServices = New-Object "$SSISNamespace.IntegrationServices" $sqlConnection
 
-if ($integrationServices -eq $null) {
-    Write-Host "Failed to create Integration Services object."
-    exit 1  # Exit with an error code if object creation fails
-}
-
 # Get the Integration Services catalog
 $catalog = $integrationServices.Catalogs["SSISDB"]
-
-if ($catalog -eq $null) {
-    Write-Host "Failed to get SSISDB catalog."
-    exit 1  # Exit with an error code if catalog retrieval fails
-}
 
 # Create the target folder
 $folder = New-Object "$SSISNamespace.CatalogFolder" ($catalog, $TargetFolderName, "Folder description")
