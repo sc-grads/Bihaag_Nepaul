@@ -27,4 +27,4 @@ jobs:
           DEST_FOLDER: 'SSISDB/TestFolder'
         run: |
           echo "Deploying SSIS package..."
-          sqlpackage /Action:Publish /SourceFile:$PACKAGE_PATH /TargetServerName:${SERVER_NAME} /TargetDatabase:SSISDB /TargetUser:${SQL_USER} /TargetPassword:${SQL_PASSWORD} /TargetFolder:$DEST_FOLDER
+          sqlcmd -S $SERVER_NAME -U $SQL_USER -P $SQL_PASSWORD -Q "EXEC SSISDB.catalog.deploy_project '$DEST_FOLDER', '$PACKAGE_PATH', 'NULL', 'NULL', NULL"
