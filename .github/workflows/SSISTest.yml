@@ -19,11 +19,9 @@ jobs:
           sudo apt-get install -y mssql-tools unixodbc-dev
           sudo apt-get install -y --no-install-recommends msodbcsql17
 
-      - name: Copy ISpac file using PowerShell
-        shell: pwsh
+      - name: Copy ISpac file
         run: |
-          # Copy the ISpac file to the current directory
-          Copy-Item -Path DatabaseAdministration/SSIS/Ispac/SSIS-GraduateProject.ispac -Destination ISpacFile.ispac
+          cp DatabaseAdministration/SSIS/Ispac/SSIS-GraduateProject.ispac ISpacFile.ispac
 
       - name: List files in directory
         run: ls -l
