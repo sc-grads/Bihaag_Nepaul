@@ -25,6 +25,9 @@ jobs:
           # Copy the ISpac file to the current directory
           Copy-Item -Path DatabaseAdministration/SSIS/Ispac/SSIS-GraduateProject.ispac -Destination ISpacFile.ispac
 
+      - name: List files in directory
+        run: ls -l
+
       - name: Deploy SSIS package
         run: |
           # Execute the SQL commands to deploy the SSIS package
