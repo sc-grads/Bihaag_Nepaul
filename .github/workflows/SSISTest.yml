@@ -27,4 +27,8 @@ jobs:
           DEST_FOLDER: 'SSISDB/TimesheetCatalog'
         run: |
           echo "Deploying SSIS package..."
-          sqlcmd -S $SERVER_NAME -U $SQL_USER -P $SQL_PASSWORD -Q "EXEC SSISDB.catalog.deploy_project '$DEST_FOLDER', '$PACKAGE_PATH', 'NULL', 'NULL', NULL"
+          # Read the .dtsx file content into a variable and convert it to base64
+          content=$(cat $PACKAGE_PATH | base64)
+          
+          # Execute the deploy_packages stored procedure using sqlcmd
+          sqlcmd -S $SERVER_NAME -U $SQL_USER -P $SQL_PASSWORD -d SSISDB -Q "EXEC catalog.deploy_packages @folder_name='$DEST_FOLDER', @project_name='SSIS-GraduateProject', @packages_table=$content, @operation_id=NULL OUTPUT"
