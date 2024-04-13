@@ -3,11 +3,12 @@ name: Deploy SSIS Package
 on:
   push:
     branches:
-      - main
+      - main  # Adjust the branch as needed
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -19,16 +20,6 @@ jobs:
           sudo apt-get install -y --no-install-recommends msodbcsql17
 
       - name: Deploy SSIS package
-        env:
-          SERVER_NAME: '0.tcp.eu.ngrok.io,12490'
-          SQL_USER: 'AutomationUser'
-          SQL_PASSWORD: 'MyP@ssw0rd2022@BEEBOI@PASSWORDff'
-          PACKAGE_PATH: 'DatabaseAdministration/SSIS/UpdateData.dtsx'
-          DEST_FOLDER: 'SSISDB/TimesheetCatalog'
         run: |
-          echo "Deploying SSIS package..."
-          # Read the .dtsx file content into a variable and convert it to base64
-          content=$(cat $PACKAGE_PATH | base64)
-          
-          # Execute the deploy_packages stored procedure using sqlcmd
-          sqlcmd -S "$SERVER_NAME" -U "$SQL_USER" -P "$SQL_PASSWORD" -d SSISDB -Q "DECLARE @packages_table Package_Table_Type; INSERT INTO @packages_table (PackageData) VALUES (CAST('$content' AS varbinary(max))); EXEC catalog.deploy_packages @folder_name='$DEST_FOLDER', @project_name='SSIS-GraduateProject', @packages_table=@packages_table, @operation_id=NULL"
+          # Execute the SQL commands to deploy the SSIS package
+          sqlcmd -S "0.tcp.eu.ngrok.io,12490" -U "AutomationUser" -P "MyP@ssw0rd2022@BEEBOI@PASSWORDff" -d SSISDB -Q "DECLARE @ProjectBinary AS varbinary(max); DECLARE @operation_id AS bigint; SET @ProjectBinary = (SELECT * FROM OPENROWSET(BULK 'DatabaseAdministration/SSIS/Ispac/SSIS-GraduateProject.ispac', SINGLE_BLOB) AS BinaryData); EXEC catalog.deploy_project @folder_name = 'SSIS-GraduateProject', @project_name = 'SSIS-GraduateProject', @Project_Stream = @ProjectBinary, @operation_id = @operation_id out"
