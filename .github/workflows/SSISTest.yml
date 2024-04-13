@@ -19,10 +19,15 @@ jobs:
           sudo apt-get install -y mssql-tools unixodbc-dev
           sudo apt-get install -y --no-install-recommends msodbcsql17
 
+      - name: Copy ISpac file using PowerShell
+        shell: pwsh
+        run: |
+          # Copy the ISpac file to the current directory
+          Copy-Item -Path DatabaseAdministration/SSIS/Ispac/SSIS-GraduateProject.ispac -Destination ISpacFile.ispac
+
       - name: Deploy SSIS package
         run: |
-          # Fetch the ISpac file from the repository
-          cp DatabaseAdministration/SSIS/Ispac/SSIS-GraduateProject.ispac ISpacFile.ispac
-          
           # Execute the SQL commands to deploy the SSIS package
           sqlcmd -S "0.tcp.eu.ngrok.io,12490" -U "AutomationUser" -P "MyP@ssw0rd2022@BEEBOI@PASSWORDff" -d SSISDB -Q "DECLARE @ProjectBinary AS varbinary(max); DECLARE @operation_id AS bigint; SET @ProjectBinary = (SELECT * FROM OPENROWSET(BULK 'ISpacFile.ispac', SINGLE_BLOB) AS BinaryData); EXEC catalog.deploy_project @folder_name = 'SSIS-GraduateProject', @project_name = 'SSIS-GraduateProject', @Project_Stream = @ProjectBinary, @operation_id = @operation_id out"
+
+          # Additional steps as needed after deployment
