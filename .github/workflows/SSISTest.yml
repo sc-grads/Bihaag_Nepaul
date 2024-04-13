@@ -31,4 +31,4 @@ jobs:
           content=$(cat $PACKAGE_PATH | base64)
           
           # Execute the deploy_packages stored procedure using sqlcmd
-          sqlcmd -S "$SERVER_NAME" -U "$SQL_USER" -P "$SQL_PASSWORD" -d SSISDB -Q "EXEC catalog.deploy_packages @folder_name='$DEST_FOLDER', @project_name='SSIS-GraduateProject', @packages_table='$content'"
+          sqlcmd -S "$SERVER_NAME" -U "$SQL_USER" -P "$SQL_PASSWORD" -d SSISDB -Q "DECLARE @packageTable dbo.PackageTableType; INSERT INTO @packageTable (PackageData) VALUES (CAST('$content' AS VARBINARY(MAX))); EXEC catalog.deploy_packages @folder_name='$DEST_FOLDER', @project_name='SSIS-GraduateProject', @packages_table=@packageTable"
