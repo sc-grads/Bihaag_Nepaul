@@ -3,7 +3,7 @@ name: Deploy SSIS Package
 on:
   push:
     branches:
-      - main  # Adjust the branch as needed
+      - main
 
 jobs:
   deploy:
@@ -21,5 +21,8 @@ jobs:
 
       - name: Deploy SSIS package
         run: |
+          # Fetch the ISpac file from the repository
+          cp DatabaseAdministration/SSIS/Ispac/SSIS-GraduateProject.ispac ISpacFile.ispac
+          
           # Execute the SQL commands to deploy the SSIS package
-          sqlcmd -S "0.tcp.eu.ngrok.io,12490" -U "AutomationUser" -P "MyP@ssw0rd2022@BEEBOI@PASSWORDff" -d SSISDB -Q "DECLARE @ProjectBinary AS varbinary(max); DECLARE @operation_id AS bigint; SET @ProjectBinary = (SELECT * FROM OPENROWSET(BULK 'DatabaseAdministration/SSIS/Ispac/SSIS-GraduateProject.ispac', SINGLE_BLOB) AS BinaryData); EXEC catalog.deploy_project @folder_name = 'SSIS-GraduateProject', @project_name = 'SSIS-GraduateProject', @Project_Stream = @ProjectBinary, @operation_id = @operation_id out"
+          sqlcmd -S "0.tcp.eu.ngrok.io,12490" -U "AutomationUser" -P "MyP@ssw0rd2022@BEEBOI@PASSWORDff" -d SSISDB -Q "DECLARE @ProjectBinary AS varbinary(max); DECLARE @operation_id AS bigint; SET @ProjectBinary = (SELECT * FROM OPENROWSET(BULK 'ISpacFile.ispac', SINGLE_BLOB) AS BinaryData); EXEC catalog.deploy_project @folder_name = 'SSIS-GraduateProject', @project_name = 'SSIS-GraduateProject', @Project_Stream = @ProjectBinary, @operation_id = @operation_id out"
