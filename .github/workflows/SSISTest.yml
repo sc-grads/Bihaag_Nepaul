@@ -26,5 +26,9 @@ jobs:
           PACKAGE_PATH: 'DatabaseAdministration/SSIS/UpdateData.dtsx'
           DEST_FOLDER: 'SSISDB/TimesheetCatalog'
         run: |
+          echo "Deploying SSIS package..."
+          # Read the .dtsx file content into a variable and convert it to base64
+          content=$(cat $PACKAGE_PATH | base64)
+          
           # Execute the deploy_packages stored procedure using sqlcmd
           sqlcmd -S "$SERVER_NAME" -U "$SQL_USER" -P "$SQL_PASSWORD" -d SSISDB -Q "EXEC catalog.deploy_packages @folder_name='$DEST_FOLDER', @project_name='SSIS-GraduateProject', @packages_table='$content'"
