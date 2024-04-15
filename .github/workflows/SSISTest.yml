@@ -1,38 +1,27 @@
 name: Deploy SSIS Package
 
-
-
 on:
   push:
-    branches:
-      - main
-
-
+    branches:
+      - main
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
+      - name: Install SQL Server Integration Services
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mssql-server-integration-services
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-
-
-    - name: Install SQL Server Integration Services
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y mssql-server-integration-services
-
-
-
-    - name: Deploy SSIS Package
-      run: |
-        sudo -u $(USER_NAME) /opt/mssql/bin/dtutil -s $(SQL_SERVER_NAME) -f DatabaseAdministration/SSIS/SSIS-NewDeployment/Package.dtsx -i DatabaseAdministration/SSIS/SSIS-NewDeployment/bin/Development/SSIS-NewDeployment.ispac -k
-
-      env:
-        SQL_SERVER_NAME: ${{ secrets.SQL_SERVER_NAME }}
-        SQL_USERNAME: ${{ secrets.USER_NAME }}
-        SQL_PASSWORD: ${{ secrets.USER_PASSWORD }}
+      - name: Deploy SSIS Package
+        run: |
+          sudo -u $(USER_NAME) /opt/mssql/bin/dtutil -s $(SQL_SERVER_NAME) -f DatabaseAdministration/SSIS/SSIS-NewDeployment/Package.dtsx -i DatabaseAdministration/SSIS/SSIS-NewDeployment/bin/Development/SSIS-NewDeployment.ispac -k
+        env:
+          SQL_SERVER_NAME: ${{ secrets.SQL_SERVER_NAME }}
+          SQL_USERNAME: ${{ secrets.USER_NAME }}
+          SQL_PASSWORD: ${{ secrets.USER_PASSWORD }}
