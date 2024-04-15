@@ -33,6 +33,5 @@ jobs:
           Install-Module -Name SQLServer -Scope CurrentUser -Force
 
       - name: Run PowerShell script
-        shell: pwsh
         run: |
-            ./SSISDeployment.ps1
+          sudo ./SSISDeployment.ps1 
