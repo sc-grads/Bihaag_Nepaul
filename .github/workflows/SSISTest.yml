@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy SSIS Package
         run: |
-          sudo -u ${{ secrets.USER_NAME }} /opt/mssql/bin/dtutil -s ${{ secrets.SQL_SERVER_NAME }} -f ./Package.dtsx -i DatabaseAdministration/SSIS/SSIS-NewDeployment/bin/Development/SSIS-NewDeployment.ispac -k
+          sudo -u ${{ secrets.USER_NAME }} /opt/mssql/bin/dtutil -s ${{ secrets.SQL_SERVER_NAME }} -f Package.dtsx -i DatabaseAdministration/SSIS/SSIS-NewDeployment/bin/Development/SSIS-NewDeployment.ispac -k
         env:
           SQL_SERVER_NAME: ${{ secrets.SQL_SERVER_NAME }}
           SQL_USERNAME: ${{ secrets.USER_NAME }}
