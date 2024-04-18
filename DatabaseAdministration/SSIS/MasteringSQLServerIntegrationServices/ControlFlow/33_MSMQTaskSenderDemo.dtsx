@@ -1,0 +1,150 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="4/18/2024 7:56:41 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="DESKTOP-6JDNS4N"
+  DTS:CreatorName="DESKTOP-6JDNS4N\Bihaag Nepaul"
+  DTS:DTSID="{7F15DD5A-3DC8-4192-85FF-67DCCCE5A1A9}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="16.0.5397.1"
+  DTS:LocaleID="7177"
+  DTS:ObjectName="33_MSMQTaskSenderDemo"
+  DTS:PackageType="5"
+  DTS:VersionBuild="6"
+  DTS:VersionGUID="{D56C6338-3079-4F6E-8CA6-C0DE7D67E4D0}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Message Queue Connection Manager]"
+      DTS:CreationName="MSMQ"
+      DTS:DTSID="{BD1C23F9-1124-41E5-9EAD-BEDEB2D830FE}"
+      DTS:ObjectName="Message Queue Connection Manager">
+      <DTS:ObjectData>
+        <MsmqConnectionManager
+          ConnectionString=".\private$\ssis-msmq-demo"
+          ConnectByProxy="False" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[ssis-msmq-demo]"
+      DTS:CreationName="MSMQ"
+      DTS:DTSID="{986A05AC-A7F4-4814-96A7-5EBC4A5B4AB5}"
+      DTS:ObjectName="ssis-msmq-demo">
+      <DTS:ObjectData>
+        <MsmqConnectionManager
+          ConnectionString=".\private$\ssis-msmq-demo"
+          ConnectByProxy="False" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Message Queue Task"
+      DTS:CreationName="Microsoft.MessageQueueTask"
+      DTS:Description="Message Queue Task"
+      DTS:DTSID="{0B70A9AB-A694-441F-A007-5E63E5FC08DC}"
+      DTS:ExecutableType="Microsoft.MessageQueueTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Message Queue Task"
+      DTS:TaskContact="Message Queue Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <MessageQueueTask:MessageQueueTaskData
+          MessageQueueTask:CurrentPackageID="{7F15DD5A-3DC8-4192-85FF-67DCCCE5A1A9}"
+          MessageQueueTask:QueuePath="ssis-msmq-demo"
+          MessageQueueTask:TaskType="DTSMQType_Receiver"
+          MessageQueueTask:StringMessage="Hellooo" xmlns:MessageQueueTask="www.microsoft.com/sqlserver/dts/tasks/messagequeuetask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Script Task"
+      DTS:CreationName="Microsoft.ScriptTask"
+      DTS:Description="Script Task"
+      DTS:DTSID="{8D815EAD-3D11-475B-A55F-11BA8B652CC9}"
+      DTS:ExecutableType="Microsoft.ScriptTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Script Task"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ScriptProject
+          Name="ST_ee1627e515264fadbb67904ab7225e5d"
+          VSTAMajorVersion="16"
+          VSTAMinorVersion="0"
+          Language="CSharp" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{A4DD709B-3A5D-4CC1-9B8E-D229519CB78A}"
+      DTS:From="Package\Message Queue Task"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Script Task" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="184,42.6666666666667"
+          Id="Package\Message Queue Task"
+          TopLeft="209.374990640208,158.052629843561" />
+        <NodeLayout
+          Size="133.333333333334,42.6666666666667"
+          Id="Package\Script Task"
+          TopLeft="253.124988684431,290.7894704914" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="301.374990640208,200.719296510227">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="18.4166647108893,90.0701739811722"
+              Start="0,0"
+              End="18.4166647108893,82.5701739811722">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,41.0350869905861" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,41.0350869905861"
+                    Point2="0,45.0350869905861"
+                    Point3="4,45.0350869905861" />
+                  <mssgle:LineSegment
+                    End="14.4166647108893,45.0350869905861" />
+                  <mssgle:CubicBezierSegment
+                    Point1="14.4166647108893,45.0350869905861"
+                    Point2="18.4166647108893,45.0350869905861"
+                    Point3="18.4166647108893,49.0350869905861" />
+                  <mssgle:LineSegment
+                    End="18.4166647108893,82.5701739811722" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
