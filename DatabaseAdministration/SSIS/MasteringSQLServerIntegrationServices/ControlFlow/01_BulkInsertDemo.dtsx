@@ -1,0 +1,83 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="4/18/2024 12:36:31 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="DESKTOP-6JDNS4N"
+  DTS:CreatorName="DESKTOP-6JDNS4N\Bihaag Nepaul"
+  DTS:DTSID="{2672FF10-92B4-421A-BB33-373556E5BF4A}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="16.0.5397.1"
+  DTS:LocaleID="7177"
+  DTS:ObjectName="01_BulkInsertDemo"
+  DTS:PackageType="5"
+  DTS:VersionBuild="2"
+  DTS:VersionGUID="{B6CA5356-5223-472E-875A-23B1FD0AA932}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[DESKTOP-6JDNS4N.AdventureWorks2022]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{BA7A7900-3316-405F-A705-E8C638DFBAC5}"
+      DTS:ObjectName="DESKTOP-6JDNS4N.AdventureWorks2022">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=DESKTOP-6JDNS4N;Initial Catalog=AdventureWorks2022;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=SSIS-01_BulkInsertDemo-{BA7A7900-3316-405F-A705-E8C638DFBAC5}DESKTOP-6JDNS4N.AdventureWorks2022;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Employees.csv]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{6AC711DB-38E4-4054-A32D-99D36BF357C8}"
+      DTS:ObjectName="Employees.csv">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="C:\Users\Bihaag Nepaul\Desktop\DemoData\Employees.csv" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Bulk Insert Task"
+      DTS:CreationName="Microsoft.BulkInsertTask"
+      DTS:Description="Bulk Insert Task"
+      DTS:DTSID="{5D1FDC3D-9531-4636-AE81-1DE43A7D76D9}"
+      DTS:ExecutableType="Microsoft.BulkInsertTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Bulk Insert Task"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <BulkInsertTask:BulkInsertTaskData
+          BulkInsertTask:SourceConnectionName="{6AC711DB-38E4-4054-A32D-99D36BF357C8}"
+          BulkInsertTask:DestinationConnectionName="{BA7A7900-3316-405F-A705-E8C638DFBAC5}"
+          BulkInsertTask:DestinationTableName="[dbo].[Employees]"
+          BulkInsertTask:FieldTerminator="Comma {,}" xmlns:BulkInsertTask="www.microsoft.com/sqlserver/dts/tasks/bulkinserttask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="156,42.6666666666667"
+          Id="Package\Bulk Insert Task"
+          TopLeft="173.74999223277,112.894735602543" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

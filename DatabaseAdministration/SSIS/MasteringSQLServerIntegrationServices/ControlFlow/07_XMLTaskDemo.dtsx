@@ -1,0 +1,125 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="4/18/2024 1:48:04 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="DESKTOP-6JDNS4N"
+  DTS:CreatorName="DESKTOP-6JDNS4N\Bihaag Nepaul"
+  DTS:DTSID="{C0AB91A6-C1AA-4A30-89E3-722B880F437D}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="16.0.5397.1"
+  DTS:LocaleID="7177"
+  DTS:ObjectName="07_XMLTaskDemo"
+  DTS:PackageType="5"
+  DTS:VersionBuild="4"
+  DTS:VersionGUID="{BE5F89C0-D40C-4594-8DB6-20B986A9BF41}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Inventory.xml]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{46D425C9-7239-467E-80EB-F9208E93455B}"
+      DTS:ObjectName="Inventory.xml">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="C:\Users\Bihaag Nepaul\Desktop\DemoData\ssisdemofiles\Inventory.xml" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[NodeOutput.txt]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{3C72CAA9-BEB2-4E03-8628-57AC484675A8}"
+      DTS:ObjectName="NodeOutput.txt">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:FileUsageType="1"
+          DTS:ConnectionString="C:\Users\Bihaag Nepaul\Desktop\DemoData\ssisdemofiles\NodeOutput.txt" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[SumOP]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{4CE7AB6A-AA94-40FE-86A4-5F2790C1C917}"
+      DTS:ObjectName="SumOP">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:FileUsageType="1"
+          DTS:ConnectionString="C:\Users\Bihaag Nepaul\Desktop\DemoData\ssisdemofiles\SumOP" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Nodes Demo"
+      DTS:CreationName="Microsoft.XMLTask"
+      DTS:Description="XML Task"
+      DTS:Disabled="True"
+      DTS:DTSID="{1F901A14-8B65-40B2-84D0-6FDCD3E4ED0F}"
+      DTS:ExecutableType="Microsoft.XMLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Nodes Demo"
+      DTS:TaskContact="XML Task; Microsoft Corporation; SQL Server 2022; � 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <XMLTaskData
+          OperationType="XPATH"
+          Source="Inventory.xml"
+          SecondOperand="/bookstore/book/author/first-name"
+          SaveOperationResult="True"
+          Destination="NodeOutput.txt"
+          XPathOperation="NodeList"
+          PutResultInOneNode="True" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\XPath Evaluation"
+      DTS:CreationName="Microsoft.XMLTask"
+      DTS:Description="XML Task"
+      DTS:Disabled="True"
+      DTS:DTSID="{CB4C844D-3F2A-4D23-A15D-9D38CC38F13B}"
+      DTS:ExecutableType="Microsoft.XMLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="XPath Evaluation"
+      DTS:TaskContact="XML Task; Microsoft Corporation; SQL Server 2022; � 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <XMLTaskData
+          OperationType="XPATH"
+          Source="Inventory.xml"
+          SecondOperand="sum(bookstore/book/price)"
+          SaveOperationResult="True"
+          Destination="SumOP"
+          OverwriteDestination="True"
+          PutResultInOneNode="True" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="161.333333333334,42.6666666666667"
+          Id="Package\XPath Evaluation"
+          TopLeft="39.3749982398004,80.7368412187886" />
+        <NodeLayout
+          Size="141.333333333334,42.6666666666667"
+          Id="Package\Nodes Demo"
+          TopLeft="48.1249978486449,171.052629700823" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
