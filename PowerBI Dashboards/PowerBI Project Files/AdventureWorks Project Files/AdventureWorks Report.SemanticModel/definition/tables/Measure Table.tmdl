@@ -391,6 +391,9 @@ table 'Measure Table'
 
 		annotation PBI_FormatHint = {"currencyCulture":"en-ZA"}
 
+	measure 'Test Measure' = "Hello Github"
+		lineageTag: d14c6023-c81d-4fb2-bc2a-1d82040462a7
+
 	partition 'Measure Table' = m
 		mode: import
 		source =
