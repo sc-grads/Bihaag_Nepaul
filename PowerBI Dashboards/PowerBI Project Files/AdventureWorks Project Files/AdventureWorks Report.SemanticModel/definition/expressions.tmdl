@@ -1,0 +1,141 @@
+expression DiscountedProductOrders =
+		let
+		    Source = Sql.Database("DESKTOP-6JDNS4N", "EmployeeHub"),
+		    dbo_DiscountedProductOrders = Source{[Schema="dbo",Item="DiscountedProductOrders"]}[Data]
+		in
+		    dbo_DiscountedProductOrders
+	lineageTag: 8c2070c8-7819-455f-9e7b-e1b1ab406a0a
+	queryGroup: 'Demo Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression EmployeeData =
+		let
+		    Source = Sql.Database("DESKTOP-6JDNS4N", "EmployeeHub"),
+		    dbo_EmployeeData = Source{[Schema="dbo",Item="EmployeeData"]}[Data]
+		in
+		    dbo_EmployeeData
+	lineageTag: 36f7484e-876a-4668-9bee-36242e12832e
+	queryGroup: 'Demo Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression employees =
+		let
+		    Source = Sql.Database("DESKTOP-6JDNS4N", "EmployeeHub"),
+		    dbo_employees = Source{[Schema="dbo",Item="employees"]}[Data]
+		in
+		    dbo_employees
+	lineageTag: 48af80b6-8c07-4b7a-bd5b-2b458ce386cc
+	queryGroup: 'Demo Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression GenderAvg =
+		let
+		    Source = Sql.Database("DESKTOP-6JDNS4N", "EmployeeHub"),
+		    dbo_GenderAvg = Source{[Schema="dbo",Item="GenderAvg"]}[Data]
+		in
+		    dbo_GenderAvg
+	lineageTag: af343c6d-06fc-4491-87a5-63e1e2f40f5a
+	queryGroup: 'Demo Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Largest AssetManagement Firms' =
+		let
+		    Source = Web.BrowserContents("https://en.wikipedia.org/wiki/List_of_asset_management_firms"),
+		    #"Extracted Table From Html" = Html.Table(Source, {{"Column1", "TABLE.sortable.wikitable > * > TR > :nth-child(1)"}, {"Column2", "TABLE.sortable.wikitable > * > TR > :nth-child(2)"}, {"Column3", "TABLE.sortable.wikitable > * > TR > :nth-child(3)"}, {"Column4", "TABLE.sortable.wikitable > * > TR > :nth-child(4)"}}, [RowSelector="TABLE.sortable.wikitable > * > TR"]),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Extracted Table From Html", [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Rank", Int64.Type}, {"Firm/company", type text}, {"Country", type text}, {"AUM (billion USD)", type number}})
+		in
+		    #"Changed Type"
+	lineageTag: 541b62ea-e029-4429-bf76-8781309d099b
+	queryGroup: 'Demo Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Sample File' =
+		let
+		    Source = Folder.Files("C:\Users\Bihaag Nepaul\Desktop\Adventure Works Raw Data\AdventureWorks Raw Data\Sales Data"),
+		    Navigation1 = Source{0}[Content]
+		in
+		    Navigation1
+	lineageTag: 8d9b44b5-8fb3-4550-ac04-874a64e56e47
+	queryGroup: 'Transform File from Sales Data\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression Parameter1 = #"Sample File" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: ac161a0d-b279-4b4e-a9eb-550ea3366d8b
+	queryGroup: 'Transform File from Sales Data\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File' =
+		let
+		    Source = Csv.Document(Parameter1,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 687171dd-886c-4b44-bf60-24b7ba612143
+	queryGroup: 'Transform File from Sales Data'
+
+	annotation PBI_ResultType = Table
+
+expression 'Transform File' =
+		let
+		    Source = (Parameter1 as binary) => let
+		    Source = Csv.Document(Parameter1,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File""}" ]
+	lineageTag: c008e262-464c-4515-a876-4ae5165c2858
+	queryGroup: 'Transform File from Sales Data\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression 'Rolling Calender' =
+		let
+		    Source = #date(2024, 1, 1),
+		    Custom1 = List.Dates(
+		    Source,
+		    Number.From(DateTime.LocalNow()) - Number.From(Source),
+		    #duration(1,0,0,0)
+		),
+		    #"Converted to Table" = Table.FromList(Custom1, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "Date"}}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"Date", type date}}),
+		    #"Inserted Year" = Table.AddColumn(#"Changed Type", "Year", each Date.Year([Date]), Int64.Type),
+		    #"Inserted Start of Quarter" = Table.AddColumn(#"Inserted Year", "Start of Quarter", each Date.StartOfQuarter([Date]), type date),
+		    #"Inserted Start of Month" = Table.AddColumn(#"Inserted Start of Quarter", "Start of Month", each Date.StartOfMonth([Date]), type date)
+		in
+		    #"Inserted Start of Month"
+	lineageTag: 4d216e05-6995-49c4-9f39-cacbe2273fb9
+
+	annotation PBI_ResultType = Table
+
+expression 'Product Category Sales (Unpivot Demo)' =
+		let
+		    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Desktop\Adventure Works Raw Data\AdventureWorks Raw Data\Product Category Sales (Unpivot Demo).csv"),[Delimiter=",", Columns=5, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Date", type date}, {"Product Category", type text}, {"North Region", Int64.Type}, {"Central Region", Int64.Type}, {"South Region", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: c4b3776c-50c7-48fc-bb33-97b941e82843
+
+	annotation PBI_ResultType = Table
+
