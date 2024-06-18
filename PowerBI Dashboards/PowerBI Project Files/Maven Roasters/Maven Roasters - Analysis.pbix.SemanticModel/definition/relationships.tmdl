@@ -1,0 +1,59 @@
+relationship e6916672-773a-4ed3-862f-1b2197cd6f1f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Calendar.Transaction_Date
+	toColumn: LocalDateTable_d201c2aa-3bba-4dc3-b190-eb20ff4b6b02.Date
+
+relationship 08ca79fd-235a-4dbc-9035-9948e8826a7f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Customer Lookup'.customer_since
+	toColumn: LocalDateTable_59df40e7-15be-4532-8572-7bdd659fd704.Date
+
+relationship 56cfe356-ac35-497b-b5b6-ae2577c021e9
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Customer Lookup'.birthdate
+	toColumn: LocalDateTable_8e864239-40c9-4c3a-95ee-6e191db7b412.Date
+
+relationship bbd4e0a7-85e7-403f-a7d1-f0c000e4fb1a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Employee Lookup'.start_date
+	toColumn: LocalDateTable_d8e7f137-f79e-48dc-8d39-c3d4a95359cd.Date
+
+relationship 2e7d1b10-06c5-424b-b79f-b1aa757f3ccd
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Food Inventory'.baked_date
+	toColumn: LocalDateTable_5345552e-d10b-4c2e-934e-c05d7362653a.Date
+
+relationship b856409c-d6c1-4980-80ba-b132480285f5
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Food Inventory'.transaction_date
+	toColumn: LocalDateTable_5e3b3232-cd0b-4a17-a114-4f968f6be750.Date
+
+relationship 802e7b76-57f0-4984-a7ca-cbcb80eb7661
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Sales by Store'.transaction_date
+	toColumn: LocalDateTable_8bc68ce4-e50f-4fee-8693-d747818fd366.Date
+
+relationship AutoDetected_526b129f-cc9d-4141-b52a-806e2b49fa2d
+	fromColumn: 'Sales by Store'.customer_id
+	toColumn: 'Customer Lookup'.customer_id
+
+relationship AutoDetected_73df7da2-3d78-4aa4-8262-5487b89b0f7e
+	fromColumn: 'Sales by Store'.staff_id
+	toColumn: 'Employee Lookup'.staff_id
+
+relationship AutoDetected_edc27c28-a536-4e2f-b942-59b90e17879a
+	fromColumn: 'Food Inventory'.store_id
+	toColumn: 'Store Lookup'.store_id
+
+relationship AutoDetected_3500c430-aaaa-41a5-bb5f-d16ea7de57d2
+	fromColumn: 'Sales by Store'.store_id
+	toColumn: 'Store Lookup'.store_id
+
+relationship AutoDetected_ff9bea04-a876-4ac6-b1f3-3b903ecb2125
+	fromColumn: 'Food Inventory'.product_id
+	toColumn: 'Product Lookup'.product_id
+
+relationship AutoDetected_5ff2c6d3-5c72-4467-b162-5b4fc3b78e22
+	fromColumn: 'Sales by Store'.product_id
+	toColumn: 'Product Lookup'.product_id
+

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Maven Roasters - Analysis.pbix"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "75083e0d-b12a-42ba-976c-be56d084dda5"
+  }
+}

@@ -1,0 +1,34 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-ZA
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["Calendar","Customer Lookup","Employee Lookup","Food Inventory","Product Lookup","Sales by Store","Store Lookup"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBIDesktopVersion = 2.130.754.0 (24.06)
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Calendar
+ref table DateTableTemplate_0bc613f1-8afd-4952-933b-7116c85e1738
+ref table LocalDateTable_d201c2aa-3bba-4dc3-b190-eb20ff4b6b02
+ref table 'Customer Lookup'
+ref table LocalDateTable_59df40e7-15be-4532-8572-7bdd659fd704
+ref table LocalDateTable_8e864239-40c9-4c3a-95ee-6e191db7b412
+ref table 'Employee Lookup'
+ref table LocalDateTable_d8e7f137-f79e-48dc-8d39-c3d4a95359cd
+ref table 'Food Inventory'
+ref table LocalDateTable_5345552e-d10b-4c2e-934e-c05d7362653a
+ref table LocalDateTable_5e3b3232-cd0b-4a17-a114-4f968f6be750
+ref table 'Product Lookup'
+ref table 'Sales by Store'
+ref table LocalDateTable_8bc68ce4-e50f-4fee-8693-d747818fd366
+ref table 'Store Lookup'
+
+ref cultureInfo en-US
+

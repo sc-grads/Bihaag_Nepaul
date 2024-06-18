@@ -1,0 +1,131 @@
+table 'Product Lookup'
+	lineageTag: 5571fbc2-ec4b-4073-9a1e-82e2eea9c2f2
+
+	column product_id
+		dataType: int64
+		formatString: 0
+		lineageTag: cddef6c8-7a10-4c5c-9aa3-3b966b4f6b41
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_group
+		dataType: string
+		lineageTag: 554c7f54-ef2f-434d-84d3-8aad50f31c54
+		summarizeBy: none
+		sourceColumn: product_group
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category
+		dataType: string
+		lineageTag: d64ca6cc-7d6e-4647-a731-34381c93940a
+		summarizeBy: none
+		sourceColumn: product_category
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_type
+		dataType: string
+		lineageTag: 38b47536-fdca-4cf4-b4b5-a0cb26e6dc66
+		summarizeBy: none
+		sourceColumn: product_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column product
+		dataType: string
+		lineageTag: fdc188ea-e54b-4c75-a74b-7442165b9931
+		summarizeBy: none
+		sourceColumn: product
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_description
+		dataType: string
+		lineageTag: 54a2c3b2-d090-473e-87dd-1273125aa142
+		summarizeBy: none
+		sourceColumn: product_description
+
+		annotation SummarizationSetBy = Automatic
+
+	column unit_of_measure
+		dataType: string
+		lineageTag: a615edd1-6c0e-4f12-b131-34b7105efa48
+		summarizeBy: none
+		sourceColumn: unit_of_measure
+
+		annotation SummarizationSetBy = Automatic
+
+	column current_cost
+		dataType: string
+		lineageTag: 0397682f-7dfb-4f44-866c-a1bbf13f65a2
+		summarizeBy: none
+		sourceColumn: current_cost
+
+		annotation SummarizationSetBy = Automatic
+
+	column current_wholesale_price
+		dataType: string
+		lineageTag: 4a88e31f-7a09-45d9-a940-9510006c08ac
+		summarizeBy: none
+		sourceColumn: current_wholesale_price
+
+		annotation SummarizationSetBy = Automatic
+
+	column current_retail_price
+		dataType: string
+		lineageTag: c2f2cb68-ba80-4fa1-ba08-e437b5394ff1
+		summarizeBy: none
+		sourceColumn: current_retail_price
+
+		annotation SummarizationSetBy = Automatic
+
+	column tax_exempt_yn
+		dataType: string
+		lineageTag: b99b1381-1edd-436b-ac7f-4213bb88bdcd
+		summarizeBy: none
+		sourceColumn: tax_exempt_yn
+
+		annotation SummarizationSetBy = Automatic
+
+	column promo_yn
+		dataType: string
+		lineageTag: 3086102c-e9ce-4f30-a879-7a3c078a83ed
+		summarizeBy: none
+		sourceColumn: promo_yn
+
+		annotation SummarizationSetBy = Automatic
+
+	column new_product_yn
+		dataType: string
+		lineageTag: 04cf1311-f845-4986-860e-3366968f2596
+		summarizeBy: none
+		sourceColumn: new_product_yn
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column1
+		dataType: int64
+		formatString: 0
+		lineageTag: bd348b03-0979-47bf-a268-a413bd076fe8
+		summarizeBy: sum
+		sourceColumn: Column1
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Product Lookup' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Downloads\Dax Udemy Files\Advanced DAX Data Files\Product Lookup.csv"),[Delimiter=",", Columns=14, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"product_id", Int64.Type}, {"product_group", type text}, {"product_category", type text}, {"product_type", type text}, {"product", type text}, {"product_description", type text}, {"unit_of_measure", type text}, {"current_cost", type text}, {"current_wholesale_price", type text}, {"current_retail_price", type text}, {"tax_exempt_yn", type text}, {"promo_yn", type text}, {"new_product_yn", type text}, {"", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

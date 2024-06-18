@@ -1,0 +1,110 @@
+table Calendar
+	lineageTag: d30f72b1-86f2-4eb2-8482-5bcd4eee6d3c
+
+	column Transaction_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: e5450e71-d86d-4c3e-83b9-f5d407ce5133
+		summarizeBy: none
+		sourceColumn: Transaction_Date
+
+		variation Variation
+			isDefault
+			relationship: e6916672-773a-4ed3-862f-1b2197cd6f1f
+			defaultHierarchy: LocalDateTable_d201c2aa-3bba-4dc3-b190-eb20ff4b6b02.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Date_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 1b673f72-8ed1-4643-b109-d5c227c19193
+		summarizeBy: count
+		sourceColumn: Date_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Week_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 9d70b3f7-0dfe-4a7f-a746-20f88f54e007
+		summarizeBy: count
+		sourceColumn: Week_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Week_Desc
+		dataType: string
+		lineageTag: c6679baf-4a53-4439-b3a8-64544e1d39bf
+		summarizeBy: none
+		sourceColumn: Week_Desc
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 2f2900e3-2925-47a5-add6-f66839efb9e3
+		summarizeBy: count
+		sourceColumn: Month_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month_Name
+		dataType: string
+		lineageTag: 34563791-6a45-4b0c-abe2-ee5b0d79cc15
+		summarizeBy: none
+		sourceColumn: Month_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 09fdc83f-1eee-472f-902b-3d02d0fdea55
+		summarizeBy: count
+		sourceColumn: Quarter_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter_Name
+		dataType: string
+		lineageTag: 5905c5a4-47a2-4ba5-813d-34e26caa6aec
+		summarizeBy: none
+		sourceColumn: Quarter_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 52cf683a-39b9-4585-a0e4-a7b01930bb9c
+		summarizeBy: count
+		sourceColumn: Year_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Week_Year
+		dataType: string
+		lineageTag: b676f1e8-b00f-4d36-be1a-25b3dedc1b1d
+		summarizeBy: none
+		sourceColumn: Week_Year
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Calendar = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Downloads\Dax Udemy Files\Advanced DAX Data Files\Calendar.csv"),[Delimiter=",", Columns=10, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Transaction_Date", type date}, {"Date_ID", Int64.Type}, {"Week_ID", Int64.Type}, {"Week_Desc", type text}, {"Month_ID", Int64.Type}, {"Month_Name", type text}, {"Quarter_ID", Int64.Type}, {"Quarter_Name", type text}, {"Year_ID", Int64.Type}, {"Week_Year", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
