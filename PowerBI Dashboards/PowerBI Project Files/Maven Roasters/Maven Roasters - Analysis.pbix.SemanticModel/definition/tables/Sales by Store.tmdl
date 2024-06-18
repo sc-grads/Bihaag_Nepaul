@@ -1,6 +1,36 @@
 table 'Sales by Store'
 	lineageTag: 5c6fe69b-4de5-45ea-9c65-3916d48e7004
 
+	measure 'Customer Sales' =
+			
+			SUMX(
+			    'Sales by Store',
+			    'Sales by Store'[quantity_sold] * 'Sales by Store'[unit_price]
+			)
+		lineageTag: 893dfb3f-88c2-440a-91ce-49dad1317862
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Cost =
+			
+			SUMX(
+			    'Sales by Store',
+			    'Sales by Store'[quantity_sold] *
+			    RELATED(
+			        'Product Lookup'[current_cost]
+			    )
+			)
+		lineageTag: 43444d36-6bbd-406e-a166-8567b386c51b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Profit =
+			
+			[Customer Sales] - [Cost]
+		lineageTag: f275e4c5-c42a-4165-8c4e-fc618b2ab9af
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column transaction_id
 		dataType: int64
 		formatString: 0

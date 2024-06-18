@@ -25,7 +25,17 @@
       "filters": "[]",
       "height": 720.00,
       "name": "d7ca0efbf632a60326ac",
-      "visualContainers": [],
+      "visualContainers": [
+        {
+          "config": "{\"name\":\"bdcdac7081e6c1a68838\",\"layouts\":[{\"id\":0,\"position\":{\"x\":354.27338626164993,\"y\":212.6593027269589,\"width\":300,\"height\":300,\"z\":0}}],\"singleVisual\":{\"visualType\":\"pivotTable\",\"projections\":{\"Values\":[{\"queryRef\":\"Sales by Store.Customer Sales\"},{\"queryRef\":\"Sales by Store.Cost\"},{\"queryRef\":\"Sales by Store.Profit\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"s\",\"Entity\":\"Sales by Store\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"Customer Sales\"},\"Name\":\"Sales by Store.Customer Sales\",\"NativeReferenceName\":\"Customer Sales\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"Cost\"},\"Name\":\"Sales by Store.Cost\",\"NativeReferenceName\":\"Cost\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"Profit\"},\"Name\":\"Sales by Store.Profit\",\"NativeReferenceName\":\"Profit\"}]},\"drillFilterOtherVisuals\":true}}",
+          "filters": "[]",
+          "height": 300.00,
+          "width": 300.00,
+          "x": 354.27,
+          "y": 212.66,
+          "z": 0.00
+        }
+      ],
       "width": 1280.00
     }
   ]
