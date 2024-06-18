@@ -24,10 +24,8 @@ ref table 'Employee Lookup'
 ref table LocalDateTable_d8e7f137-f79e-48dc-8d39-c3d4a95359cd
 ref table 'Food Inventory'
 ref table LocalDateTable_5345552e-d10b-4c2e-934e-c05d7362653a
-ref table LocalDateTable_5e3b3232-cd0b-4a17-a114-4f968f6be750
 ref table 'Product Lookup'
 ref table 'Sales by Store'
-ref table LocalDateTable_8bc68ce4-e50f-4fee-8693-d747818fd366
 ref table 'Store Lookup'
 
 ref cultureInfo en-US

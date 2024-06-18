@@ -17,11 +17,6 @@ table 'Sales by Store'
 		summarizeBy: none
 		sourceColumn: transaction_date
 
-		variation Variation
-			isDefault
-			relationship: 802e7b76-57f0-4984-a7ca-cbcb80eb7661
-			defaultHierarchy: LocalDateTable_8bc68ce4-e50f-4fee-8693-d747818fd366.'Date Hierarchy'
-
 		annotation SummarizationSetBy = Automatic
 
 		annotation UnderlyingDateTimeDataType = Date

@@ -23,37 +23,35 @@ relationship 2e7d1b10-06c5-424b-b79f-b1aa757f3ccd
 	fromColumn: 'Food Inventory'.baked_date
 	toColumn: LocalDateTable_5345552e-d10b-4c2e-934e-c05d7362653a.Date
 
-relationship b856409c-d6c1-4980-80ba-b132480285f5
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Food Inventory'.transaction_date
-	toColumn: LocalDateTable_5e3b3232-cd0b-4a17-a114-4f968f6be750.Date
-
-relationship 802e7b76-57f0-4984-a7ca-cbcb80eb7661
-	joinOnDateBehavior: datePartOnly
+relationship 78de903c-b1f2-f051-30b7-e5e423627cec
 	fromColumn: 'Sales by Store'.transaction_date
-	toColumn: LocalDateTable_8bc68ce4-e50f-4fee-8693-d747818fd366.Date
+	toColumn: Calendar.Transaction_Date
 
-relationship AutoDetected_526b129f-cc9d-4141-b52a-806e2b49fa2d
+relationship 290e62a3-d219-27b6-6bc9-d19d4124f9ac
+	fromColumn: 'Food Inventory'.transaction_date
+	toColumn: Calendar.Transaction_Date
+
+relationship e6875813-5a36-abff-84b6-44ac36d284d9
 	fromColumn: 'Sales by Store'.customer_id
 	toColumn: 'Customer Lookup'.customer_id
 
-relationship AutoDetected_73df7da2-3d78-4aa4-8262-5487b89b0f7e
+relationship 794c6c85-4e8e-a31c-4048-619099ab69ac
 	fromColumn: 'Sales by Store'.staff_id
 	toColumn: 'Employee Lookup'.staff_id
 
-relationship AutoDetected_edc27c28-a536-4e2f-b942-59b90e17879a
-	fromColumn: 'Food Inventory'.store_id
-	toColumn: 'Store Lookup'.store_id
+relationship 14c05d31-fd7c-18c2-2939-d27e1852df0d
+	fromColumn: 'Sales by Store'.product_id
+	toColumn: 'Product Lookup'.product_id
 
-relationship AutoDetected_3500c430-aaaa-41a5-bb5f-d16ea7de57d2
-	fromColumn: 'Sales by Store'.store_id
-	toColumn: 'Store Lookup'.store_id
-
-relationship AutoDetected_ff9bea04-a876-4ac6-b1f3-3b903ecb2125
+relationship c4b73c26-a560-4f55-78ff-07ac87a6f21d
 	fromColumn: 'Food Inventory'.product_id
 	toColumn: 'Product Lookup'.product_id
 
-relationship AutoDetected_5ff2c6d3-5c72-4467-b162-5b4fc3b78e22
-	fromColumn: 'Sales by Store'.product_id
-	toColumn: 'Product Lookup'.product_id
+relationship 513c8961-bba1-566d-9029-cd8c2c0212d6
+	fromColumn: 'Sales by Store'.store_id
+	toColumn: 'Store Lookup'.store_id
+
+relationship 56329672-f0c4-8e9a-9af0-422eb2cb3c0c
+	fromColumn: 'Food Inventory'.store_id
+	toColumn: 'Store Lookup'.store_id
 
