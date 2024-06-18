@@ -14,8 +14,8 @@ table 'Sales by Store'
 	measure Cost =
 			
 			SUMX(
-			    'Sales by Store',
-			    'Sales by Store'[quantity_sold] *
+			    'Sales by Store',                       --Returns the Sales by store table to
+			    'Sales by Store'[quantity_sold] *       --evaluate expression quantity sold times cost from a related table.
 			    RELATED(
 			        'Product Lookup'[current_cost]
 			    )
