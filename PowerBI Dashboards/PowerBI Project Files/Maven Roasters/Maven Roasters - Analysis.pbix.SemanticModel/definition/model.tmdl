@@ -23,7 +23,6 @@ ref table LocalDateTable_8e864239-40c9-4c3a-95ee-6e191db7b412
 ref table 'Employee Lookup'
 ref table LocalDateTable_d8e7f137-f79e-48dc-8d39-c3d4a95359cd
 ref table 'Food Inventory'
-ref table LocalDateTable_5345552e-d10b-4c2e-934e-c05d7362653a
 ref table 'Product Lookup'
 ref table 'Sales by Store'
 ref table 'Store Lookup'
@@ -51,6 +50,8 @@ ref table LocalDateTable_e9afa434-72c5-45f5-9eff-2496e920adcf
 ref table 'New Employees (INTERSECT)'
 ref table LocalDateTable_202cd725-c7b9-46dc-a588-7e2de688494a
 ref table 'Repeat Customer Sales (INTERSECT Assignment)'
+ref table LocalDateTable_f2331a97-6572-4f42-8231-00047c93c36a
+ref table TREATASDEMO
 
 ref cultureInfo en-US
 

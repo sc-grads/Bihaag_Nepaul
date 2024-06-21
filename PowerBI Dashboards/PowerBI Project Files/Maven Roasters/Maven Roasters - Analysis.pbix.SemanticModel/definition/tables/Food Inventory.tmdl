@@ -37,8 +37,8 @@ table 'Food Inventory'
 
 		variation Variation
 			isDefault
-			relationship: 2e7d1b10-06c5-424b-b79f-b1aa757f3ccd
-			defaultHierarchy: LocalDateTable_5345552e-d10b-4c2e-934e-c05d7362653a.'Date Hierarchy'
+			relationship: 8117bf64-9a71-4adb-84a3-cbb02ac16f5d
+			defaultHierarchy: LocalDateTable_f2331a97-6572-4f42-8231-00047c93c36a.'Date Hierarchy'
 
 		annotation SummarizationSetBy = Automatic
 

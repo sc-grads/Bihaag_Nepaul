@@ -111,6 +111,42 @@ table 'Customer Lookup'
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	column 'Customer Sales (High/Low)' =
+			
+			VAR TotalSales =
+			SUMX(
+			    'Sales by Store',
+			    'Sales by Store'[quantity_sold] * 'Sales by Store'[unit_price]
+			)
+			VAR AllCustomers =
+			COUNTROWS('Customer Lookup')
+			VAR AvgSales =
+			DIVIDE(TotalSales,AllCustomers)
+			VAR CustomerSales =
+			SUMX(
+			    RELATEDTABLE(
+			        'Sales by Store'
+			    ),
+			    'Sales by Store'[quantity_sold] * 'Sales by Store'[unit_price]
+			)
+			
+			VAR HighLow =
+			
+			IF(
+			    CustomerSales > AvgSales,
+			    "High",
+			    "Low"
+			)
+			
+			RETURN
+			HighLow
+		dataType: string
+		lineageTag: aa561988-a932-431b-9953-05dc090a8dbc
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
 	partition 'Customer Lookup' = m
 		mode: import
 		source =

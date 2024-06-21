@@ -4,8 +4,8 @@
     {
       "ordinal": 0,
       "scrollPosition": {
-        "x": 3350.9792779151867,
-        "y": 0
+        "x": 478.49763990253183,
+        "y": 128.46365242426629
       },
       "nodes": [
         {
@@ -75,7 +75,7 @@
         },
         {
           "location": {
-            "x": 471.98686637795743,
+            "x": 355.30886605599773,
             "y": 528.76753899902235
           },
           "nodeIndex": "Sales by Store",
@@ -88,21 +88,21 @@
         },
         {
           "location": {
-            "x": 1118.3961599372974,
-            "y": 202.49999999999937
+            "x": 1114.860462957844,
+            "y": 218.41063640753933
           },
           "nodeIndex": "Store Lookup",
           "nodeLineageTag": "c78f7c83-66ab-4f13-94e9-3f8dd0ff7a0d",
           "size": {
-            "height": 251.11111111111109,
+            "height": 244.03971715220439,
             "width": 234
           },
           "zIndex": 0
         },
         {
           "location": {
-            "x": 1449.0628266039641,
-            "y": 428.15275714568253
+            "x": 1731.9185849602302,
+            "y": 185.95751405312976
           },
           "nodeIndex": "Measure Table",
           "nodeLineageTag": "9bc822b5-61e4-40ae-a0c3-c6d7916a845e",
@@ -247,10 +247,11 @@
         },
         {
           "location": {
-            "x": 4857.0628266039639,
-            "y": 314.4583127012383
+            "x": 1342.5800290273596,
+            "y": 540.74291938625106
           },
           "nodeIndex": "UNION Demo",
+          "nodeLineageTag": "afe57417-b4f1-4c84-851b-07aa1c4583c4",
           "size": {
             "height": 200,
             "width": 234
@@ -299,6 +300,18 @@
             "y": 314.4583127012383
           },
           "nodeIndex": "Repeat Customer Sales (INTERSECT Assignment)",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 6277.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "TREATASDEMO",
           "size": {
             "height": 200,
             "width": 234

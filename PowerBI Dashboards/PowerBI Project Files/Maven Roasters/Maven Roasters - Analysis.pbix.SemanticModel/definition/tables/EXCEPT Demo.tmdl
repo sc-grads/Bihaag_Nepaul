@@ -117,6 +117,16 @@ table 'EXCEPT Demo'
 
 		annotation SummarizationSetBy = Automatic
 
+	column 'Customer Sales (High/Low)'
+		dataType: string
+		lineageTag: f0c3ba14-4e74-4826-a1cc-725afb49698b
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[Customer Sales (High/Low)]
+
+		annotation SummarizationSetBy = Automatic
+
 	partition 'EXCEPT Demo' = calculated
 		mode: import
 		source =

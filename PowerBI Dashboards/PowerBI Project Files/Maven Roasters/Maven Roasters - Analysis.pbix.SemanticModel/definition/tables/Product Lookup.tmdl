@@ -109,12 +109,19 @@ table 'Product Lookup'
 
 		annotation SummarizationSetBy = Automatic
 
-	column Column1
+	column 'Number of Food Items Made' =
+			
+			SUMX(
+			    RELATEDTABLE(
+			        'Food Inventory'
+			    ),
+			    'Food Inventory'[quantity_start_of_day]
+			)
 		dataType: int64
 		formatString: 0
-		lineageTag: bd348b03-0979-47bf-a268-a413bd076fe8
+		lineageTag: 6ae4c815-9062-4c9c-b5d8-512724772b62
 		summarizeBy: sum
-		sourceColumn: Column1
+		isDataTypeInferred
 
 		annotation SummarizationSetBy = Automatic
 
@@ -124,11 +131,10 @@ table 'Product Lookup'
 				let
 				    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Downloads\Dax Udemy Files\Advanced DAX Data Files\Product Lookup (Updated).csv"),[Delimiter=",", Columns=14, Encoding=1252, QuoteStyle=QuoteStyle.None]),
 				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"product_id", Int64.Type}, {"product_group", type text}, {"product_category", type text}, {"product_type", type text}, {"product", type text}, {"product_description", type text}, {"unit_of_measure", type text}, {"current_cost", type text}, {"current_wholesale_price", type text}, {"current_retail_price", type text}, {"tax_exempt_yn", type text}, {"promo_yn", type text}, {"new_product_yn", type text}, {"", Int64.Type}})
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"product_id", Int64.Type}, {"product_group", type text}, {"product_category", type text}, {"product_type", type text}, {"product", type text}, {"product_description", type text}, {"unit_of_measure", type text}, {"current_cost", type text}, {"current_wholesale_price", type text}, {"current_retail_price", type text}, {"tax_exempt_yn", type text}, {"promo_yn", type text}, {"new_product_yn", type text}, {"", Int64.Type}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
 				in
-				    #"Changed Type"
-
-	annotation PBI_NavigationStepName = Navigation
+				    #"Removed Columns"
 
 	annotation PBI_ResultType = Table
 
