@@ -52,6 +52,7 @@ ref table LocalDateTable_202cd725-c7b9-46dc-a588-7e2de688494a
 ref table 'Repeat Customer Sales (INTERSECT Assignment)'
 ref table LocalDateTable_f2331a97-6572-4f42-8231-00047c93c36a
 ref table TREATASDEMO
+ref table 'Average Days'
 
 ref cultureInfo en-US
 

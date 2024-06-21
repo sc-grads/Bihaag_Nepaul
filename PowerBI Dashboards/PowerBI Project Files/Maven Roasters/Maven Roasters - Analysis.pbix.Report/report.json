@@ -1,5 +1,5 @@
 {
-  "config": "{\"version\":\"5.55\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU06\",\"version\":\"5.55\",\"type\":2}},\"activeSectionIndex\":0,\"defaultDrillFilterOtherVisuals\":true,\"linguisticSchemaSyncVersion\":2,\"settings\":{\"useNewFilterPaneExperience\":true,\"allowChangeFilterTypes\":true,\"useStylableVisualContainerHeader\":true,\"queryLimitOption\":6,\"useEnhancedTooltips\":true,\"exportDataMode\":1,\"useDefaultAggregateDisplayName\":true},\"objects\":{\"section\":[{\"properties\":{\"verticalAlignment\":{\"expr\":{\"Literal\":{\"Value\":\"'Top'\"}}}}}],\"outspacePane\":[{\"properties\":{\"expanded\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}]}}",
+  "config": "{\"version\":\"5.55\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU06\",\"version\":\"5.55\",\"type\":2}},\"activeSectionIndex\":2,\"defaultDrillFilterOtherVisuals\":true,\"linguisticSchemaSyncVersion\":2,\"settings\":{\"useNewFilterPaneExperience\":true,\"allowChangeFilterTypes\":true,\"useStylableVisualContainerHeader\":true,\"queryLimitOption\":6,\"useEnhancedTooltips\":true,\"exportDataMode\":1,\"useDefaultAggregateDisplayName\":true},\"objects\":{\"section\":[{\"properties\":{\"verticalAlignment\":{\"expr\":{\"Literal\":{\"Value\":\"'Top'\"}}}}}],\"outspacePane\":[{\"properties\":{\"expanded\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}]}}",
   "layoutOptimization": 0,
   "resourcePackages": [
     {
@@ -18,6 +18,36 @@
     }
   ],
   "sections": [
+    {
+      "config": "{}",
+      "displayName": "Iterators",
+      "displayOption": 1,
+      "filters": "[]",
+      "height": 720.00,
+      "name": "50493b1fb7c4f718109f",
+      "ordinal": 1,
+      "visualContainers": [
+        {
+          "config": "{\"name\":\"ea4e0f88d86165dd2e7c\",\"layouts\":[{\"id\":0,\"position\":{\"x\":329.25647221263375,\"y\":211.55125992405937,\"z\":1,\"width\":618.7476700034518,\"height\":174.96720745598893,\"tabOrder\":1}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"Measure Table.Sales by Employee Name (CONCATENATEX)\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"m\",\"Entity\":\"Measure Table\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"m\"}},\"Property\":\"Sales by Employee Name (CONCATENATEX)\"},\"Name\":\"Measure Table.Sales by Employee Name (CONCATENATEX)\",\"NativeReferenceName\":\"Sales by Employee Name (CONCATENATEX)\"}]},\"drillFilterOtherVisuals\":true,\"objects\":{\"labels\":[{\"properties\":{\"fontSize\":{\"expr\":{\"Literal\":{\"Value\":\"16D\"}}}}}]},\"vcObjects\":{\"title\":[{\"properties\":{\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}},\"alignment\":{\"expr\":{\"Literal\":{\"Value\":\"'center'\"}}},\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Selected Employee'\"}}},\"fontColor\":{\"solid\":{\"color\":{\"expr\":{\"ThemeDataColor\":{\"ColorId\":0,\"Percent\":0}}}}},\"background\":{\"solid\":{\"color\":{\"expr\":{\"ThemeDataColor\":{\"ColorId\":1,\"Percent\":0}}}}}}}]}}}",
+          "filters": "[]",
+          "height": 174.97,
+          "width": 618.75,
+          "x": 329.26,
+          "y": 211.55,
+          "z": 1.00
+        },
+        {
+          "config": "{\"name\":\"ebc6c853314dd226fb73\",\"layouts\":[{\"id\":0,\"position\":{\"x\":480.3645150155333,\"y\":408.7870210562651,\"z\":0,\"width\":318.12219537452535,\"height\":203.5982050396962,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"pivotTable\",\"projections\":{\"Values\":[{\"queryRef\":\"Measure Table.Customer Sales\"}],\"Rows\":[{\"queryRef\":\"Store Lookup.store_id\",\"active\":true},{\"queryRef\":\"Employee Lookup.staff_id\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"m\",\"Entity\":\"Measure Table\",\"Type\":0},{\"Name\":\"s\",\"Entity\":\"Store Lookup\",\"Type\":0},{\"Name\":\"e\",\"Entity\":\"Employee Lookup\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"m\"}},\"Property\":\"Customer Sales\"},\"Name\":\"Measure Table.Customer Sales\",\"NativeReferenceName\":\"Customer Sales\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"store_id\"},\"Name\":\"Store Lookup.store_id\",\"NativeReferenceName\":\"store_id\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"e\"}},\"Property\":\"staff_id\"},\"Name\":\"Employee Lookup.staff_id\",\"NativeReferenceName\":\"staff_id\"}]},\"expansionStates\":[{\"roles\":[\"Rows\"],\"levels\":[{\"queryRefs\":[\"Store Lookup.store_id\"],\"isCollapsed\":true,\"identityKeys\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Entity\":\"Store Lookup\"}},\"Property\":\"store_id\"}}],\"isPinned\":true},{\"queryRefs\":[\"Employee Lookup.staff_id\"],\"isCollapsed\":true,\"isPinned\":true}],\"root\":{\"identityValues\":null,\"children\":[{\"identityValues\":[{\"Literal\":{\"Value\":\"5L\"}}],\"isToggled\":true}]}}],\"drillFilterOtherVisuals\":true}}",
+          "filters": "[{\"name\":\"Filter9166b451cf5da435e1f4\",\"expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Entity\":\"Store Lookup\"}},\"Property\":\"store_id\"}},\"filter\":{\"Version\":2,\"From\":[{\"Name\":\"s\",\"Entity\":\"Store Lookup\",\"Type\":0}],\"Where\":[{\"Condition\":{\"In\":{\"Expressions\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"store_id\"}}],\"Values\":[[{\"Literal\":{\"Value\":\"5L\"}}]]}}}]},\"type\":\"Categorical\",\"howCreated\":0,\"objects\":{},\"isHiddenInViewMode\":false}]",
+          "height": 203.60,
+          "width": 318.12,
+          "x": 480.36,
+          "y": 408.79,
+          "z": 0.00
+        }
+      ],
+      "width": 1280.00
+    },
     {
       "config": "{}",
       "displayName": "Page 1",
@@ -61,6 +91,45 @@
           "x": 321.30,
           "y": 252.91,
           "z": 2003.00
+        }
+      ],
+      "width": 1280.00
+    },
+    {
+      "config": "{}",
+      "displayName": "Page 2",
+      "displayOption": 1,
+      "filters": "[]",
+      "height": 720.00,
+      "name": "f50a7970dd8350cc3da7",
+      "ordinal": 2,
+      "visualContainers": [
+        {
+          "config": "{\"name\":\"2f54e6fae43486caa1d5\",\"layouts\":[{\"id\":0,\"position\":{\"x\":0,\"y\":92.87576854314742,\"z\":0,\"width\":896.6083809357693,\"height\":280.41337810142585,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"pivotTable\",\"projections\":{\"Rows\":[{\"queryRef\":\"Product Lookup.product_category\",\"active\":true}],\"Values\":[{\"queryRef\":\"Measure Table.Customer Sales\"},{\"queryRef\":\"Measure Table.Rank of Customer Sales (RANK)\"},{\"queryRef\":\"Measure Table.Rounded Customer Sales\"},{\"queryRef\":\"Measure Table.Rank of Rounded Customer Sales (RANK)\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"p\",\"Entity\":\"Product Lookup\",\"Type\":0},{\"Name\":\"m\",\"Entity\":\"Measure Table\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"p\"}},\"Property\":\"product_category\"},\"Name\":\"Product Lookup.product_category\",\"NativeReferenceName\":\"product_category\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"m\"}},\"Property\":\"Customer Sales\"},\"Name\":\"Measure Table.Customer Sales\",\"NativeReferenceName\":\"Customer Sales\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"m\"}},\"Property\":\"Rank of Customer Sales (RANK)\"},\"Name\":\"Measure Table.Rank of Customer Sales (RANK)\",\"NativeReferenceName\":\"Rank of Customer Sales (RANK)\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"m\"}},\"Property\":\"Rounded Customer Sales\"},\"Name\":\"Measure Table.Rounded Customer Sales\",\"NativeReferenceName\":\"Rounded Customer Sales\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"m\"}},\"Property\":\"Rank of Rounded Customer Sales (RANK)\"},\"Name\":\"Measure Table.Rank of Rounded Customer Sales (RANK)\",\"NativeReferenceName\":\"Rank of Rounded Customer Sales (RANK)\"}],\"OrderBy\":[{\"Direction\":1,\"Expression\":{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"m\"}},\"Property\":\"Rank of Customer Sales (RANK)\"}}}]},\"drillFilterOtherVisuals\":true}}",
+          "filters": "[]",
+          "height": 280.41,
+          "width": 896.61,
+          "x": 0.00,
+          "y": 92.88,
+          "z": 0.00
+        },
+        {
+          "config": "{\"name\":\"9bf6eb2ec636daacd3e4\",\"layouts\":[{\"id\":0,\"position\":{\"x\":907,\"y\":93,\"width\":373,\"height\":280,\"z\":2,\"tabOrder\":2}}],\"singleVisual\":{\"visualType\":\"slicer\",\"projections\":{\"Values\":[{\"queryRef\":\"Product Lookup.product_category\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"p\",\"Entity\":\"Product Lookup\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"p\"}},\"Property\":\"product_category\"},\"Name\":\"Product Lookup.product_category\",\"NativeReferenceName\":\"product_category\"}]},\"drillFilterOtherVisuals\":true,\"objects\":{\"data\":[{\"properties\":{\"mode\":{\"expr\":{\"Literal\":{\"Value\":\"'Basic'\"}}}}}],\"general\":[{\"properties\":{}}]}}}",
+          "filters": "[]",
+          "height": 280.00,
+          "width": 373.00,
+          "x": 907.00,
+          "y": 93.00,
+          "z": 2.00
+        },
+        {
+          "config": "{\"name\":\"dee3d0002037d1d95faa\",\"layouts\":[{\"id\":0,\"position\":{\"x\":0,\"y\":383,\"width\":897,\"height\":280,\"z\":1,\"tabOrder\":1}}],\"singleVisual\":{\"visualType\":\"pivotTable\",\"projections\":{\"Values\":[{\"queryRef\":\"Measure Table.Top 5 Products by Profit (RANKX)\"}],\"Rows\":[{\"queryRef\":\"Product Lookup.product\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"m\",\"Entity\":\"Measure Table\",\"Type\":0},{\"Name\":\"p\",\"Entity\":\"Product Lookup\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"m\"}},\"Property\":\"Top 5 Products by Profit (RANKX)\"},\"Name\":\"Measure Table.Top 5 Products by Profit (RANKX)\",\"NativeReferenceName\":\"Top 5 Products by Profit (RANKX)\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"p\"}},\"Property\":\"product\"},\"Name\":\"Product Lookup.product\",\"NativeReferenceName\":\"product\"}]},\"drillFilterOtherVisuals\":true}}",
+          "filters": "[]",
+          "height": 280.00,
+          "width": 897.00,
+          "x": 0.00,
+          "y": 383.00,
+          "z": 1.00
         }
       ],
       "width": 1280.00

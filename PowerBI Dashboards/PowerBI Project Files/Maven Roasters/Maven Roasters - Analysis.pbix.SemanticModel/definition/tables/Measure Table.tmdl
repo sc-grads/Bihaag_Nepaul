@@ -615,6 +615,236 @@ table 'Measure Table'
 		formatString: 0.00%;-0.00%;0.00%
 		lineageTag: 01ffecac-1a26-4a1e-b461-92697cda997f
 
+	measure 'Employee Full Name (CONCATENATEX)' =
+			
+			IF(
+			    HASONEVALUE(
+			        'Employee Lookup'[first_name]
+			    ),
+			
+			    CONCATENATEX(
+			    'Employee Lookup',
+			    'Employee Lookup'[first_name] & " " & 'Employee Lookup'[last_name],
+			    ",",
+			    'Employee Lookup'[first_name],
+			    ASC
+			    ),
+			    BLANK()
+			)
+		lineageTag: 3a3dcdea-f914-4248-bf78-cfda5963104f
+
+	measure 'Selected Product Category (CONCATENATEX)' =
+			
+			"Showing Sales For: " &
+			CONCATENATEX(
+			    VALUES(
+			        'Product Lookup'[product_category]
+			    ),
+			    'Product Lookup'[product_category],
+			    ",",
+			    'Product Lookup'[product_category],
+			    ASC
+			)
+		lineageTag: 90db47eb-49e3-4235-8958-07aace464b34
+
+	measure '% of Customer Sales (CONCATENATEX Assignment)' = ```
+			
+			VAR AllExceptSales = 
+			CALCULATE(
+			    [Customer Sales],
+			    ALLEXCEPT(
+			        'Sales by Store',
+			        'Store Lookup'[store_id]
+			    )
+			)
+			VAR Ratio =
+			DIVIDE(
+			    [Customer Sales],
+			    AllExceptSales,
+			    BLANK()
+			)
+			RETURN
+			Ratio
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: e3923bbd-0ffe-4b7a-87e8-111b2817db33
+
+	measure 'Sales by Employee Name (CONCATENATEX)' = ```
+			
+			IF(
+			    HASONEVALUE(
+			        'Employee Lookup'[first_name]
+			    ),
+			    "Employee: " &
+			    CONCATENATEX(
+			        VALUES(
+			            'Employee Lookup'[first_name]
+			        ),
+			        'Employee Lookup'[first_name] &  
+			        "-" &
+			        FORMAT([% of Customer Sales (CONCATENATEX Assignment)],"Percent"),
+			        ",",
+			        'Employee Lookup'[first_name],
+			        ASC
+			    ),
+			    "Select a Single Employee"
+			)
+			```
+		lineageTag: d700e8ce-76f7-4028-9717-2157123d7e8f
+
+	measure 'Average Daily Sales (AVERAGEX)' =
+			
+			AVERAGEX(
+			    'Calendar',
+			    [Customer Sales]
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: bfc6c86a-3d92-4279-9f21-b1ca29ac2489
+
+	measure 'Moving Average (AVERAGEX)' = ```
+			
+			VAR LastTransactionDate = MAX('Sales by Store'[transaction_date])
+			VAR AverageDay = 30
+			VAR PeriodInVisual =
+			FILTER(
+			    ALL(
+			        'Calendar'[Transaction_Date]
+			    ),
+			    AND(
+			        'Calendar'[Transaction_Date] > LastTransactionDate - AverageDay,
+			        'Calendar'[Transaction_Date] <= LastTransactionDate
+			    )
+			)
+			VAR OutPut = 
+			CALCULATE(
+			    AVERAGEX(
+			        'Calendar',
+			        [Customer Sales]
+			    ),
+			    PeriodInVisual
+			)
+			RETURN
+			OutPut
+			```
+		formatString: 0.00
+		lineageTag: 526cdaf3-3d6d-465d-a96d-c9c61fbfc163
+
+	measure 'Average Profit (AVERAGEX)' =
+			
+			AVERAGEX(
+			    'Calendar',
+			    [Profit]
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: caab5be0-c049-4d45-8848-af125e8a5530
+
+	measure 'Average Days Value' =
+			
+			GENERATESERIES(
+			    7,
+			    63,
+			    7
+			)
+		formatString: 0
+		lineageTag: e9e26e17-d55a-42b0-8e94-df80f2beeb7d
+
+	measure 'Moving Average Profit (AVERAGEX)' = ```
+			
+			VAR LastTransactionDate = MAX('Sales by Store'[transaction_date])
+			VAR AverageDay = [Average Days Value]
+			VAR PeriodInVisual =
+			FILTER(
+			    ALL(
+			        'Calendar'[Transaction_Date]
+			    ),
+			    AND(
+			        'Calendar'[Transaction_Date] > LastTransactionDate - AverageDay,
+			        'Calendar'[Transaction_Date] <= LastTransactionDate
+			    )
+			)
+			VAR OutPut = 
+			CALCULATE(
+			    AVERAGEX(
+			        'Calendar',
+			        [Profit]
+			    ),
+			    PeriodInVisual
+			)
+			RETURN
+			OutPut
+			```
+		lineageTag: 72dcc548-60d4-4ff0-8127-67a8d1f397f6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Rank of Customer Sales (RANK)' =
+			
+			IF(
+			    HASONEVALUE(
+			        'Product Lookup'[product_category]
+			    ),
+			    RANKX(
+			        ALL(
+			            'Product Lookup'[product_category]
+			        ),
+			        [Customer Sales]
+			    )
+			)
+		formatString: 0
+		lineageTag: 6acdaf91-b45f-48c5-8b9f-5ccf4adc54ed
+
+	measure 'Rounded Customer Sales' =
+			
+			MROUND(
+			    [Customer Sales],
+			    100000
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 5c22af54-d3e7-4faa-a429-73bcb69bc377
+
+	measure 'Rank of Rounded Customer Sales (RANK)' =
+			
+			IF(
+			    HASONEVALUE(
+			        'Product Lookup'[product_category]
+			    ),
+			    RANKX(
+			        ALL(
+			            'Product Lookup'[product_category]
+			        ),
+			        [Rounded Customer Sales],
+			        ,DESC
+			        ,Dense
+			    )
+			)
+		formatString: 0
+		lineageTag: 096703d3-4a7e-43f6-a5e5-ff43ac6d67d1
+
+	measure 'Top 5 Products by Profit (RANKX)' = ```
+			
+			VAR ProfitRank = 
+			IF(
+			    HASONEVALUE(
+			        'Product Lookup'[product_category]
+			    ),
+			    RANKX(
+			        ALL(
+			            'Product Lookup'[product]
+			        ),
+			        [Customer Sales] - [Cost]
+			    )
+			)
+			VAR Top5Products =
+			IF(
+			    ProfitRank <= 5,
+			    [Profit]
+			)
+			RETURN
+			Top5Products
+			```
+		formatString: 0
+		lineageTag: 0ace9bb2-aff9-4c73-a466-938803b32ad4
+
 	partition 'Measure Table' = m
 		mode: import
 		source =
