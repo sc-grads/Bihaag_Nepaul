@@ -1,0 +1,40 @@
+table 'SUMMARIZE Demo'
+	lineageTag: 7a7c1b8d-113d-4e1d-af43-4c40293c50b8
+
+	column customer_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 87631e6b-2919-4c1c-80b8-ce9c80cd63c6
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Sales by Store[customer_id]
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity_sold
+		dataType: int64
+		formatString: 0
+		lineageTag: 07e1d54f-c74a-451e-8fb9-edff39be85d7
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Sales by Store[quantity_sold]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'SUMMARIZE Demo' = calculated
+		mode: import
+		source =
+				
+				SUMMARIZE(
+				    FILTER(
+				        'Sales by Store',
+				        'Sales by Store'[quantity_sold] >=3
+				    ),
+				    'Sales by Store'[customer_id],
+				    'Sales by Store'[quantity_sold]
+				)
+
+	annotation PBI_Id = 882b405ac9eb41038ff49e42b10912bd
+

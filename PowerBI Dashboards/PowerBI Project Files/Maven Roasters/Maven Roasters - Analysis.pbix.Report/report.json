@@ -1,5 +1,5 @@
 {
-  "config": "{\"version\":\"5.55\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU06\",\"version\":\"5.55\",\"type\":2}},\"activeSectionIndex\":0,\"defaultDrillFilterOtherVisuals\":true,\"settings\":{\"useNewFilterPaneExperience\":true,\"allowChangeFilterTypes\":true,\"useStylableVisualContainerHeader\":true,\"queryLimitOption\":6,\"useEnhancedTooltips\":true,\"exportDataMode\":1,\"useDefaultAggregateDisplayName\":true},\"objects\":{\"section\":[{\"properties\":{\"verticalAlignment\":{\"expr\":{\"Literal\":{\"Value\":\"'Top'\"}}}}}]}}",
+  "config": "{\"version\":\"5.55\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU06\",\"version\":\"5.55\",\"type\":2}},\"activeSectionIndex\":0,\"defaultDrillFilterOtherVisuals\":true,\"linguisticSchemaSyncVersion\":2,\"settings\":{\"useNewFilterPaneExperience\":true,\"allowChangeFilterTypes\":true,\"useStylableVisualContainerHeader\":true,\"queryLimitOption\":6,\"useEnhancedTooltips\":true,\"exportDataMode\":1,\"useDefaultAggregateDisplayName\":true},\"objects\":{\"section\":[{\"properties\":{\"verticalAlignment\":{\"expr\":{\"Literal\":{\"Value\":\"'Top'\"}}}}}],\"outspacePane\":[{\"properties\":{\"expanded\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}]}}",
   "layoutOptimization": 0,
   "resourcePackages": [
     {
@@ -27,13 +27,13 @@
       "name": "d7ca0efbf632a60326ac",
       "visualContainers": [
         {
-          "config": "{\"name\":\"bdcdac7081e6c1a68838\",\"layouts\":[{\"id\":0,\"position\":{\"x\":354.27338626164993,\"y\":212.6593027269589,\"width\":300,\"height\":300,\"z\":0}}],\"singleVisual\":{\"visualType\":\"pivotTable\",\"projections\":{\"Values\":[{\"queryRef\":\"Sales by Store.Customer Sales\"},{\"queryRef\":\"Sales by Store.Cost\"},{\"queryRef\":\"Sales by Store.Profit\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"s\",\"Entity\":\"Sales by Store\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"Customer Sales\"},\"Name\":\"Sales by Store.Customer Sales\",\"NativeReferenceName\":\"Customer Sales\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"Cost\"},\"Name\":\"Sales by Store.Cost\",\"NativeReferenceName\":\"Cost\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"s\"}},\"Property\":\"Profit\"},\"Name\":\"Sales by Store.Profit\",\"NativeReferenceName\":\"Profit\"}]},\"drillFilterOtherVisuals\":true}}",
+          "config": "{\"name\":\"babca5475d32eeebab8a\",\"layouts\":[{\"id\":0,\"position\":{\"x\":709.4124956851915,\"y\":466.84432171211597,\"width\":467.63962720055224,\"height\":157.47048671039005,\"z\":3001}}],\"singleVisual\":{\"visualType\":\"pivotTable\",\"projections\":{\"Values\":[{\"queryRef\":\"Measure Table.Wholesale Cost\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"m\",\"Entity\":\"Measure Table\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"m\"}},\"Property\":\"Wholesale Cost\"},\"Name\":\"Measure Table.Wholesale Cost\",\"NativeReferenceName\":\"Wholesale Cost\"}]},\"drillFilterOtherVisuals\":true}}",
           "filters": "[]",
-          "height": 300.00,
-          "width": 300.00,
-          "x": 354.27,
-          "y": 212.66,
-          "z": 0.00
+          "height": 157.47,
+          "width": 467.64,
+          "x": 709.41,
+          "y": 466.84,
+          "z": 3001.00
         }
       ],
       "width": 1280.00

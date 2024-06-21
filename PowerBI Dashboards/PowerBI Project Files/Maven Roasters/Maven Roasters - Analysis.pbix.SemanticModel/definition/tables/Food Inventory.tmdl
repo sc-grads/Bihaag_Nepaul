@@ -1,6 +1,24 @@
 table 'Food Inventory'
 	lineageTag: 346796ec-97ad-475b-8aa3-7b3919a1ffb7
 
+	measure 'SUM Quantity Sold' =
+			
+			SUM(
+			    'Food Inventory'[quantity_sold]
+			)
+		formatString: #,0
+		lineageTag: d400f4d2-97c9-422e-bdd9-60571a068f2a
+
+	measure 'Calculate SUM Quantity Sold' =
+			
+			CALCULATE(
+			    SUM(
+			        'Food Inventory'[quantity_sold]
+			    )
+			)
+		formatString: #,0
+		lineageTag: f1b8dea2-7cb0-44d4-ba1a-458a17f17354
+
 	column store_id
 		dataType: int64
 		formatString: 0
@@ -61,6 +79,34 @@ table 'Food Inventory'
 		lineageTag: 05b8061d-5a14-4fd3-9beb-fb47440dad2d
 		summarizeBy: sum
 		sourceColumn: quantity_sold
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Quantity Sold (SUM)' =
+			
+			SUM(
+			    'Food Inventory'[quantity_sold]
+			)
+		dataType: int64
+		formatString: 0
+		lineageTag: 2dcf8bc0-8c4a-4b62-bd85-f65c49b215ff
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Quantity Sold (CALCULATE)' =
+			
+			CALCULATE(
+			    SUM(
+			        'Food Inventory'[quantity_sold]
+			    )
+			)
+		dataType: int64
+		formatString: 0
+		lineageTag: cb45d022-fdc1-4f0b-ab80-e26a6c8168df
+		summarizeBy: sum
+		isDataTypeInferred
 
 		annotation SummarizationSetBy = Automatic
 

@@ -1,0 +1,440 @@
+table 'Measure Table'
+	lineageTag: 9bc822b5-61e4-40ae-a0c3-c6d7916a845e
+
+	measure Cost =
+			
+			SUMX(
+			    'Sales by Store',                       --Returns the Sales by store table to
+			    'Sales by Store'[quantity_sold] *       --evaluate expression quantity sold times cost from a related table.
+			    RELATED(
+			        'Product Lookup'[current_cost]
+			    )
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Tips & Best Practices
+		lineageTag: 43444d36-6bbd-406e-a166-8567b386c51b
+
+	measure 'Customer Sales' =
+			
+			SUMX(
+			    'Sales by Store',
+			    'Sales by Store'[quantity_sold] * 'Sales by Store'[unit_price]
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: Tips & Best Practices
+		lineageTag: 893dfb3f-88c2-440a-91ce-49dad1317862
+
+	measure Profit =
+			
+			[Customer Sales] - [Cost]
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: Tips & Best Practices
+		lineageTag: f275e4c5-c42a-4165-8c4e-fc618b2ab9af
+
+	measure 'Customer Sales (Last Year)' =
+			
+			CALCULATE(
+			    [Customer Sales],
+			    DATEADD(
+			        'Calendar'[Transaction_Date],
+			        -1,
+			        Year
+			    )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: Tips & Best Practices
+		lineageTag: c6b36794-28d2-49cf-a3a4-54a94a408aef
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure '% Quantity Sold to Females (VAR)' =
+			
+			VAR TotalFemaleOrders =
+			    CALCULATE(
+			        SUM('Sales by Store'[quantity_sold]),
+			        FILTER(
+			            'Customer Lookup',
+			            'Customer Lookup'[gender] = "F"
+			        )
+			    )
+			VAR QuantitySold =
+			    SUM(
+			        'Sales by Store'[quantity_sold]
+			    )
+			VAR Ratio =
+			    DIVIDE(
+			        TotalFemaleOrders,
+			        QuantitySold,
+			        "-"
+			    )
+			
+			RETURN
+			    Ratio
+		formatString: 0
+		displayFolder: Tips & Best Practices
+		lineageTag: ce9c8a43-242d-4cdb-b8e4-2e1e1fdad893
+
+	measure 'Total Customers' =
+			
+			DISTINCTCOUNT(
+			    'Customer Lookup'[customer_id]
+			)
+		formatString: #,0
+		displayFolder: Scalar Measures
+		lineageTag: dbc204ad-5558-49b3-8845-a3a5a14e16c6
+
+	measure 'Total Employees' =
+			
+			COUNTROWS(
+			    'Employee Lookup'
+			)
+		formatString: #,0
+		displayFolder: Scalar Measures
+		lineageTag: 69d4c484-0987-45ab-a950-58c98f844980
+
+	measure 'Cost (CURRENCY)' =
+			
+			ROUND(
+			    CURRENCY([Cost])
+			    ,2
+			)
+		formatString: "R"#,0.###############;-"R"#,0.###############;"R"#,0.###############
+		displayFolder: Tips & Best Practices
+		lineageTag: d5a1654f-e40c-4384-977a-6b9802ab5277
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-ZA"}
+
+	measure 'Customer Sales (COALESCE)' = ```
+			
+			VAR Customer_Sales_LY =
+			CALCULATE(
+			    [Customer Sales],
+			    DATEADD(
+			        'Calendar'[Transaction_Date],
+			        -1,
+			        Year
+			    )
+			)
+			RETURN 
+			COALESCE(
+			    Customer_Sales_LY,
+			    "-"
+			)
+			```
+		displayFolder: Tips & Best Practices
+		lineageTag: 7e364af2-aa05-4269-9d8d-bdadf5ad4566
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Store 3 Sales of Whole Beans & Teas (CALCULATE)' =
+			
+			CALCULATE (
+			    [Customer Sales],
+			    'Store Lookup'[store_id] = 3,
+			    'Product Lookup'[product_group] = "Whole Bean/Teas"
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: c2bc480c-6ae7-45a0-a5b3-b4173d4c365d
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Store 3 Sales of Whole Beans & Teas (ALL Modifier)' = ```
+			
+			CALCULATE (
+			    [Customer Sales],
+			    'Store Lookup'[store_id] = 3,
+			    'Product Lookup'[product_group] = "Whole Bean/Teas",
+			    ALL(
+			        'Store Lookup'
+			    )      
+			)
+			```
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 52536d97-1b4d-4e70-aedf-31633a7061cf
+
+	measure 'Total Profit' =
+			
+			CALCULATE(
+			    [Profit],
+			    REMOVEFILTERS(
+			        'Sales by Store'
+			    )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 75e31896-a129-4c29-99ca-27a1f0c5c350
+
+	measure 'Store 5 Profit (KEEPFILTERS)' =
+			
+			CALCULATE(
+			    [Profit],
+			    KEEPFILTERS(
+			        'Store Lookup'[store_id] = 5
+			    )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 156543f6-ed0f-4a0c-b56e-693fa856d492
+
+	measure 'Store 5 Profit' =
+			
+			CALCULATE(
+			    [Profit],
+			    'Store Lookup'[store_id] = 5
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: e23e050e-e58f-4709-918e-67ea88ff7f5c
+
+	measure 'Store 3 Sales (KEEPFILTERS)' =
+			
+			CALCULATE (
+			    [Customer Sales],
+			    KEEPFILTERS('Store Lookup'[store_id] = 3
+			    )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: fde60277-6aa0-41d2-9a07-2843100460f0
+
+	measure 'Store 5 Sales (KEEPFILTERS)' =
+			
+			CALCULATE (
+			    [Customer Sales],
+			    KEEPFILTERS('Store Lookup'[store_id] = 5
+			    )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: c46fe981-c2e1-4c1e-be14-a3b71c846481
+
+	measure 'Store 8 Sales (KEEPFILTERS)' =
+			
+			CALCULATE (
+			    [Customer Sales],
+			    KEEPFILTERS('Store Lookup'[store_id] = 8
+			    )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 30cabdfb-eac7-402b-815c-0423f680c9c0
+
+	measure '% of Store Sales (REMOVEFILTERS)' =
+			
+			VAR AllStoreSales =
+			CALCULATE(
+			    [Customer Sales],
+			    REMOVEFILTERS(
+			        'Store Lookup'[store_id]
+			    )
+			)
+			VAR Ratio =
+			DIVIDE(
+			    [Customer Sales],
+			    AllStoreSales
+			)
+			RETURN
+			Ratio
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 33b76162-d2b8-441f-83b1-b8480b1dde86
+
+	measure 'Count of Product ID (DISTINCT)' =
+			
+			COUNTROWS(
+			    DISTINCT(
+			        'Product Lookup'[product_id]
+			    )
+			)
+		formatString: 0
+		lineageTag: 7ee2e0d7-9440-498f-a7a1-6d45626dcd4d
+
+	measure 'Count of Product ID (VALUES)' =
+			
+			COUNTROWS(
+			    VALUES(
+			        'Product Lookup'[product_id]
+			    )
+			)
+		formatString: 0
+		lineageTag: 10f40b66-4dba-450a-85b4-e54e1c56a178
+
+	measure 'Retail Price (SELECTEDVALUE)' =
+			
+			SELECTEDVALUE(
+			    'Product Lookup'[current_retail_price]
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 8388f7c4-3f25-46be-b375-f1427a98899b
+
+	measure 'Quantity Sold (SELECTEDVALUE)' =
+			
+			DIVIDE(
+			    [Customer Sales],
+			    SELECTEDVALUE(
+			        'Product Lookup'[current_retail_price] --what we're saying here is if a single retail price can be determined, then divide the customer sales
+			    )
+			)
+		formatString: #,0.00
+		lineageTag: 04ad1e53-9b61-4a35-ade2-cfeedd7cc691
+
+	measure 'Customer Sales (ALLEXCEPT)' =
+			
+			CALCULATE(
+			    [Customer Sales],
+			    ALLEXCEPT(
+			        'Sales by Store',
+			        'Product Lookup'[product_group],
+			        'Calendar'[Transaction_Date]
+			    )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 79c24b69-988e-4a17-a7cb-965a56ba5878
+
+	measure 'Customer Sales (ALLEXCEPT Assignment)' =
+			
+			CALCULATE(
+			    [Customer Sales],
+			    ALLEXCEPT(
+			        'Sales by Store',
+			        'Calendar'[Transaction_Date],
+			        'Store Lookup'[store_id],
+			        'Customer Lookup'[customer_first-name],
+			        'Product Lookup'[product_group]
+			    )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 78a0ce6f-9b52-4535-bfd1-7c681f5d2afe
+
+	measure '% of Store-Level Sales' = ```
+			
+			VAr StoreLevelSales =
+			CALCULATE(
+			    [Customer Sales],
+			    REMOVEFILTERS(
+			        'Customer Lookup'
+			    ),
+			    KEEPFILTERS(
+			        'Calendar'
+			    )
+			)
+			VAR Ratio =
+			DIVIDE(
+			    [Customer Sales (ALLEXCEPT Assignment)],
+			    StoreLevelSales
+			)
+			
+			RETURN 
+			Ratio
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 39c865b3-1596-46dd-b038-1ae0390778a8
+
+	measure 'Customer Sales (ALLSELECTED)' =
+			
+			CALCULATE(
+			    [Customer Sales],
+			    ALLSELECTED(
+			    )
+			)
+		lineageTag: b8db8a49-c028-4bdc-9632-e1162507d260
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Baked' =
+			
+			SUMX(
+			    'Food Inventory',
+			    'Food Inventory'[quantity_start_of_day]
+			)
+		formatString: #,0
+		lineageTag: 16e0c900-2ba6-4d08-a9c9-11536cf83dfd
+
+	measure 'Total Sold' =
+			
+			SUMX(
+			    'Food Inventory',
+			    'Food Inventory'[quantity_sold]
+			)
+		formatString: #,0
+		lineageTag: 1ab5cb74-d8f4-41f4-ab13-e3eeb0cfb179
+
+	measure '% of Total Baked (ALLSELECTED)' =
+			
+			VAR SelectedQuantityBaked =
+			    CALCULATE ( [Total Baked], ALLSELECTED () )
+			VAR Ratio =
+			    DIVIDE ( [Total Baked], SelectedQuantityBaked, "0" )
+			RETURN
+			    Ratio
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 9935b8a7-ce8d-4ce7-93d9-d1a3e4c457e6
+
+	measure '% of Total Sold (ALLSELECTED)' =
+			
+			VAR SelectedQuantitySold =
+			    CALCULATE ( [Total Sold], ALLSELECTED () )
+			VAR Ratio =
+			    DIVIDE ( [Total Sold], SelectedQuantitySold, "0" )
+			RETURN
+			    Ratio
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: ded37c9e-46bc-4cac-a8fd-502b4c475d17
+
+	measure '% of All Baked' = ```
+			
+			VAR ALLBaked =
+			CALCULATE(
+			    [Total Baked],
+			    REMOVEFILTERS(
+			        'Food Inventory'
+			    )
+			)
+			VAR Ratio = 
+			DIVIDE(
+			    [Total Baked],
+			    ALLBaked,
+			    "0"
+			)
+			
+			RETURN 
+			Ratio
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 61d7baab-fc2a-4198-a051-85c5fc3d546b
+
+	measure 'Revenue (INTERSECT Assignment)' =
+			
+			SUM(
+			    'Repeat Customer Sales (INTERSECT Assignment)'[Revenue]
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: b079ba48-ebf0-46fd-9f33-d4da13d7117c
+
+	measure 'Profit (INTERSECT Assignment)' =
+			
+			SUM(
+			    'Repeat Customer Sales (INTERSECT Assignment)'[Profit]
+			)
+		lineageTag: 8c885249-78d0-43c8-a67f-2a65c4154583
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Wholesale Cost' = ```
+			
+			SUMX(
+			    'Sales by Store',
+			    'Sales by Store'[quantity_sold] * 
+			    RELATED(
+			        'Product Lookup'[current_wholesale_price]
+			    )
+			)
+			```
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 090701e2-dbc9-4a94-8326-6e7fda7e8aa6
+
+	partition 'Measure Table' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i45WCk7MLchJVYqNBQA=", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+

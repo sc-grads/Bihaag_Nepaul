@@ -1,0 +1,41 @@
+table 'Row Demo'
+	lineageTag: ee7a35ac-6772-4aa4-9fbf-29b973419ac8
+
+	column 'Customer Sales'
+		dataType: double
+		lineageTag: 3033b035-3ff4-4fd9-b32c-166887badcf2
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Customer Sales]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Items Ordered'
+		dataType: int64
+		formatString: 0
+		lineageTag: 41d88969-dd3e-4557-ba92-1044f54ffdce
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Items Ordered]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Row Demo' = calculated
+		mode: import
+		source =
+				
+				ROW(
+				    "Customer Sales", [Customer Sales],
+				    "Items Ordered",
+				    SUMX(
+				        'Sales by Store',
+				        'Sales by Store'[quantity_sold]
+				    )
+				)
+
+	annotation PBI_Id = 0a7ae36ecb0c4a979d0b5bab24587299
+

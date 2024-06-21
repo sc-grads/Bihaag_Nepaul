@@ -75,10 +75,13 @@ table 'Product Lookup'
 		annotation SummarizationSetBy = Automatic
 
 	column current_retail_price
-		dataType: string
+		dataType: double
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
 		lineageTag: c2f2cb68-ba80-4fa1-ba08-e437b5394ff1
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: current_retail_price
+
+		changedProperty = DataType
 
 		annotation SummarizationSetBy = Automatic
 
@@ -119,7 +122,7 @@ table 'Product Lookup'
 		mode: import
 		source =
 				let
-				    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Downloads\Dax Udemy Files\Advanced DAX Data Files\Product Lookup.csv"),[Delimiter=",", Columns=14, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Downloads\Dax Udemy Files\Advanced DAX Data Files\Product Lookup (Updated).csv"),[Delimiter=",", Columns=14, Encoding=1252, QuoteStyle=QuoteStyle.None]),
 				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
 				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"product_id", Int64.Type}, {"product_group", type text}, {"product_category", type text}, {"product_type", type text}, {"product", type text}, {"product_description", type text}, {"unit_of_measure", type text}, {"current_cost", type text}, {"current_wholesale_price", type text}, {"current_retail_price", type text}, {"tax_exempt_yn", type text}, {"promo_yn", type text}, {"new_product_yn", type text}, {"", Int64.Type}})
 				in

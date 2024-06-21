@@ -1,36 +1,6 @@
 table 'Sales by Store'
 	lineageTag: 5c6fe69b-4de5-45ea-9c65-3916d48e7004
 
-	measure 'Customer Sales' =
-			
-			SUMX(
-			    'Sales by Store',
-			    'Sales by Store'[quantity_sold] * 'Sales by Store'[unit_price]
-			)
-		lineageTag: 893dfb3f-88c2-440a-91ce-49dad1317862
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
-
-	measure Cost =
-			
-			SUMX(
-			    'Sales by Store',                       --Returns the Sales by store table to
-			    'Sales by Store'[quantity_sold] *       --evaluate expression quantity sold times cost from a related table.
-			    RELATED(
-			        'Product Lookup'[current_cost]
-			    )
-			)
-		lineageTag: 43444d36-6bbd-406e-a166-8567b386c51b
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
-
-	measure Profit =
-			
-			[Customer Sales] - [Cost]
-		lineageTag: f275e4c5-c42a-4165-8c4e-fc618b2ab9af
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
-
 	column transaction_id
 		dataType: int64
 		formatString: 0
@@ -146,6 +116,48 @@ table 'Sales by Store'
 		lineageTag: 9c9e20c7-d97b-43fe-836f-6efae1d6fbe9
 		summarizeBy: none
 		sourceColumn: promo_item_yn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Time Group' =
+			
+			FLOOR(
+			    'Sales by Store'[transaction_time],
+			    "1:00"
+			)
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 7ba090aa-14d0-4c5a-84d9-8a6badd98935
+		summarizeBy: none
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column 'Total Revenue' =
+			
+			CURRENCY(
+			    'Sales by Store'[quantity_sold] * 'Sales by Store'[unit_price]
+			)
+		dataType: decimal
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: e9216711-5c49-43e1-9dba-22851f9c5cc8
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Group' =
+			
+			RELATED(
+			    'Product Lookup'[product_group]
+			)
+		dataType: string
+		lineageTag: a529e1cd-e81d-4673-bfcf-770a017a640d
+		summarizeBy: none
+		isDataTypeInferred
 
 		annotation SummarizationSetBy = Automatic
 

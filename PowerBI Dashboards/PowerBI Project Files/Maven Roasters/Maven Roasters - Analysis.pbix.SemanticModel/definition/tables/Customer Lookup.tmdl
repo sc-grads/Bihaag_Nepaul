@@ -92,6 +92,25 @@ table 'Customer Lookup'
 
 		annotation SummarizationSetBy = Automatic
 
+	column 'Current Age' =
+			
+			FLOOR(
+			    DATEDIFF(
+			        'Customer Lookup'[birthdate],
+			        TODAY(),--Volatile function(Updates all the time)
+			        DAY
+			    ) / 365.25,
+			    1
+			)
+		dataType: int64
+		lineageTag: 56552acc-9034-41ed-baa5-ff0c4fed7ec7
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	partition 'Customer Lookup' = m
 		mode: import
 		source =

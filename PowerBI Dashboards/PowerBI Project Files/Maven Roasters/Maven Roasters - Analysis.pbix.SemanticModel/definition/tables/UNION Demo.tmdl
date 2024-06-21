@@ -1,0 +1,89 @@
+table 'UNION Demo'
+	lineageTag: afe57417-b4f1-4c84-851b-07aa1c4583c4
+
+	column 'Store ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: eac365eb-c59d-4815-9d7b-f3d20be26b30
+		summarizeBy: count
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Target Sales - March 2019 (DATATABLE)[Store ID]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: string
+		lineageTag: d57b3cdb-9b52-4ec7-95e1-8a03c391ef89
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Target Sales - March 2019 (DATATABLE)[Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: string
+		lineageTag: 232c74cf-073b-4d5b-aea2-495991e5af7d
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Target Sales - March 2019 (DATATABLE)[Month]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Bean/Teas Goal'
+		dataType: int64
+		formatString: 0
+		lineageTag: 951f4bb3-6e62-4a3c-8429-b9bcc86bd676
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Target Sales - March 2019 (DATATABLE)[Bean/Teas Goal]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Beverage Goal'
+		dataType: int64
+		formatString: 0
+		lineageTag: 8c6134ac-f641-4199-802d-5d19a1361806
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Target Sales - March 2019 (DATATABLE)[Beverage Goal]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Food Goal'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1ea25de6-16f2-49a7-b220-499739be9f4f
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Target Sales - March 2019 (DATATABLE)[Food Goal]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Merchandise Goal'
+		dataType: int64
+		formatString: 0
+		lineageTag: 9b200358-d091-41dd-8c34-071e952341de
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Target Sales - March 2019 (DATATABLE)[Merchandise Goal]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'UNION Demo' = calculated
+		mode: import
+		source =
+				
+				UNION(
+				    'Target Sales - March 2019 (DATATABLE)',
+				    'Target Sales - April 2019 (DATATABLE)'
+				)
+
+	annotation PBI_Id = 350b404480554580afa05acaadc0854a
+
