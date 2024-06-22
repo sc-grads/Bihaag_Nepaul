@@ -1,23 +1,3 @@
-relationship e6916672-773a-4ed3-862f-1b2197cd6f1f
-	joinOnDateBehavior: datePartOnly
-	fromColumn: Calendar.Transaction_Date
-	toColumn: LocalDateTable_d201c2aa-3bba-4dc3-b190-eb20ff4b6b02.Date
-
-relationship 08ca79fd-235a-4dbc-9035-9948e8826a7f
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Customer Lookup'.customer_since
-	toColumn: LocalDateTable_59df40e7-15be-4532-8572-7bdd659fd704.Date
-
-relationship 56cfe356-ac35-497b-b5b6-ae2577c021e9
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Customer Lookup'.birthdate
-	toColumn: LocalDateTable_8e864239-40c9-4c3a-95ee-6e191db7b412.Date
-
-relationship bbd4e0a7-85e7-403f-a7d1-f0c000e4fb1a
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Employee Lookup'.start_date
-	toColumn: LocalDateTable_d8e7f137-f79e-48dc-8d39-c3d4a95359cd.Date
-
 relationship 78de903c-b1f2-f051-30b7-e5e423627cec
 	fromColumn: 'Sales by Store'.transaction_date
 	toColumn: Calendar.Transaction_Date
@@ -49,46 +29,6 @@ relationship 513c8961-bba1-566d-9029-cd8c2c0212d6
 relationship 56329672-f0c4-8e9a-9af0-422eb2cb3c0c
 	fromColumn: 'Food Inventory'.store_id
 	toColumn: 'Store Lookup'.store_id
-
-relationship 05c09cde-2847-4651-90c5-8ebca594e798
-	joinOnDateBehavior: datePartOnly
-	fromColumn: '4-5-4 Calendar'.Date
-	toColumn: LocalDateTable_d7b91c60-11f1-4b7e-b0b2-1f6b61aa4272.Date
-
-relationship ef339c1b-648f-4d12-b6b0-c7d9048fc117
-	joinOnDateBehavior: datePartOnly
-	fromColumn: '4-5-4 Calendar'.FiscalMonthYear
-	toColumn: LocalDateTable_b30312ab-b70f-4406-be5b-2e2f5bfa49e8.Date
-
-relationship 9728be2e-f858-4539-84e9-418356de5d43
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'ADDCOLUMNS DEMO'.start_date
-	toColumn: LocalDateTable_a6bc610e-1b3b-43be-9fb6-4d59998e3b3e.Date
-
-relationship 5de20cf9-b704-4831-a53e-2e86a86d939b
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Unsold Pastries'.transaction_date
-	toColumn: LocalDateTable_830ea0a9-bfc1-4c41-9a4e-69416229d444.Date
-
-relationship 4d5c620a-9d0a-4076-a5ad-e6e524a9e5ec
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'EXCEPT Demo'.customer_since
-	toColumn: LocalDateTable_010a0772-eb36-48ed-8737-0af0fe878aff.Date
-
-relationship 3658be95-67b8-4b16-8043-3e1b700cd55a
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'EXCEPT Demo'.birthdate
-	toColumn: LocalDateTable_e9afa434-72c5-45f5-9eff-2496e920adcf.Date
-
-relationship c3e2b8db-3a4b-413d-b65d-c66d0c7d96a9
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'New Employees (INTERSECT)'.start_date
-	toColumn: LocalDateTable_202cd725-c7b9-46dc-a588-7e2de688494a.Date
-
-relationship 8117bf64-9a71-4adb-84a3-cbb02ac16f5d
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Food Inventory'.baked_date
-	toColumn: LocalDateTable_f2331a97-6572-4f42-8231-00047c93c36a.Date
 
 relationship d7bcb05e-cb30-56f0-855b-d5fd7b91d5ef
 	isActive: false

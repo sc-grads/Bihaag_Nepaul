@@ -8,20 +8,15 @@ model Model
 
 annotation PBI_QueryOrder = ["Calendar","Customer Lookup","Employee Lookup","Food Inventory","Product Lookup","Sales by Store","Store Lookup","Measure Table","4-5-4 Calendar"]
 
-annotation __PBI_TimeIntelligenceEnabled = 1
+annotation __PBI_TimeIntelligenceEnabled = 0
 
 annotation PBIDesktopVersion = 2.130.930.0 (24.06)
 
 annotation PBI_ProTooling = ["DevMode"]
 
 ref table Calendar
-ref table DateTableTemplate_0bc613f1-8afd-4952-933b-7116c85e1738
-ref table LocalDateTable_d201c2aa-3bba-4dc3-b190-eb20ff4b6b02
 ref table 'Customer Lookup'
-ref table LocalDateTable_59df40e7-15be-4532-8572-7bdd659fd704
-ref table LocalDateTable_8e864239-40c9-4c3a-95ee-6e191db7b412
 ref table 'Employee Lookup'
-ref table LocalDateTable_d8e7f137-f79e-48dc-8d39-c3d4a95359cd
 ref table 'Food Inventory'
 ref table 'Product Lookup'
 ref table 'Sales by Store'
@@ -29,13 +24,9 @@ ref table 'Store Lookup'
 ref table 'Measure Table'
 ref table 'Values Example'
 ref table '4-5-4 Calendar'
-ref table LocalDateTable_d7b91c60-11f1-4b7e-b0b2-1f6b61aa4272
-ref table LocalDateTable_b30312ab-b70f-4406-be5b-2e2f5bfa49e8
 ref table 'ADDCOLUMNS DEMO'
-ref table LocalDateTable_a6bc610e-1b3b-43be-9fb6-4d59998e3b3e
 ref table 'SUMMARIZE Demo'
 ref table 'Unsold Pastries'
-ref table LocalDateTable_830ea0a9-bfc1-4c41-9a4e-69416229d444
 ref table 'Row Demo'
 ref table 'DATATABLE DEMO'
 ref table 'Generate Series Demo'
@@ -45,14 +36,11 @@ ref table 'CROSSJOIN Demo'
 ref table 'UNION Demo'
 ref table 'Target Sales - March 2019 (DATATABLE)'
 ref table 'EXCEPT Demo'
-ref table LocalDateTable_010a0772-eb36-48ed-8737-0af0fe878aff
-ref table LocalDateTable_e9afa434-72c5-45f5-9eff-2496e920adcf
 ref table 'New Employees (INTERSECT)'
-ref table LocalDateTable_202cd725-c7b9-46dc-a588-7e2de688494a
 ref table 'Repeat Customer Sales (INTERSECT Assignment)'
-ref table LocalDateTable_f2331a97-6572-4f42-8231-00047c93c36a
 ref table TREATASDEMO
 ref table 'Average Days'
+ref table 'CALENDAR Demo'
 
 ref cultureInfo en-US
 

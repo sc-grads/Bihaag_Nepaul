@@ -27,11 +27,6 @@ table 'Unsold Pastries'
 		isDataTypeInferred
 		sourceColumn: Food Inventory[transaction_date]
 
-		variation Variation
-			isDefault
-			relationship: 5de20cf9-b704-4831-a53e-2e86a86d939b
-			defaultHierarchy: LocalDateTable_830ea0a9-bfc1-4c41-9a4e-69416229d444.'Date Hierarchy'
-
 		annotation SummarizationSetBy = Automatic
 
 	column store_id

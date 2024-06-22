@@ -42,11 +42,6 @@ table 'Customer Lookup'
 		summarizeBy: none
 		sourceColumn: customer_since
 
-		variation Variation
-			isDefault
-			relationship: 08ca79fd-235a-4dbc-9035-9948e8826a7f
-			defaultHierarchy: LocalDateTable_59df40e7-15be-4532-8572-7bdd659fd704.'Date Hierarchy'
-
 		annotation SummarizationSetBy = Automatic
 
 		annotation UnderlyingDateTimeDataType = Date
@@ -65,11 +60,6 @@ table 'Customer Lookup'
 		lineageTag: 2003e417-ee02-408f-ae4c-04d1bb99407e
 		summarizeBy: none
 		sourceColumn: birthdate
-
-		variation Variation
-			isDefault
-			relationship: 56cfe356-ac35-497b-b5b6-ae2577c021e9
-			defaultHierarchy: LocalDateTable_8e864239-40c9-4c3a-95ee-6e191db7b412.'Date Hierarchy'
 
 		annotation SummarizationSetBy = Automatic
 

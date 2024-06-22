@@ -1,17 +1,14 @@
 table Calendar
 	lineageTag: d30f72b1-86f2-4eb2-8482-5bcd4eee6d3c
+	dataCategory: Time
 
 	column Transaction_Date
 		dataType: dateTime
+		isKey
 		formatString: Short Date
 		lineageTag: e5450e71-d86d-4c3e-83b9-f5d407ce5133
 		summarizeBy: none
 		sourceColumn: Transaction_Date
-
-		variation Variation
-			isDefault
-			relationship: e6916672-773a-4ed3-862f-1b2197cd6f1f
-			defaultHierarchy: LocalDateTable_d201c2aa-3bba-4dc3-b190-eb20ff4b6b02.'Date Hierarchy'
 
 		annotation SummarizationSetBy = Automatic
 

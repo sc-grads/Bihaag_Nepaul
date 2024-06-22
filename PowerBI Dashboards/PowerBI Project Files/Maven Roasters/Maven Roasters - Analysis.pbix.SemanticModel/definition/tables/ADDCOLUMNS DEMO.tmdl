@@ -61,11 +61,6 @@ table 'ADDCOLUMNS DEMO'
 		isDataTypeInferred
 		sourceColumn: Employee Lookup[start_date]
 
-		variation Variation
-			isDefault
-			relationship: 9728be2e-f858-4539-84e9-418356de5d43
-			defaultHierarchy: LocalDateTable_a6bc610e-1b3b-43be-9fb6-4d59998e3b3e.'Date Hierarchy'
-
 		annotation SummarizationSetBy = Automatic
 
 	column location

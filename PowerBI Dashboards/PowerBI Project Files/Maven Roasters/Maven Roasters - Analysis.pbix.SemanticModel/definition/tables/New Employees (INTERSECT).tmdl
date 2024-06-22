@@ -51,11 +51,6 @@ table 'New Employees (INTERSECT)'
 		isDataTypeInferred
 		sourceColumn: Employee Lookup[start_date]
 
-		variation Variation
-			isDefault
-			relationship: c3e2b8db-3a4b-413d-b65d-c66d0c7d96a9
-			defaultHierarchy: LocalDateTable_202cd725-c7b9-46dc-a588-7e2de688494a.'Date Hierarchy'
-
 		annotation SummarizationSetBy = Automatic
 
 	column location

@@ -52,11 +52,6 @@ table 'EXCEPT Demo'
 		isDataTypeInferred
 		sourceColumn: Customer Lookup[customer_since]
 
-		variation Variation
-			isDefault
-			relationship: 4d5c620a-9d0a-4076-a5ad-e6e524a9e5ec
-			defaultHierarchy: LocalDateTable_010a0772-eb36-48ed-8737-0af0fe878aff.'Date Hierarchy'
-
 		annotation SummarizationSetBy = Automatic
 
 	column loyalty_card_number
@@ -77,11 +72,6 @@ table 'EXCEPT Demo'
 		isNameInferred
 		isDataTypeInferred
 		sourceColumn: Customer Lookup[birthdate]
-
-		variation Variation
-			isDefault
-			relationship: 3658be95-67b8-4b16-8043-3e1b700cd55a
-			defaultHierarchy: LocalDateTable_e9afa434-72c5-45f5-9eff-2496e920adcf.'Date Hierarchy'
 
 		annotation SummarizationSetBy = Automatic
 

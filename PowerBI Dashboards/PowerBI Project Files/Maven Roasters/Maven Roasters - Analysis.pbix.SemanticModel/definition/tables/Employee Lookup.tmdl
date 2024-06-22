@@ -41,11 +41,6 @@ table 'Employee Lookup'
 		summarizeBy: none
 		sourceColumn: start_date
 
-		variation Variation
-			isDefault
-			relationship: bbd4e0a7-85e7-403f-a7d1-f0c000e4fb1a
-			defaultHierarchy: LocalDateTable_d8e7f137-f79e-48dc-8d39-c3d4a95359cd.'Date Hierarchy'
-
 		annotation SummarizationSetBy = Automatic
 
 		annotation UnderlyingDateTimeDataType = Date
