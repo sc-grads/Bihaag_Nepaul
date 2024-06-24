@@ -1,0 +1,23 @@
+table 'CALENDARAUTO DEMO'
+	lineageTag: 03c4679b-c239-442e-b444-0659483914e5
+
+	column Date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 11f519b3-c948-41df-9642-5a65886c5bc9
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'CALENDARAUTO DEMO' = calculated
+		mode: import
+		source = ```
+				
+				CALENDARAUTO(6) 
+				```
+
+	annotation PBI_Id = 3492619e50de4a16b198617f1487f5c6
+

@@ -163,6 +163,50 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	column 'Weekday Number' =
+			
+			WEEKDAY(
+			    'Calendar'[Transaction_Date],
+			    2
+			)
+		dataType: int64
+		formatString: 0
+		lineageTag: b564ab36-4b0a-403b-9127-28cf4343ee05
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Weekday Name' =
+			
+			FORMAT(
+			    'Calendar'[Transaction_Date],
+			    "dddd"
+			)
+		dataType: string
+		lineageTag: 5d211a79-512d-4086-9f6f-7a04db312ca9
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column Weekends =
+			
+			IF(
+			    WEEKDAY(
+			        'Calendar'[Transaction_Date],
+			        2
+			    ) IN {6,7},
+			    "Y",
+			    "N"
+			)
+		dataType: string
+		lineageTag: f53e4cbb-62ba-4bb7-8770-81602e4bdb18
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
 	partition Calendar = m
 		mode: import
 		source =

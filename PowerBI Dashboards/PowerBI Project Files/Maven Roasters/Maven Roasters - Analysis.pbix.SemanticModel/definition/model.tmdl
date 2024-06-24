@@ -41,6 +41,8 @@ ref table 'Repeat Customer Sales (INTERSECT Assignment)'
 ref table TREATASDEMO
 ref table 'Average Days'
 ref table 'CALENDAR Demo'
+ref table 'CALENDARAUTO DEMO'
+ref table 'Date Table (CALENDARAUTO)'
 
 ref cultureInfo en-US
 

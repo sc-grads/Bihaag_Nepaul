@@ -1,0 +1,19 @@
+// DAX Query
+DEFINE
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			ROLLUPADDISSUBTOTAL('Calendar'[Transaction_Date], "IsGrandTotalRowTotal"),
+			"SumDayOfMonthNumber", CALCULATE(SUM('4-5-4 Calendar'[DayOfMonthNumber]))
+		)
+
+	VAR __DS0PrimaryWindowed = 
+		TOPN(502, __DS0Core, [IsGrandTotalRowTotal], 0, 'Calendar'[Transaction_Date], 1)
+
+EVALUATE
+	__DS0PrimaryWindowed
+
+ORDER BY
+	[IsGrandTotalRowTotal] DESC, 'Calendar'[Transaction_Date]
+
+EVALUATE
+    TOPN(100, 'Calendar')

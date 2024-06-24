@@ -41,3 +41,11 @@ relationship 92775fbe-dc62-1979-540c-62a7a674589a
 	fromColumn: 'UNION Demo'.'Store ID'
 	toColumn: 'Store Lookup'.store_id
 
+relationship e01b4e2c-9964-d2c7-b88f-3845698b7183
+	fromColumn: 'Sales by Store'.transaction_date
+	toColumn: '4-5-4 Calendar'.Date
+
+relationship c36fcde3-d122-f2e4-ad7b-14eff29a45bf
+	fromColumn: 'Food Inventory'.transaction_date
+	toColumn: '4-5-4 Calendar'.Date
+

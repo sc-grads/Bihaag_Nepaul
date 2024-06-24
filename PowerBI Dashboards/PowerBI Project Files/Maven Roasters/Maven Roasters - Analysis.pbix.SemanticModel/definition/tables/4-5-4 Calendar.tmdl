@@ -10,6 +10,93 @@ table '4-5-4 Calendar'
 		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
 		lineageTag: 93152a64-bc94-4352-ab57-a342d7c6b8b7
 
+	measure 'QTD Sales (4-5-4)' =
+			
+			VAR MaxDate = MAX('4-5-4 Calendar'[Date])
+			VAR MaxPeriod = MAX('4-5-4 Calendar'[FiscalQuarterYear])
+			VAR OutPut =
+			    IF (
+			        HASONEVALUE('4-5-4 Calendar'[FiscalQuarterYear]),
+			        CALCULATE (
+			            [Customer Sales],
+			            '4-5-4 Calendar'[Date] <= MaxDate,
+			            '4-5-4 Calendar'[FiscalQuarterYear] = MaxPeriod
+			        ),
+			        "-"
+			    )
+			RETURN
+			    OutPut
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: dd9a91b7-60f6-453a-ade7-a2fdf670cad2
+
+	measure 'Last QTD Sales (4-5-4)' =
+			
+			VAR LastPeriod =
+			    CALCULATE(
+			        [Customer Sales],
+			        FILTER(
+			            ALL('4-5-4 Calendar'),
+			            IF(
+			                SELECTEDVALUE('4-5-4 Calendar'[FiscalQuarter]) = 1,
+			                '4-5-4 Calendar'[FiscalQuarter] = 4 && '4-5-4 Calendar'[FiscalYear] = SELECTEDVALUE('4-5-4 Calendar'[FiscalYear]) - 1,
+			                '4-5-4 Calendar'[FiscalYear] = SELECTEDVALUE('4-5-4 Calendar'[FiscalYear]) &&
+			                '4-5-4 Calendar'[FiscalQuarter] = SELECTEDVALUE('4-5-4 Calendar'[FiscalQuarter]) - 1
+			            )
+			        )
+			    )
+			RETURN
+			    LastPeriod
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 4844dfb0-cf73-4b6e-9c9a-971a5893ff6d
+
+	measure 'MTD Sales (4-5-4)' =
+			
+			VAR MaxDate = MAX('4-5-4 Calendar'[Date])
+			VAR MaxPeriod = MAX('4-5-4 Calendar'[FiscalMonthYear])
+			VAR OutPut =
+			    IF (
+			        HASONEVALUE('4-5-4 Calendar'[FiscalMonthYear]),
+			        CALCULATE (
+			            [Customer Sales],
+			            '4-5-4 Calendar'[Date] <= MaxDate,
+			            '4-5-4 Calendar'[FiscalMonthYear] = MaxPeriod
+			        ),
+			        "-"
+			    )
+			RETURN
+			    OutPut
+		lineageTag: ebdfa0c1-5a05-402a-9196-79028d1b9cdc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'YTD Sales (4-5-4)' =
+			
+			VAR MaxDate = MAX('4-5-4 Calendar'[Date])
+			VAR MaxPeriod = MAX('4-5-4 Calendar'[FiscalYear])
+			VAR MaxSellDate = MAX('Sales by Store'[transaction_date])
+			VAR OutPut =
+			    CALCULATE(
+			        [Customer Sales],
+			        '4-5-4 Calendar'[Date] <= MaxDate,
+			        '4-5-4 Calendar'[FiscalYear] = MaxPeriod,
+			        'Calendar'[Transaction_Date] <= MaxSellDate
+			    )
+			RETURN
+			    OutPut
+		lineageTag: c24d0f07-a07d-442a-bdb7-2421f2dbde19
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Wow % Change (4-5-4)' =
+			
+			DIVIDE(
+			    ([Customer Sales] - [Last Week's Sales 4-5-4 (DATEADD)]),
+			    [Last Week's Sales 4-5-4 (DATEADD)],
+			    BLANK()
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 1a58e669-9630-40c6-bcd2-3c5b31525ef8
+
 	column Date
 		dataType: dateTime
 		formatString: Long Date
@@ -80,6 +167,9 @@ table '4-5-4 Calendar'
 		lineageTag: cd99c087-5f08-43d6-b1c3-6d002673f76f
 		summarizeBy: none
 		sourceColumn: FiscalMonthName
+		sortByColumn: FiscalMonthNumber
+
+		changedProperty = SortByColumn
 
 		annotation SummarizationSetBy = Automatic
 
@@ -119,6 +209,21 @@ table '4-5-4 Calendar'
 		sourceColumn: DayName
 
 		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'FiscalYear Hierarchy'
+		lineageTag: e7d608b3-ae37-42da-a12f-76527c029c65
+
+		level FiscalYear
+			lineageTag: 43faa386-8ed8-4d92-aa2b-e0345866d058
+			column: FiscalYear
+
+		level FiscalMonthName
+			lineageTag: 55eddbfc-cbfc-4e6d-bd89-d1fa75e80700
+			column: FiscalMonthName
+
+		level Date
+			lineageTag: 3d68ef12-c729-4940-b140-60e975182ca3
+			column: Date
 
 	partition '4-5-4 Calendar' = m
 		mode: import

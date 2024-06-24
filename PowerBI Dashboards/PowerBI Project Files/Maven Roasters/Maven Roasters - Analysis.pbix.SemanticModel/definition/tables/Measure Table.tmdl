@@ -845,6 +845,113 @@ table 'Measure Table'
 		formatString: 0
 		lineageTag: 0ace9bb2-aff9-4c73-a466-938803b32ad4
 
+	measure '% of Total Sales' =
+			
+			VAR AllSales =
+			CALCULATE(
+			    [Customer Sales],
+			    ALL(
+			        'Sales by Store'
+			    )
+			)
+			VAR Ratio =
+			DIVIDE(
+			    [Customer Sales],
+			    AllSales
+			)
+			RETURN
+			Ratio
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 33831f04-11dc-4aa1-8e9c-fe8fb74e97ec
+
+	measure 'Last Quarter''s Sales (PARALLELPERIOD)' =
+			
+			CALCULATE(
+			    [Customer Sales],
+			    PARALLELPERIOD(
+			        'Calendar'[Transaction_Date],
+			        -1,
+			        QUARTER
+			    )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: cf8736fa-885f-4fec-bdd3-3e200f96edaf
+
+	measure 'Last Quarter''s Sales (PREVIOUSQUARTER)' = ```
+			
+			CALCULATE (
+			    [Customer Sales],
+			    PREVIOUSQUARTER( 
+			        'Calendar'[Transaction_Date] 
+			    )
+			)
+			```
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: e1a2783f-bde1-414a-9424-da75059c8bd5
+
+	measure 'Last Years Sales (SAMEPERIODLASTYEAR)' =
+			
+			CALCULATE (
+			    [Customer Sales],
+			    SAMEPERIODLASTYEAR ( 'Calendar'[Transaction_Date] )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 894de9fe-c857-49e5-af8e-edeb5b655767
+
+	measure 'Customer Sales Last Month (PARRALLELPERIOD)' =
+			
+			CALCULATE(
+			    [Customer Sales],
+			    PARALLELPERIOD(
+			        'Calendar'[Transaction_Date],
+			        -1,
+			        MONTH
+			    )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: f86258b7-e64e-4a61-852b-d1c069df57fe
+
+	measure 'Customer Sales MoM % Change' =
+			
+			DIVIDE(
+			    ([Customer Sales] - [Customer Sales Last Month (PARRALLELPERIOD)]),
+			    [Customer Sales Last Month (PARRALLELPERIOD)],
+			    BLANK()
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: a618eca8-a081-41f7-8ae8-78e06d511e45
+
+	measure 'Customer Sales YoY % Change' =
+			
+			VAR LastYearsSales =
+			    CALCULATE (
+			        [Customer Sales],
+			        SAMEPERIODLASTYEAR ( 'Calendar'[Transaction_Date] )
+			    )
+			VAR Ratio =
+			    DIVIDE (
+			        [Customer Sales] - LastYearsSales,
+			        LastYearsSales,
+			        "-"
+			    )
+			RETURN
+			    Ratio
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: a02d4523-40b0-4387-adf1-59a697bd2e07
+
+	measure 'Last Week''s Sales 4-5-4 (DATEADD)' =
+			
+			CALCULATE(
+			    [Customer Sales],
+			    DATEADD(
+			        '4-5-4 Calendar'[Date],
+			        -7,
+			        DAY
+			    )
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: e596398e-b48b-41b9-ac3d-f95c14cc7c4e
+
 	partition 'Measure Table' = m
 		mode: import
 		source =
