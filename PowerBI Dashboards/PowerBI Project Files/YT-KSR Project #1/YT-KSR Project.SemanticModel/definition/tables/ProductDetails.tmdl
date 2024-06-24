@@ -1,4 +1,4 @@
-table Product
+table ProductDetails
 	lineageTag: 1057f002-9f71-40d4-b87e-39a2b924ac04
 
 	column ProductID
@@ -49,7 +49,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
-	partition Product = m
+	partition ProductDetails = m
 		mode: import
 		source =
 				let
@@ -57,6 +57,8 @@ table Product
 				    dbo_Product = Source{[Schema="dbo",Item="Product"]}[Data]
 				in
 				    dbo_Product
+
+	changedProperty = Name
 
 	annotation PBI_NavigationStepName = Navigation
 

@@ -1,11 +1,11 @@
-table 'Sub categories'
+table SubCategory
 	lineageTag: b67d18d9-0e48-4205-bfd6-3b2140825a11
 
 	column SubCategoryKey
 		dataType: int64
 		formatString: 0
 		lineageTag: fa39a84d-80f9-469f-9bfb-9f94dd3b7f48
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: SubCategoryKey
 
 		annotation SummarizationSetBy = Automatic
@@ -26,7 +26,7 @@ table 'Sub categories'
 
 		annotation SummarizationSetBy = Automatic
 
-	partition 'Sub categories' = m
+	partition SubCategory = m
 		mode: import
 		source =
 				let
@@ -36,6 +36,8 @@ table 'Sub categories'
 				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"SubCategoryKey", Int64.Type}, {"CategoryKey", type text}, {"SubCategory Name", type text}})
 				in
 				    #"Changed Type"
+
+	changedProperty = Name
 
 	annotation PBI_ResultType = Table
 

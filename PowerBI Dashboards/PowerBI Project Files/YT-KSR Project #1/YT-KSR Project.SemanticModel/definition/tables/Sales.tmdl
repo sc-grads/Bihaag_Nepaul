@@ -1,9 +1,9 @@
 table Sales
-	lineageTag: a13e0593-458b-454f-9c33-2d5c34246f95
+	lineageTag: ac52cd88-1e20-4cfd-b2c6-ca6368f463a4
 
 	column 'Source.Name'
 		dataType: string
-		lineageTag: 7a73c503-51af-4af6-ac6a-ca306e048612
+		lineageTag: 0b11b19a-0945-46dc-a59e-49809f31b4b1
 		summarizeBy: none
 		sourceColumn: Source.Name
 
@@ -12,7 +12,7 @@ table Sales
 	column fSalesPrimaryKey
 		dataType: int64
 		formatString: 0
-		lineageTag: 9da6ff69-11d1-4cca-9ae5-244b110b984e
+		lineageTag: 63cb781a-b231-4230-b277-376fa48885b3
 		summarizeBy: count
 		sourceColumn: fSalesPrimaryKey
 
@@ -21,7 +21,7 @@ table Sales
 	column ProductID
 		dataType: int64
 		formatString: 0
-		lineageTag: f4c4f1e7-af56-46b1-8244-78020a1ca3e9
+		lineageTag: bb59606a-59ee-485a-8811-4db8a724bbeb
 		summarizeBy: count
 		sourceColumn: ProductID
 
@@ -30,7 +30,7 @@ table Sales
 	column SalesRepID
 		dataType: int64
 		formatString: 0
-		lineageTag: 6ca423c4-01e1-42a3-bf16-d852b6f8cac0
+		lineageTag: c88581af-31de-452d-a92f-110731359851
 		summarizeBy: count
 		sourceColumn: SalesRepID
 
@@ -38,7 +38,7 @@ table Sales
 
 	column Location
 		dataType: string
-		lineageTag: f5d62622-0af5-4bdf-8228-a0fbfadda9cb
+		lineageTag: e8fc1ca7-2ee0-4016-a4e8-14bafbacb8c2
 		summarizeBy: none
 		sourceColumn: Location
 
@@ -47,7 +47,7 @@ table Sales
 	column Date
 		dataType: dateTime
 		formatString: Long Date
-		lineageTag: 83fa262d-1d2a-4661-8472-ce5e1b68ccd7
+		lineageTag: 4231e299-40bf-4714-afbe-80aece2938a7
 		summarizeBy: none
 		sourceColumn: Date
 
@@ -58,27 +58,31 @@ table Sales
 	column Units
 		dataType: int64
 		formatString: 0
-		lineageTag: ee5e6a71-2ba7-4477-b738-390e51d74af2
+		lineageTag: 852c96f1-f874-40a8-b427-bf05439448dd
 		summarizeBy: sum
 		sourceColumn: Units
 
 		annotation SummarizationSetBy = Automatic
 
 	column PercentOfStandardCost
-		dataType: string
-		lineageTag: f63cd561-d0ee-4bfe-a890-0609677f300b
-		summarizeBy: none
+		dataType: double
+		lineageTag: 07faa0c5-c170-4ed0-b084-6551978c59af
+		summarizeBy: sum
 		sourceColumn: PercentOfStandardCost
 
 		annotation SummarizationSetBy = Automatic
 
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column RevenueDiscount
-		dataType: string
-		lineageTag: f560fd07-c6b2-47a3-a650-4cabdb01bb66
-		summarizeBy: none
+		dataType: double
+		lineageTag: cf429b2d-d743-4c0f-8f28-a2e9118a5334
+		summarizeBy: sum
 		sourceColumn: RevenueDiscount
 
 		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	partition Sales = m
 		mode: import
@@ -86,11 +90,11 @@ table Sales
 				let
 				    Source = Folder.Files("C:\Users\Bihaag Nepaul\Downloads\YT-Datasets\Sales"),
 				    #"Filtered Hidden Files1" = Table.SelectRows(Source, each [Attributes]?[Hidden]? <> true),
-				    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File", each #"Transform File"([Content])),
+				    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File (3)", each #"Transform File (3)"([Content])),
 				    #"Renamed Columns1" = Table.RenameColumns(#"Invoke Custom Function1", {"Name", "Source.Name"}),
-				    #"Removed Other Columns1" = Table.SelectColumns(#"Renamed Columns1", {"Source.Name", "Transform File"}),
-				    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File", Table.ColumnNames(#"Transform File"(#"Sample File"))),
-				    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Table Column1",{{"Source.Name", type text}, {"fSalesPrimaryKey", Int64.Type}, {"ProductID", Int64.Type}, {"SalesRepID", Int64.Type}, {"Location", type text}, {"Date", type date}, {"Units", Int64.Type}, {"PercentOfStandardCost", type text}, {"RevenueDiscount", type text}})
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Renamed Columns1", {"Source.Name", "Transform File (3)"}),
+				    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File (3)", Table.ColumnNames(#"Transform File (3)"(#"Sample File (3)"))),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Table Column1",{{"Source.Name", type text}, {"fSalesPrimaryKey", Int64.Type}, {"ProductID", Int64.Type}, {"SalesRepID", Int64.Type}, {"Location", type text}, {"Date", type date}, {"Units", Int64.Type}, {"PercentOfStandardCost", type number}, {"RevenueDiscount", type number}})
 				in
 				    #"Changed Type"
 

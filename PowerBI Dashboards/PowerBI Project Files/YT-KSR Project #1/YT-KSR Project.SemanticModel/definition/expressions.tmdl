@@ -41,26 +41,89 @@ expression 'Transform File' =
 
 	annotation PBI_ResultType = Function
 
-expression 'Errors in Sales' =
+expression 'Sample File (2)' =
 		let
-		Source = Sales,
-		  #"Detected Type Mismatches" = let
-		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Source, Table.ColumnsOfType(Source, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
-		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
-		    fieldNames = Record.FieldNames(recordTypeFields),
-		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
-		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "The type of the value does not match the type of the column.", Detail = v], fieldTypes{i}})
+		    Source = Folder.Files("C:\Users\Bihaag Nepaul\Downloads\YT-Datasets\Sales"),
+		    Navigation1 = Source{0}[Content]
 		in
-		    Table.TransformColumns(Source, pairs),
-		  #"Added Index" = Table.AddIndexColumn(#"Detected Type Mismatches", "Row Number" ,1),
-		  #"Kept Errors" = Table.SelectRowsWithErrors(#"Added Index", {"Source.Name", "fSalesPrimaryKey", "ProductID", "SalesRepID", "Location", "Date", "Units", "PercentOfStandardCost", "RevenueDiscount"}),
-		  #"Reordered Columns" = Table.ReorderColumns(#"Kept Errors", {"Row Number", "Source.Name", "fSalesPrimaryKey", "ProductID", "SalesRepID", "Location", "Date", "Units", "PercentOfStandardCost", "RevenueDiscount"})
-		in
-		  #"Reordered Columns"
-	lineageTag: ff511b31-4e1e-42fd-bd81-37e5e014ed46
-	queryGroup: 'Query Errors - 2024/06/24 14:46:16'
+		    Navigation1
+	lineageTag: 90d4439a-eca9-4c80-b143-9b4380ed775e
+	queryGroup: 'Transform File from Sales (2)\Helper Queries'
 
-	annotation PBI_NavigationStepName = Navigation
+	annotation PBI_ResultType = Binary
+
+expression Parameter2 = #"Sample File (2)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (2)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: bff6c129-9bdd-40be-b847-5de438103c9b
+	queryGroup: 'Transform File from Sales (2)\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (2)' =
+		let
+		    Source = Csv.Document(Parameter2,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 9de0beba-807c-4571-a87e-0978f817db90
+	queryGroup: 'Transform File from Sales (2)'
 
 	annotation PBI_ResultType = Table
+
+expression 'Transform File (2)' =
+		let
+		    Source = (Parameter2) => let
+		        Source = Csv.Document(Parameter2,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		        #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		    in
+		        #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (2)""}" ]
+	lineageTag: 0e0369d3-4df5-4cc1-b172-f076fb8ecec4
+	queryGroup: 'Transform File from Sales (2)\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression 'Transform Sample File (3)' =
+		let
+		    Source = Csv.Document(Parameter3,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 837dbb44-8096-4532-a473-ad9cbf3d72e5
+	queryGroup: 'Transform File from Sales (3)'
+
+	annotation PBI_ResultType = Table
+
+expression Parameter3 = #"Sample File (3)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (3)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 0c2cd2f6-25ef-496a-beab-1a53eafa7286
+	queryGroup: 'Transform File from Sales (3)\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Sample File (3)' =
+		let
+		    Source = Folder.Files("C:\Users\Bihaag Nepaul\Downloads\YT-Datasets\Sales"),
+		    Navigation1 = Source{0}[Content]
+		in
+		    Navigation1
+	lineageTag: 41f3e502-6622-4e5c-b03a-564fff250bd4
+	queryGroup: 'Transform File from Sales (3)\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform File (3)' =
+		let
+		    Source = (Parameter3) => let
+		        Source = Csv.Document(Parameter3,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		        #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		    in
+		        #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (3)""}" ]
+	lineageTag: 719de228-e136-4927-b048-fa394051364c
+	queryGroup: 'Transform File from Sales (3)\Helper Queries'
+
+	annotation PBI_ResultType = Function
 

@@ -1,4 +1,4 @@
-table 'Sales rep'
+table SalesRep
 	lineageTag: 596815dd-1c5a-4e64-9c72-4579fc370437
 
 	column Column1
@@ -17,7 +17,7 @@ table 'Sales rep'
 
 		annotation SummarizationSetBy = Automatic
 
-	partition 'Sales rep' = m
+	partition SalesRep = m
 		mode: import
 		source =
 				let
@@ -26,6 +26,8 @@ table 'Sales rep'
 				    #"Changed Type" = Table.TransformColumnTypes(#"Sales rep_Sheet",{{"Column1", type text}, {"Column2", type text}})
 				in
 				    #"Changed Type"
+
+	changedProperty = Name
 
 	annotation PBI_ResultType = Table
 
