@@ -1,0 +1,64 @@
+table Product
+	lineageTag: 1057f002-9f71-40d4-b87e-39a2b924ac04
+
+	column ProductID
+		dataType: string
+		lineageTag: f130d9e4-d65d-44b8-aed7-eee55b43f7ee
+		summarizeBy: none
+		sourceColumn: ProductID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sub_Category_Key
+		dataType: string
+		lineageTag: 8345ea9e-2292-413f-9948-6ffc986deb0e
+		summarizeBy: none
+		sourceColumn: Sub_Category_Key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Color
+		dataType: string
+		lineageTag: c64b145a-f1cf-47e4-8e4a-171745eddb0b
+		summarizeBy: none
+		sourceColumn: Color
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductName
+		dataType: string
+		lineageTag: dcc4266b-c0b2-4173-b21e-b6d4eb9179c9
+		summarizeBy: none
+		sourceColumn: ProductName
+
+		annotation SummarizationSetBy = Automatic
+
+	column RetailPrice
+		dataType: string
+		lineageTag: f2a00752-6760-4f96-99cb-023e7e4f6d04
+		summarizeBy: none
+		sourceColumn: RetailPrice
+
+		annotation SummarizationSetBy = Automatic
+
+	column StandardCost
+		dataType: string
+		lineageTag: f9019420-8df1-4ca6-a422-b18b8b1b7b23
+		summarizeBy: none
+		sourceColumn: StandardCost
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Product = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DESKTOP-6JDNS4N", "YT-DashboardDS"),
+				    dbo_Product = Source{[Schema="dbo",Item="Product"]}[Data]
+				in
+				    dbo_Product
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

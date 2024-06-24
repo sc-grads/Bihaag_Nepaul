@@ -1,0 +1,39 @@
+table Geography
+	lineageTag: e5cb6bd2-0580-4d2a-8002-bc53d95cceb1
+
+	column Column1
+		dataType: string
+		lineageTag: 47be1a33-ab74-440e-800b-9f5a7b2e8830
+		summarizeBy: none
+		sourceColumn: Column1
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column2
+		dataType: string
+		lineageTag: 829211ee-c2b2-4099-a556-5684da5e7104
+		summarizeBy: none
+		sourceColumn: Column2
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column3
+		dataType: string
+		lineageTag: 91f0ba22-5401-4af4-ac8d-4c0c9e64ed7e
+		summarizeBy: none
+		sourceColumn: Column3
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Geography = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\Bihaag Nepaul\Downloads\YT-Datasets\Dimensions\Geography.xlsx"), null, true),
+				    Geography_Sheet = Source{[Item="Geography",Kind="Sheet"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(Geography_Sheet,{{"Column1", type text}, {"Column2", type text}, {"Column3", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

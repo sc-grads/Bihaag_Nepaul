@@ -1,0 +1,41 @@
+table 'Sub categories'
+	lineageTag: b67d18d9-0e48-4205-bfd6-3b2140825a11
+
+	column SubCategoryKey
+		dataType: int64
+		formatString: 0
+		lineageTag: fa39a84d-80f9-469f-9bfb-9f94dd3b7f48
+		summarizeBy: count
+		sourceColumn: SubCategoryKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column CategoryKey
+		dataType: string
+		lineageTag: 11146dcf-6e3c-437b-b9c1-ec6d5b93546a
+		summarizeBy: none
+		sourceColumn: CategoryKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'SubCategory Name'
+		dataType: string
+		lineageTag: 195e4a69-776f-4840-ba6d-ca74109a1d2a
+		summarizeBy: none
+		sourceColumn: SubCategory Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Sub categories' = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\Bihaag Nepaul\Downloads\YT-Datasets\Dimensions\SubCategories.xlsx"), null, true),
+				    #"Sub categories_Sheet" = Source{[Item="Sub categories",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Sub categories_Sheet", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"SubCategoryKey", Int64.Type}, {"CategoryKey", type text}, {"SubCategory Name", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
