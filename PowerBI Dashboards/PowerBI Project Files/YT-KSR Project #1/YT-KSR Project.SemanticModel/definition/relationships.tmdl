@@ -2,3 +2,7 @@ relationship 34fa10f6-b7fe-a814-26e7-d42cef3802c6
 	fromColumn: ProductDetails.Sub_Category_Key
 	toColumn: SubCategory.SubCategoryKey
 
+relationship AutoDetected_8ce26bb9-8de8-41f0-acbb-a01c9dbb8203
+	fromColumn: Sales.Town
+	toColumn: Geography.Town
+

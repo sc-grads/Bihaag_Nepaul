@@ -33,11 +33,16 @@ table SubCategory
 				    Source = Excel.Workbook(File.Contents("C:\Users\Bihaag Nepaul\Downloads\YT-Datasets\Dimensions\SubCategories.xlsx"), null, true),
 				    #"Sub categories_Sheet" = Source{[Item="Sub categories",Kind="Sheet"]}[Data],
 				    #"Promoted Headers" = Table.PromoteHeaders(#"Sub categories_Sheet", [PromoteAllScalars=true]),
-				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"SubCategoryKey", Int64.Type}, {"CategoryKey", type text}, {"SubCategory Name", type text}})
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"SubCategoryKey", Int64.Type}, {"CategoryKey", type text}, {"SubCategory Name", type text}}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Changed Type","ID -*","",Replacer.ReplaceText,{"CategoryKey"}),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","Text.Middle([ID], 4)","",Replacer.ReplaceText,{"CategoryKey"}),
+				    #"Replaced Value2" = Table.ReplaceValue(#"Replaced Value1","ID -"," ",Replacer.ReplaceText,{"CategoryKey"}),
+				    #"Replaced Value3" = Table.ReplaceValue(#"Replaced Value2","  ","",Replacer.ReplaceText,{"CategoryKey"}),
+				    #"Replaced Value4" = Table.ReplaceValue(#"Replaced Value3"," ","",Replacer.ReplaceText,{"CategoryKey"})
 				in
-				    #"Changed Type"
-
-	changedProperty = Name
+				    #"Replaced Value4"
 
 	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
 

@@ -54,11 +54,10 @@ table ProductDetails
 		source =
 				let
 				    Source = Sql.Database("DESKTOP-6JDNS4N", "YT-DashboardDS"),
-				    dbo_Product = Source{[Schema="dbo",Item="Product"]}[Data]
+				    dbo_Product = Source{[Schema="dbo",Item="Product"]}[Data],
+				    #"Removed Duplicates" = Table.Distinct(dbo_Product, {"ProductID"})
 				in
-				    dbo_Product
-
-	changedProperty = Name
+				    #"Removed Duplicates"
 
 	annotation PBI_NavigationStepName = Navigation
 

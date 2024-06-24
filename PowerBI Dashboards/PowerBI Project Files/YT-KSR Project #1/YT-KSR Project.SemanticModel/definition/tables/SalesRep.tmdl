@@ -1,19 +1,19 @@
 table SalesRep
 	lineageTag: 596815dd-1c5a-4e64-9c72-4579fc370437
 
-	column Column1
+	column SalesRepID
 		dataType: string
-		lineageTag: 8c447101-5ad9-42a2-b767-5c05bf4b82f2
+		lineageTag: 41f8f02e-1aa2-4e4b-99f5-f239436a629e
 		summarizeBy: none
-		sourceColumn: Column1
+		sourceColumn: SalesRepID
 
 		annotation SummarizationSetBy = Automatic
 
-	column Column2
+	column 'Sales Rep Name'
 		dataType: string
-		lineageTag: 82605d06-44c0-4cb6-b3d8-cb07a655fdd5
+		lineageTag: c7c8b86a-999d-4740-9f9d-7b39b181156c
 		summarizeBy: none
-		sourceColumn: Column2
+		sourceColumn: Sales Rep Name
 
 		annotation SummarizationSetBy = Automatic
 
@@ -23,11 +23,14 @@ table SalesRep
 				let
 				    Source = Excel.Workbook(File.Contents("C:\Users\Bihaag Nepaul\Downloads\YT-Datasets\Dimensions\SalesRep.xlsx"), null, true),
 				    #"Sales rep_Sheet" = Source{[Item="Sales rep",Kind="Sheet"]}[Data],
-				    #"Changed Type" = Table.TransformColumnTypes(#"Sales rep_Sheet",{{"Column1", type text}, {"Column2", type text}})
+				    #"Changed Type" = Table.TransformColumnTypes(#"Sales rep_Sheet",{{"Column1", type text}, {"Column2", type text}}),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Changed Type", [PromoteAllScalars=true]),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Promoted Headers",{{"SalesRepID", type text}, {"Sales Rep Name", type text}}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Changed Type1","ID -","",Replacer.ReplaceText,{"SalesRepID"})
 				in
-				    #"Changed Type"
-
-	changedProperty = Name
+				    #"Replaced Value"
 
 	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
 
