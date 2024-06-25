@@ -14,7 +14,7 @@ table Sales
 		dataType: int64
 		formatString: 0
 		lineageTag: bb59606a-59ee-485a-8811-4db8a724bbeb
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: ProductID
 
 		annotation SummarizationSetBy = Automatic
@@ -23,7 +23,7 @@ table Sales
 		dataType: int64
 		formatString: 0
 		lineageTag: c88581af-31de-452d-a92f-110731359851
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: SalesRepID
 
 		annotation SummarizationSetBy = Automatic
@@ -68,21 +68,44 @@ table Sales
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	column Country
-		dataType: string
-		lineageTag: 031fb124-3be1-4108-ab4e-0297dd9c96f0
+	column 'Geography.GeoKey'
+		dataType: int64
+		formatString: 0
+		lineageTag: 61f1a3dd-7f62-4efb-ba1b-1aa73ce5dfc0
 		summarizeBy: none
-		sourceColumn: Country
+		sourceColumn: Geography.GeoKey
 
 		annotation SummarizationSetBy = Automatic
 
-	column Town
-		dataType: string
-		lineageTag: 01221cb9-e526-415e-9320-fcf55a4b7a46
-		summarizeBy: none
-		sourceColumn: Town
+	column 'Total Revenue' = Sales[Units] * RELATED(ProductDetails[RetailPrice])
+		dataType: double
+		lineageTag: 7adb4b78-79f7-49d9-a720-b445bbc77412
+		summarizeBy: sum
+		isDataTypeInferred
 
 		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Total Cost' = Sales[Units] * RELATED(ProductDetails[StandardCost])
+		dataType: double
+		lineageTag: cf12741c-11c4-48b9-8efa-23419a178162
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Gross Profit' = Sales[Total Revenue] - Sales[Total Cost]
+		dataType: double
+		lineageTag: 113a7bf6-5df8-4db4-b9d6-377a728606f1
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	partition Sales = m
 		mode: import
@@ -98,9 +121,13 @@ table Sales
 				    #"Remove Source Details" = Table.RemoveColumns(#"Changed Type",{"Source.Name"}),
 				    #"Splitted the location" = Table.SplitColumn(#"Remove Source Details", "Location", Splitter.SplitTextByDelimiter(";", QuoteStyle.Csv), {"Location.1", "Location.2"}),
 				    #"Changed Type1" = Table.TransformColumnTypes(#"Splitted the location",{{"Location.1", type text}, {"Location.2", type text}}),
-				    #"Renamed Columns from location 1 to Country & location 2 to Town" = Table.RenameColumns(#"Changed Type1",{{"Location.1", "Country"}, {"Location.2", "Town"}})
+				    #"Renamed Columns from location 1 to Country & location 2 to Town" = Table.RenameColumns(#"Changed Type1",{{"Location.1", "Country"}, {"Location.2", "Town"}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Renamed Columns from location 1 to Country & location 2 to Town", {"Country", "Town"}, Geography, {"Country", "Town"}, "Geography", JoinKind.LeftOuter),
+				    #"Expanded Geography" = Table.ExpandTableColumn(#"Merged Queries", "Geography", {"GeoKey"}, {"Geography.GeoKey"}),
+				    #"Reordered Columns" = Table.ReorderColumns(#"Expanded Geography",{"fSalesPrimaryKey", "ProductID", "SalesRepID", "Geography.GeoKey", "Country", "Town", "Date", "Units", "PercentOfStandardCost", "RevenueDiscount"}),
+				    #"Removed redundant county and town and replaced with Geokey in sales" = Table.RemoveColumns(#"Reordered Columns",{"Country", "Town"})
 				in
-				    #"Renamed Columns from location 1 to Country & location 2 to Town"
+				    #"Removed redundant county and town and replaced with Geokey in sales"
 
 	annotation PBI_ResultType = Table
 

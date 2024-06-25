@@ -25,6 +25,15 @@ table Geography
 
 		annotation SummarizationSetBy = Automatic
 
+	column GeoKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 1cc96102-acb9-49c5-9074-329dee87043b
+		summarizeBy: none
+		sourceColumn: GeoKey
+
+		annotation SummarizationSetBy = Automatic
+
 	partition Geography = m
 		mode: import
 		source =
@@ -33,9 +42,11 @@ table Geography
 				    Geography_Sheet = Source{[Item="Geography",Kind="Sheet"]}[Data],
 				    #"Changed Type" = Table.TransformColumnTypes(Geography_Sheet,{{"Column1", type text}, {"Column2", type text}, {"Column3", type text}}),
 				    #"Promoted Headers" = Table.PromoteHeaders(#"Changed Type", [PromoteAllScalars=true]),
-				    #"Changed Type1" = Table.TransformColumnTypes(#"Promoted Headers",{{"Country", type text}, {"Town", type text}, {"Wikipedia", type text}})
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Promoted Headers",{{"Country", type text}, {"Town", type text}, {"Wikipedia", type text}}),
+				    #"Added Index" = Table.AddIndexColumn(#"Changed Type1", "Index", 1, 1, Int64.Type),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Index",{{"Index", "GeoKey"}})
 				in
-				    #"Changed Type1"
+				    #"Renamed Columns"
 
 	annotation PBI_ResultType = Table
 

@@ -28,11 +28,11 @@ expression 'Sample File' =
 
 expression 'Transform File' =
 		let
-		    Source = (Parameter1) => let
-		        Source = Csv.Document(Parameter1,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
-		        #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
-		    in
-		        #"Promoted Headers"
+		    Source = (Parameter1 as binary) => let
+		    Source = Csv.Document(Parameter1,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
 		in
 		    Source
 	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File""}" ]
@@ -71,11 +71,11 @@ expression 'Transform Sample File (2)' =
 
 expression 'Transform File (2)' =
 		let
-		    Source = (Parameter2) => let
-		        Source = Csv.Document(Parameter2,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
-		        #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
-		    in
-		        #"Promoted Headers"
+		    Source = (Parameter2 as binary) => let
+		    Source = Csv.Document(Parameter2,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
 		in
 		    Source
 	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (2)""}" ]
@@ -114,11 +114,11 @@ expression 'Sample File (3)' =
 
 expression 'Transform File (3)' =
 		let
-		    Source = (Parameter3) => let
-		        Source = Csv.Document(Parameter3,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
-		        #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
-		    in
-		        #"Promoted Headers"
+		    Source = (Parameter3 as binary) => let
+		    Source = Csv.Document(Parameter3,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
 		in
 		    Source
 	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (3)""}" ]

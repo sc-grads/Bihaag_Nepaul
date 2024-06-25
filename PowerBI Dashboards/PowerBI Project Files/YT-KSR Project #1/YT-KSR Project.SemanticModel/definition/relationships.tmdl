@@ -2,7 +2,23 @@ relationship 34fa10f6-b7fe-a814-26e7-d42cef3802c6
 	fromColumn: ProductDetails.Sub_Category_Key
 	toColumn: SubCategory.SubCategoryKey
 
-relationship AutoDetected_8ce26bb9-8de8-41f0-acbb-a01c9dbb8203
-	fromColumn: Sales.Town
-	toColumn: Geography.Town
+relationship AutoDetected_12b2643a-8ad8-4056-93b5-0ac4adfcdf37
+	fromColumn: Sales.'Geography.GeoKey'
+	toColumn: Geography.GeoKey
+
+relationship 9bbfa1dc-7567-3d26-62c1-78b2a908e0e6
+	fromColumn: Sales.SalesRepID
+	toColumn: SalesRep.SalesRepID
+
+relationship b54a7002-6fa4-035d-8789-9aad268ea08a
+	fromColumn: SubCategory.CategoryKey
+	toColumn: Categories.CategoryKey
+
+relationship b383b8b4-2363-9983-8734-a399f5b3ab1a
+	fromColumn: Sales.ProductID
+	toColumn: ProductDetails.ProductID
+
+relationship 2e26bf05-483b-9291-9dc5-479b381bdad7
+	fromColumn: Sales.Date
+	toColumn: DateMaster.Date
 

@@ -1,0 +1,86 @@
+table DateMaster
+	lineageTag: e92e57bf-97a9-400e-b187-fcd969b9ee98
+
+	column Date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 49ff1b8e-2733-43bf-a095-1a58be04f2db
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year = YEAR(DateMaster[Date])
+		dataType: int64
+		formatString: 0
+		lineageTag: cb0945bf-7014-4783-8e58-a4a955fb7d63
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month = MONTH(DateMaster[Date])
+		dataType: int64
+		formatString: 0
+		lineageTag: 10303a1b-c39e-4d59-a567-be53f7f0bfa4
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name' = FORMAT(DateMaster[Date], "MMM")
+		dataType: string
+		lineageTag: 4c188ab5-93d2-4fdc-95a3-0e378b41d065
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column Qtr = QUARTER(DateMaster[Date])
+		dataType: int64
+		formatString: 0
+		lineageTag: bb22aa97-7a1e-4052-b6fb-49cca746641e
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week Num' = WEEKNUM(DateMaster[Date])
+		dataType: int64
+		formatString: 0
+		lineageTag: 1657fc4d-993f-4e6e-ad05-e2a83fc0354e
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week Day' = WEEKDAY(DateMaster[Date])
+		dataType: int64
+		formatString: 0
+		lineageTag: 539af41b-da30-4c0d-b6c4-871b680505da
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week Day Name' = FORMAT(DateMaster[Date], "DDD")
+		dataType: string
+		lineageTag: e67e5504-acd6-4529-9eab-693c34567946
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DateMaster = calculated
+		mode: import
+		source =
+				
+				CALENDAR(
+				    FIRSTDATE(Sales[Date]),
+				    LASTDATE(Sales[Date])
+				)
+
+	annotation PBI_Id = 7e5babcbb3124d31b2cf058bd0779f14
+

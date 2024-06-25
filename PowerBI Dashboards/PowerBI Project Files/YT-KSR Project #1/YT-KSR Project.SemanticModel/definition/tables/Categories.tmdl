@@ -5,7 +5,7 @@ table Categories
 		dataType: int64
 		formatString: 0
 		lineageTag: f40f718e-eae8-49b2-a978-87b6c41abb37
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: CategoryKey
 
 		annotation SummarizationSetBy = Automatic
