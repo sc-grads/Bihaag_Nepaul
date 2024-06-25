@@ -35,6 +35,7 @@ table DateMaster
 		lineageTag: 4c188ab5-93d2-4fdc-95a3-0e378b41d065
 		summarizeBy: none
 		isDataTypeInferred
+		sortByColumn: 'Month Order'
 
 		annotation SummarizationSetBy = Automatic
 
@@ -68,6 +69,15 @@ table DateMaster
 	column 'Week Day Name' = FORMAT(DateMaster[Date], "DDD")
 		dataType: string
 		lineageTag: e67e5504-acd6-4529-9eab-693c34567946
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Order' = DateMaster[Month]
+		dataType: int64
+		formatString: 0
+		lineageTag: d1fda1a5-8d86-48ca-9333-e9d61597f5b6
 		summarizeBy: none
 		isDataTypeInferred
 

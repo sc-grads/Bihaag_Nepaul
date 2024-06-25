@@ -1,6 +1,16 @@
 table Sales
 	lineageTag: ac52cd88-1e20-4cfd-b2c6-ca6368f463a4
 
+	measure 'Tot Profit (Measure)' = SUM(Sales[Gross Profit])
+		lineageTag: 728f419d-820d-4f1c-8afd-35e5255483b3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Prev Month Profit' = CALCULATE([Tot Profit (Measure)],PREVIOUSMONTH(DateMaster[Date]))
+		lineageTag: b8d22fb9-a82d-4a90-b8a1-94ecb712fddd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column fSalesPrimaryKey
 		dataType: int64
 		formatString: 0
@@ -79,13 +89,12 @@ table Sales
 
 	column 'Total Revenue' = Sales[Units] * RELATED(ProductDetails[RetailPrice])
 		dataType: double
+		formatString: 0.00
 		lineageTag: 7adb4b78-79f7-49d9-a720-b445bbc77412
 		summarizeBy: sum
 		isDataTypeInferred
 
-		annotation SummarizationSetBy = Automatic
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
+		annotation SummarizationSetBy = User
 
 	column 'Total Cost' = Sales[Units] * RELATED(ProductDetails[StandardCost])
 		dataType: double
@@ -99,13 +108,12 @@ table Sales
 
 	column 'Gross Profit' = Sales[Total Revenue] - Sales[Total Cost]
 		dataType: double
+		formatString: #,0.00
 		lineageTag: 113a7bf6-5df8-4db4-b9d6-377a728606f1
 		summarizeBy: sum
 		isDataTypeInferred
 
 		annotation SummarizationSetBy = Automatic
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	partition Sales = m
 		mode: import
