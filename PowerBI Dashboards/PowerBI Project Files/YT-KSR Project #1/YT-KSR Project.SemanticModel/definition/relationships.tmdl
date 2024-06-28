@@ -22,3 +22,7 @@ relationship 2e26bf05-483b-9291-9dc5-479b381bdad7
 	fromColumn: Sales.Date
 	toColumn: DateMaster.Date
 
+relationship AutoDetected_c0f9c126-2801-4990-9120-2ee2f8428117
+	fromColumn: SharePointSales.fSalesPrimaryKey
+	toColumn: Sales.fSalesPrimaryKey
+

@@ -208,11 +208,11 @@ expression 'Transform Sample File (5)' =
 
 expression 'Transform File (5)' =
 		let
-		    Source = (Parameter5) => let
-		        Source = Csv.Document(Parameter5,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
-		        #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
-		    in
-		        #"Promoted Headers"
+		    Source = (Parameter5 as binary) => let
+		    Source = Csv.Document(Parameter5,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
 		in
 		    Source
 	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (5)""}" ]
@@ -251,11 +251,11 @@ expression 'Transform Sample File (6)' =
 
 expression 'Transform File (6)' =
 		let
-		    Source = (Parameter6) => let
-		        Source = Csv.Document(Parameter6,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
-		        #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
-		    in
-		        #"Promoted Headers"
+		    Source = (Parameter6 as binary) => let
+		    Source = Csv.Document(Parameter6,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
 		in
 		    Source
 	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (6)""}" ]
@@ -264,8 +264,25 @@ expression 'Transform File (6)' =
 
 	annotation PBI_ResultType = Function
 
+/// Filter specification for Sales DEV Data
 expression SharePointSalesDEV = "https://northerndata.sharepoint.com/sites/BihaagTestTeam/Shared Documents/General/YT-KSR Sales(Dev Data)/Sales/" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: 8fad1a4f-2755-41a9-a3a1-1d613cb287fd
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+/// Filter param for sales test data
+expression SharePointTEST = "https://northerndata.sharepoint.com/sites/BihaagTestTeam/Shared Documents/General/YT-KSR Sales(Test Data)/Sales/" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 8443e81f-ac04-4f22-b916-73f11bad2bc2
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+/// Filter param for sales prod data
+expression SharePointPROD = "https://northerndata.sharepoint.com/sites/BihaagTestTeam/Shared Documents/General/YT-KSR Sales(Prod Data)/Sales/" meta [IsParameterQuery=true, Type="Any", IsParameterQueryRequired=true]
+	lineageTag: 3d9e8018-f6a7-4409-b34d-5b1556aedabf
 
 	annotation PBI_NavigationStepName = Navigation
 

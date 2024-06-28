@@ -1,10 +1,10 @@
-table Sales
-	lineageTag: ac52cd88-1e20-4cfd-b2c6-ca6368f463a4
+table SharePointSales
+	lineageTag: f0ae3e3d-48af-4112-9bc2-ff883a1bed03
 
 	column fSalesPrimaryKey
 		dataType: int64
 		formatString: 0
-		lineageTag: 63cb781a-b231-4230-b277-376fa48885b3
+		lineageTag: 9d9d0153-ca0a-4739-97a8-619aa5708b69
 		summarizeBy: none
 		sourceColumn: fSalesPrimaryKey
 
@@ -13,8 +13,8 @@ table Sales
 	column ProductID
 		dataType: int64
 		formatString: 0
-		lineageTag: bb59606a-59ee-485a-8811-4db8a724bbeb
-		summarizeBy: none
+		lineageTag: 9573ccf6-3da8-49a5-9fd4-a8bd9d95be55
+		summarizeBy: count
 		sourceColumn: ProductID
 
 		annotation SummarizationSetBy = Automatic
@@ -22,16 +22,25 @@ table Sales
 	column SalesRepID
 		dataType: int64
 		formatString: 0
-		lineageTag: c88581af-31de-452d-a92f-110731359851
-		summarizeBy: none
+		lineageTag: 8c5bcda6-a3b1-425d-b217-d90528dccc9c
+		summarizeBy: count
 		sourceColumn: SalesRepID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Geography.GeoKey'
+		dataType: int64
+		formatString: 0
+		lineageTag: dcfb152a-3ffc-419e-bfc5-c4dfcbc2c37c
+		summarizeBy: count
+		sourceColumn: Geography.GeoKey
 
 		annotation SummarizationSetBy = Automatic
 
 	column Date
 		dataType: dateTime
 		formatString: Long Date
-		lineageTag: 4231e299-40bf-4714-afbe-80aece2938a7
+		lineageTag: 199cb84a-2904-4861-98aa-9d242ab340bc
 		summarizeBy: none
 		sourceColumn: Date
 
@@ -42,7 +51,7 @@ table Sales
 	column Units
 		dataType: int64
 		formatString: 0
-		lineageTag: 852c96f1-f874-40a8-b427-bf05439448dd
+		lineageTag: eb4e9c55-fa03-4d74-88d0-760fdcfa49c4
 		summarizeBy: sum
 		sourceColumn: Units
 
@@ -50,7 +59,7 @@ table Sales
 
 	column PercentOfStandardCost
 		dataType: double
-		lineageTag: 07faa0c5-c170-4ed0-b084-6551978c59af
+		lineageTag: f781e736-8679-4044-af35-c11c695afaa1
 		summarizeBy: sum
 		sourceColumn: PercentOfStandardCost
 
@@ -60,7 +69,7 @@ table Sales
 
 	column RevenueDiscount
 		dataType: double
-		lineageTag: cf429b2d-d743-4c0f-8f28-a2e9118a5334
+		lineageTag: 0c3dd0bb-47a3-4197-8226-c82f0e378193
 		summarizeBy: sum
 		sourceColumn: RevenueDiscount
 
@@ -68,48 +77,12 @@ table Sales
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	column 'Geography.GeoKey'
-		dataType: int64
-		formatString: 0
-		lineageTag: 61f1a3dd-7f62-4efb-ba1b-1aa73ce5dfc0
-		summarizeBy: none
-		sourceColumn: Geography.GeoKey
-
-		annotation SummarizationSetBy = Automatic
-
-	column 'Total Revenue' = Sales[Units] * RELATED(ProductDetails[RetailPrice])
-		dataType: double
-		formatString: 0.00
-		lineageTag: 7adb4b78-79f7-49d9-a720-b445bbc77412
-		summarizeBy: sum
-		isDataTypeInferred
-
-		annotation SummarizationSetBy = User
-
-	column 'Total Cost' = Sales[Units] * RELATED(ProductDetails[StandardCost])
-		dataType: double
-		lineageTag: cf12741c-11c4-48b9-8efa-23419a178162
-		summarizeBy: sum
-		isDataTypeInferred
-
-		annotation SummarizationSetBy = Automatic
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
-
-	column 'Gross Profit' = Sales[Total Revenue] - Sales[Total Cost]
-		dataType: double
-		formatString: #,0.00
-		lineageTag: 113a7bf6-5df8-4db4-b9d6-377a728606f1
-		summarizeBy: sum
-		isDataTypeInferred
-
-		annotation SummarizationSetBy = Automatic
-
-	partition Sales = m
+	partition SharePointSales = m
 		mode: import
 		source =
 				let
-				    Source = Folder.Files(SalesParam),
+				    Source = SharePoint.Files("https://northerndata.sharepoint.com/sites/BihaagTestTeam/", [ApiVersion = 15]),
+				    #"Filtered Rows" = Table.SelectRows(Source, each ([Folder Path] = SharePointTEST)),
 				    #"Filtered Hidden Files1" = Table.SelectRows(Source, each [Attributes]?[Hidden]? <> true),
 				    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File (3)", each #"Transform File (3)"([Content])),
 				    #"Renamed Columns1" = Table.RenameColumns(#"Invoke Custom Function1", {"Name", "Source.Name"}),
@@ -123,11 +96,14 @@ table Sales
 				    #"Merged Queries" = Table.NestedJoin(#"Renamed Columns from location 1 to Country & location 2 to Town", {"Country", "Town"}, Geography, {"Country", "Town"}, "Geography", JoinKind.LeftOuter),
 				    #"Expanded Geography" = Table.ExpandTableColumn(#"Merged Queries", "Geography", {"GeoKey"}, {"Geography.GeoKey"}),
 				    #"Reordered Columns" = Table.ReorderColumns(#"Expanded Geography",{"fSalesPrimaryKey", "ProductID", "SalesRepID", "Geography.GeoKey", "Country", "Town", "Date", "Units", "PercentOfStandardCost", "RevenueDiscount"}),
-				    #"Removed redundant county and town and replaced with Geokey in sales" = Table.RemoveColumns(#"Reordered Columns",{"Country", "Town"})
+				    #"Removed redundant county and town and replaced with Geokey in sales" = Table.RemoveColumns(#"Reordered Columns",{"Country", "Town"}),
+				    #"Filtered Rows1" = Table.SelectRows(#"Removed redundant county and town and replaced with Geokey in sales", each true)
 				in
-				    #"Removed redundant county and town and replaced with Geokey in sales"
+				    #"Filtered Rows1"
 
-	annotation PBI_ResultType = Table
+	changedProperty = Name
 
 	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
 

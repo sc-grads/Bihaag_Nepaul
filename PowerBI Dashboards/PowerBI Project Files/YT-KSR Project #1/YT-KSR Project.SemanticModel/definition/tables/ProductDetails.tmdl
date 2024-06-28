@@ -59,7 +59,5 @@ table ProductDetails
 				in
 				    #"Removed Duplicates"
 
-	annotation PBI_NavigationStepName = Navigation
-
 	annotation PBI_ResultType = Table
 

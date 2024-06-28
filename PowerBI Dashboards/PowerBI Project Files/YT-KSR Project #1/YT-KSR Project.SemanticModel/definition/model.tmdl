@@ -3,6 +3,7 @@ model Model
 	defaultPowerBIDataSourceVersion: powerBI_V3
 	sourceQueryCulture: en-GB
 	dataAccessOptions
+		fastCombine
 		legacyRedirects
 		returnErrorValuesAsNull
 
@@ -68,7 +69,7 @@ annotation __PBI_TimeIntelligenceEnabled = 0
 
 annotation PBIDesktopVersion = 2.130.930.0 (24.06)
 
-annotation PBI_QueryOrder = ["Categories","Geography","SalesRep","SubCategory","Sample File","Parameter1","Transform Sample File","Transform File","ProductDetails","Sample File (2)","Parameter2","Transform Sample File (2)","Transform File (2)","Sales","Sample File (3)","Parameter3","Transform Sample File (3)","Transform File (3)","Sample File (4)","Parameter4","Transform Sample File (4)","Transform File (4)","SalesParam","Sample File (5)","Parameter5","Transform Sample File (5)","Transform File (5)","Sample File (6)","Parameter6","Transform Sample File (6)","Transform File (6)","SharePointSales(DEV)","SharePointSalesDEV"]
+annotation PBI_QueryOrder = ["Categories","Geography","SalesRep","SubCategory","Sample File","Parameter1","Transform Sample File","Transform File","ProductDetails","Sample File (2)","Parameter2","Transform Sample File (2)","Transform File (2)","Sales","Sample File (3)","Parameter3","Transform Sample File (3)","Transform File (3)","Sample File (4)","Parameter4","Transform Sample File (4)","Transform File (4)","SalesParam","Sample File (5)","Parameter5","Transform Sample File (5)","Transform File (5)","Sample File (6)","Parameter6","Transform Sample File (6)","Transform File (6)","SharePointSales","SharePointSalesDEV","SharePointTEST","SharePointPROD"]
 
 annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop"]
 
@@ -79,7 +80,8 @@ ref table SubCategory
 ref table ProductDetails
 ref table Sales
 ref table DateMaster
-ref table SharePointSales(DEV)
+ref table SharePointSales
+ref table MeasureTable
 
 ref cultureInfo en-US
 

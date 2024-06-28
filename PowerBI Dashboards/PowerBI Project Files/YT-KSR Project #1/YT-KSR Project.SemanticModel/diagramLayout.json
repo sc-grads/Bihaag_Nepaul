@@ -11,7 +11,7 @@
         {
           "location": {
             "x": 400.37278600000013,
-            "y": 720.37629591651853
+            "y": 987.683228519702
           },
           "nodeIndex": "Categories",
           "nodeLineageTag": "538a9b8d-8465-4620-a1ac-997dbf5db04b",
@@ -24,7 +24,7 @@
         {
           "location": {
             "x": 347.776196,
-            "y": 1101.6628379165186
+            "y": 1368.969770519702
           },
           "nodeIndex": "Geography",
           "nodeLineageTag": "e5cb6bd2-0580-4d2a-8002-bc53d95cceb1",
@@ -37,7 +37,7 @@
         {
           "location": {
             "x": 681.843253502965,
-            "y": 1027.7660413252456
+            "y": 1295.0729739284291
           },
           "nodeIndex": "Sales",
           "nodeLineageTag": "ac52cd88-1e20-4cfd-b2c6-ca6368f463a4",
@@ -50,7 +50,7 @@
         {
           "location": {
             "x": 1000.3478586809135,
-            "y": 711.59865151135386
+            "y": 978.90558411453731
           },
           "nodeIndex": "ProductDetails",
           "nodeLineageTag": "1057f002-9f71-40d4-b87e-39a2b924ac04",
@@ -63,7 +63,7 @@
         {
           "location": {
             "x": 679.6083430000001,
-            "y": 1402.4272809165186
+            "y": 1669.7342135197021
           },
           "nodeIndex": "SalesRep",
           "nodeLineageTag": "596815dd-1c5a-4e64-9c72-4579fc370437",
@@ -76,7 +76,7 @@
         {
           "location": {
             "x": 717.361364,
-            "y": 719.00566191651842
+            "y": 986.31259451970186
           },
           "nodeIndex": "SubCategory",
           "nodeLineageTag": "b67d18d9-0e48-4205-bfd6-3b2140825a11",
@@ -89,7 +89,7 @@
         {
           "location": {
             "x": 1095.9251780000002,
-            "y": 1078.2850198234644
+            "y": 1345.5919524266478
           },
           "nodeIndex": "DateMaster",
           "nodeLineageTag": "e92e57bf-97a9-400e-b187-fcd969b9ee98",
@@ -102,12 +102,23 @@
         {
           "location": {
             "x": 1032.1489820000002,
-            "y": 534.613865206367
+            "y": 801.92079780955055
           },
-          "nodeIndex": "SharePointSales(DEV)",
-          "nodeLineageTag": "f0ae3e3d-48af-4112-9bc2-ff883a1bed03",
+          "nodeIndex": "SharePointSales",
           "size": {
             "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1032.1489820000002,
+            "y": 665.21364045825931
+          },
+          "nodeIndex": "MeasureTable",
+          "size": {
+            "height": 200,
             "width": 234
           },
           "zIndex": 0

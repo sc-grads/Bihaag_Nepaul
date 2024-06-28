@@ -4368,7 +4368,7 @@ cultureInfo en-US
 			    "sale.tot_profit_measure": {
 			      "Definition": {
 			        "Binding": {
-			          "ConceptualEntity": "Sales",
+			          "ConceptualEntity": "MeasureTable",
 			          "ConceptualProperty": "Tot Profit (Measure)"
 			        }
 			      },
@@ -4390,7 +4390,7 @@ cultureInfo en-US
 			    "sale.prev_month_profit": {
 			      "Definition": {
 			        "Binding": {
-			          "ConceptualEntity": "Sales",
+			          "ConceptualEntity": "MeasureTable",
 			          "ConceptualProperty": "Prev Month Profit"
 			        }
 			      },

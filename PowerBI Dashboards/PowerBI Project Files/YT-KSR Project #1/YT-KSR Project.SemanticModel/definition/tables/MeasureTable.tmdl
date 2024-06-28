@@ -1,0 +1,32 @@
+table MeasureTable
+	lineageTag: 9dd104f7-b6b8-4b5e-9f94-10e856d64e0a
+
+	measure 'Prev Month Profit' = CALCULATE([Tot Profit (Measure)],PREVIOUSMONTH(DateMaster[Date]))
+		lineageTag: b8d22fb9-a82d-4a90-b8a1-94ecb712fddd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Tot Profit (Measure)' = SUM(Sales[Gross Profit])
+		lineageTag: 728f419d-820d-4f1c-8afd-35e5255483b3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Column
+		dataType: int64
+		formatString: 0
+		lineageTag: 7c7388dc-c90b-4bba-83f3-3f91743a6529
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition MeasureTable = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = 97f2047ffded454d8edc1b574e9f6c51
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}
+
