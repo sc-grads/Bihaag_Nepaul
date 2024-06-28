@@ -4505,98 +4505,6 @@ cultureInfo en-US
 			    }
 			  },
 			  "Relationships": {
-			    "product_detail_has_sub_category": {
-			      "Binding": {
-			        "ConceptualEntity": "ProductDetails"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "product_detail": {
-			          "Target": {
-			            "Entity": "product_detail"
-			          }
-			        },
-			        "sub_category": {
-			          "Target": {
-			            "Entity": "sub_category"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "product_detail"
-			            },
-			            "Object": {
-			              "Role": "sub_category"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "product_details_have_sub_categories"
-			        },
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "sub_category"
-			            },
-			            "Object": {
-			              "Role": "product_detail"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "sub_categories_have_product_details"
-			        }
-			      ]
-			    },
-			    "sub_category_has_category": {
-			      "Binding": {
-			        "ConceptualEntity": "SubCategory"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "sub_category": {
-			          "Target": {
-			            "Entity": "sub_category"
-			          }
-			        },
-			        "category": {
-			          "Target": {
-			            "Entity": "category"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "sub_category"
-			            },
-			            "Object": {
-			              "Role": "category"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "sub_categories_have_categories"
-			        },
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "category"
-			            },
-			            "Object": {
-			              "Role": "sub_category"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "categories_have_sub_categories"
-			        }
-			      ]
-			    },
 			    "sale_has_prev_month_profit": {
 			      "Binding": {
 			        "ConceptualEntity": "Sales"
@@ -6004,6 +5912,98 @@ cultureInfo en-US
 			          "State": "Generated",
 			          "Weight": 0.99,
 			          "ID": "geographies_are_in_countries"
+			        }
+			      ]
+			    },
+			    "sub_category_has_category": {
+			      "Binding": {
+			        "ConceptualEntity": "SubCategory"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "sub_category": {
+			          "Target": {
+			            "Entity": "sub_category"
+			          }
+			        },
+			        "category": {
+			          "Target": {
+			            "Entity": "category"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "sub_category"
+			            },
+			            "Object": {
+			              "Role": "category"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "sub_categories_have_categories"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "category"
+			            },
+			            "Object": {
+			              "Role": "sub_category"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "categories_have_sub_categories"
+			        }
+			      ]
+			    },
+			    "product_detail_has_sub_category": {
+			      "Binding": {
+			        "ConceptualEntity": "ProductDetails"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "product_detail": {
+			          "Target": {
+			            "Entity": "product_detail"
+			          }
+			        },
+			        "sub_category": {
+			          "Target": {
+			            "Entity": "sub_category"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "product_detail"
+			            },
+			            "Object": {
+			              "Role": "sub_category"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "product_details_have_sub_categories"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "sub_category"
+			            },
+			            "Object": {
+			              "Role": "product_detail"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "sub_categories_have_product_details"
 			        }
 			      ]
 			    },

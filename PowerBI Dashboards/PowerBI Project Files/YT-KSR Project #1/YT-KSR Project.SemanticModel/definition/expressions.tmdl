@@ -127,3 +127,147 @@ expression 'Transform File (3)' =
 
 	annotation PBI_ResultType = Function
 
+expression 'Transform Sample File (4)' =
+		let
+		    Source = Csv.Document(Parameter4,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 845b893a-c502-4f98-b1a9-a1a4ecda2be1
+	queryGroup: 'Transform File from Sales (Test)'
+
+	annotation PBI_ResultType = Table
+
+expression Parameter4 = #"Sample File (4)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (4)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 96cedf27-a35a-4fd2-bd43-79adbb90d03c
+	queryGroup: 'Transform File from Sales (Test)\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Sample File (4)' =
+		let
+		    Source = Folder.Files("C:\Users\Bihaag Nepaul\Downloads\YT-KSR (Test Data)\Sales (Test)"),
+		    Navigation1 = Source{0}[Content]
+		in
+		    Navigation1
+	lineageTag: aab17d76-e738-433d-8782-d15f3f3656e5
+	queryGroup: 'Transform File from Sales (Test)\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform File (4)' =
+		let
+		    Source = (Parameter4 as binary) => let
+		    Source = Csv.Document(Parameter4,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (4)""}" ]
+	lineageTag: 127b5efe-04bd-4836-bb2d-d0a28ba42deb
+	queryGroup: 'Transform File from Sales (Test)\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+/// This is the original fact table dataset, mainly to be used by developers
+expression SalesParam = "C:\Users\Bihaag Nepaul\Downloads\YT-Datasets\Sales" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 6192834b-7a4d-433a-b55c-7d8f3d226809
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'Sample File (5)' =
+		let
+		    Source = SharePoint.Files("https://northerndata.sharepoint.com/sites/BihaagTestTeam", [ApiVersion = 15]),
+		    Navigation1 = Source{0}[Content]
+		in
+		    Navigation1
+	lineageTag: f3e950fa-3ab9-4bf7-ba4c-cd95f09f1c99
+	queryGroup: 'Transform File from Query1\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression Parameter5 = #"Sample File (5)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (5)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: f7e4bb47-308d-4e07-83e4-1bd28e26fda9
+	queryGroup: 'Transform File from Query1\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (5)' =
+		let
+		    Source = Csv.Document(Parameter5,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 1d0caa42-5c13-454e-9853-9e44e89a342e
+	queryGroup: 'Transform File from Query1'
+
+	annotation PBI_ResultType = Table
+
+expression 'Transform File (5)' =
+		let
+		    Source = (Parameter5) => let
+		        Source = Csv.Document(Parameter5,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		        #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		    in
+		        #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (5)""}" ]
+	lineageTag: 336ccd64-1310-49d4-bdde-e01f5f56ce17
+	queryGroup: 'Transform File from Query1\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression 'Sample File (6)' =
+		let
+		    Source = SharePoint.Files("https://northerndata.sharepoint.com/sites/BihaagTestTeam/", [ApiVersion = 15]),
+		    Navigation1 = Source{0}[Content]
+		in
+		    Navigation1
+	lineageTag: ef11a970-1ceb-486e-9103-c4c22598b86f
+	queryGroup: 'Transform File from Query1 (2)\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression Parameter6 = #"Sample File (6)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (6)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 9f4c8174-3457-4933-babc-6c87a7d116c4
+	queryGroup: 'Transform File from Query1 (2)\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (6)' =
+		let
+		    Source = Csv.Document(Parameter6,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 1b228a2a-2060-4ae1-afd2-430c3a0b2874
+	queryGroup: 'Transform File from Query1 (2)'
+
+	annotation PBI_ResultType = Table
+
+expression 'Transform File (6)' =
+		let
+		    Source = (Parameter6) => let
+		        Source = Csv.Document(Parameter6,[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		        #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		    in
+		        #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (6)""}" ]
+	lineageTag: 7b749088-88e5-42c1-b373-d93aac43d1dd
+	queryGroup: 'Transform File from Query1 (2)\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression SharePointSalesDEV = "https://northerndata.sharepoint.com/sites/BihaagTestTeam/Shared Documents/General/YT-KSR Sales(Dev Data)/Sales/" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 8fad1a4f-2755-41a9-a3a1-1d613cb287fd
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+

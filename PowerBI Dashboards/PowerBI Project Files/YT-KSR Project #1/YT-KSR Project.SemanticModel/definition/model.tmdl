@@ -40,13 +40,37 @@ queryGroup 'Transform File from Sales (3)\Helper Queries'
 
 	annotation PBI_QueryGroupOrder = 0
 
+queryGroup 'Transform File from Sales (Test)'
+
+	annotation PBI_QueryGroupOrder = 8
+
+queryGroup 'Transform File from Sales (Test)\Helper Queries'
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup 'Transform File from Query1'
+
+	annotation PBI_QueryGroupOrder = 10
+
+queryGroup 'Transform File from Query1\Helper Queries'
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup 'Transform File from Query1 (2)'
+
+	annotation PBI_QueryGroupOrder = 12
+
+queryGroup 'Transform File from Query1 (2)\Helper Queries'
+
+	annotation PBI_QueryGroupOrder = 0
+
 annotation __PBI_TimeIntelligenceEnabled = 0
 
 annotation PBIDesktopVersion = 2.130.930.0 (24.06)
 
-annotation PBI_QueryOrder = ["Categories","Geography","SalesRep","SubCategory","Sample File","Parameter1","Transform Sample File","Transform File","ProductDetails","Sample File (2)","Parameter2","Transform Sample File (2)","Transform File (2)","Sales","Sample File (3)","Parameter3","Transform Sample File (3)","Transform File (3)"]
+annotation PBI_QueryOrder = ["Categories","Geography","SalesRep","SubCategory","Sample File","Parameter1","Transform Sample File","Transform File","ProductDetails","Sample File (2)","Parameter2","Transform Sample File (2)","Transform File (2)","Sales","Sample File (3)","Parameter3","Transform Sample File (3)","Transform File (3)","Sample File (4)","Parameter4","Transform Sample File (4)","Transform File (4)","SalesParam","Sample File (5)","Parameter5","Transform Sample File (5)","Transform File (5)","Sample File (6)","Parameter6","Transform Sample File (6)","Transform File (6)","SharePointSales(DEV)","SharePointSalesDEV"]
 
-annotation PBI_ProTooling = ["DevMode"]
+annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop"]
 
 ref table Categories
 ref table Geography
@@ -55,6 +79,7 @@ ref table SubCategory
 ref table ProductDetails
 ref table Sales
 ref table DateMaster
+ref table SharePointSales(DEV)
 
 ref cultureInfo en-US
 
