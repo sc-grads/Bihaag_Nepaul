@@ -5,7 +5,7 @@
       "ordinal": 0,
       "scrollPosition": {
         "x": 0,
-        "y": 0
+        "y": 1057.0314327091678
       },
       "nodes": [
         {
@@ -101,10 +101,11 @@
         },
         {
           "location": {
-            "x": 1032.1489820000002,
-            "y": 801.92079780955055
+            "x": 1430.7502070000005,
+            "y": 1492.8295878095507
           },
           "nodeIndex": "SharePointSales",
+          "nodeLineageTag": "f0ae3e3d-48af-4112-9bc2-ff883a1bed03",
           "size": {
             "height": 224,
             "width": 234
@@ -113,10 +114,11 @@
         },
         {
           "location": {
-            "x": 1032.1489820000002,
-            "y": 665.21364045825931
+            "x": 1510.4704520000003,
+            "y": 771.50730045825935
           },
           "nodeIndex": "MeasureTable",
+          "nodeLineageTag": "9dd104f7-b6b8-4b5e-9f94-10e856d64e0a",
           "size": {
             "height": 200,
             "width": 234

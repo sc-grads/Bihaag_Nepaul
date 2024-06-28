@@ -77,6 +77,36 @@ table SharePointSales
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	column 'Total Revenue' = SharePointSales[Units] * RELATED(ProductDetails[RetailPrice])
+		dataType: double
+		lineageTag: 427cacb1-863e-44e1-b36e-c041cb1eb5dd
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Total Cost' = SharePointSales[Units] * RELATED(ProductDetails[StandardCost])
+		dataType: double
+		lineageTag: 4a3c65b9-fedc-4f47-8ae4-ea0200d83309
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Gross Profit' = SharePointSales[Total Revenue] - SharePointSales[Total Cost]
+		dataType: double
+		lineageTag: 1eed6cd2-b5dc-40fa-a864-6c8fb0b69abf
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	partition SharePointSales = m
 		mode: import
 		source =

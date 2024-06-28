@@ -26,3 +26,23 @@ relationship AutoDetected_c0f9c126-2801-4990-9120-2ee2f8428117
 	fromColumn: SharePointSales.fSalesPrimaryKey
 	toColumn: Sales.fSalesPrimaryKey
 
+relationship 577c386b-7fe1-08ce-e4c9-14b6d39b48aa
+	isActive: false
+	fromColumn: SharePointSales.'Geography.GeoKey'
+	toColumn: Geography.GeoKey
+
+relationship 661dc436-b8ae-b4e1-a8be-127c64e93d1a
+	isActive: false
+	fromColumn: SharePointSales.Date
+	toColumn: DateMaster.Date
+
+relationship d4f12639-8872-257f-d2bc-2a418da4a0d9
+	isActive: false
+	fromColumn: SharePointSales.SalesRepID
+	toColumn: SalesRep.SalesRepID
+
+relationship 54476ca0-b8ed-dbf0-0503-23fc3bed5f4a
+	isActive: false
+	fromColumn: SharePointSales.ProductID
+	toColumn: ProductDetails.ProductID
+
