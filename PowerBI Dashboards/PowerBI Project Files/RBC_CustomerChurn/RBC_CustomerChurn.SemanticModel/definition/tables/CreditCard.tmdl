@@ -5,7 +5,7 @@ table CreditCard
 		dataType: int64
 		formatString: 0
 		lineageTag: 07be2639-a1a4-4b11-b5a6-66f74e437665
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: CreditID
 
 		annotation SummarizationSetBy = Automatic

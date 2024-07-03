@@ -78,7 +78,7 @@ table Bank_Churn
 		dataType: int64
 		formatString: 0
 		lineageTag: 02e768c3-63c7-4a6b-9808-c91cc43fc73d
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: HasCrCard
 
 		annotation SummarizationSetBy = Automatic
@@ -87,7 +87,7 @@ table Bank_Churn
 		dataType: int64
 		formatString: 0
 		lineageTag: e1c57e31-2c9a-43b4-9c37-e9636010541a
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: IsActiveMember
 
 		annotation SummarizationSetBy = Automatic
@@ -106,7 +106,7 @@ table Bank_Churn
 		dataType: int64
 		formatString: 0
 		lineageTag: 12402d78-4565-4423-8ec5-032fb6970354
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: Exited
 
 		annotation SummarizationSetBy = Automatic
@@ -121,6 +121,19 @@ table Bank_Churn
 		annotation SummarizationSetBy = Automatic
 
 		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Credit Type' =
+			SWITCH(TRUE(),Bank_Churn[CreditScore]>=800 && Bank_Churn[CreditScore]<=850,"Excellent",
+			Bank_Churn[CreditScore]>=740 && Bank_Churn[CreditScore]<=799,"very good",
+			Bank_Churn[CreditScore]>=670 && Bank_Churn[CreditScore]<=739,"good",
+			Bank_Churn[CreditScore]>=580 && Bank_Churn[CreditScore]<=669,"Fair",
+			Bank_Churn[CreditScore]>=300 && Bank_Churn[CreditScore]<=579,"poor")
+		dataType: string
+		lineageTag: 4044f4f1-9a27-4eb4-9035-7e8a146a71b8
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
 
 	partition Bank_Churn = m
 		mode: import
