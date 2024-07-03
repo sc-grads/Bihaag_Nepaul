@@ -1,0 +1,14 @@
+relationship AutoDetected_0be4ab5e-0236-4fd5-9187-67b6511079f1
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: CustomerInfo.CustomerId
+	toColumn: Bank_Churn.CustomerId
+
+relationship AutoDetected_3b1dcc66-4f9a-4356-9758-fd75105bf4fc
+	fromColumn: Bank_Churn.GeographyID
+	toColumn: Geography.GeographyID
+
+relationship AutoDetected_50a20262-7a1a-4a61-b3a0-47816e6fd29b
+	fromColumn: Bank_Churn.GenderID
+	toColumn: Gender.GenderID
+

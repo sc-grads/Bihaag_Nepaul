@@ -112,7 +112,7 @@ table SharePointSales
 		source =
 				let
 				    Source = SharePoint.Files("https://northerndata.sharepoint.com/sites/BihaagTestTeam/", [ApiVersion = 15]),
-				    #"Filtered Rows" = Table.SelectRows(Source, each ([Folder Path] = SharePointTEST)),
+				    #"Filtered Rows" = Table.SelectRows(Source, each ([Folder Path] = SharePointSalesDEV)),
 				    #"Filtered Hidden Files1" = Table.SelectRows(Source, each [Attributes]?[Hidden]? <> true),
 				    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File (3)", each #"Transform File (3)"([Content])),
 				    #"Renamed Columns1" = Table.RenameColumns(#"Invoke Custom Function1", {"Name", "Source.Name"}),
@@ -130,8 +130,6 @@ table SharePointSales
 				    #"Filtered Rows1" = Table.SelectRows(#"Removed redundant county and town and replaced with Geokey in sales", each true)
 				in
 				    #"Filtered Rows1"
-
-	changedProperty = Name
 
 	annotation PBI_NavigationStepName = Navigation
 
