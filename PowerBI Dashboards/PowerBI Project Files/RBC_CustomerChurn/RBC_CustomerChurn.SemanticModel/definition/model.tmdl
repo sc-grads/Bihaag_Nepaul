@@ -24,5 +24,9 @@ ref table CustomerInfo
 ref table DateMaster
 ref table Calculations
 
+ref role FranceRegion
+ref role GermanyRegion
+ref role SpainRegion
+
 ref cultureInfo en-US
 
