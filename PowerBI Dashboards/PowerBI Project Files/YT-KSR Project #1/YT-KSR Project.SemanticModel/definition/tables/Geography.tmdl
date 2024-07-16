@@ -1,0 +1,52 @@
+table Geography
+	lineageTag: e5cb6bd2-0580-4d2a-8002-bc53d95cceb1
+
+	column Country
+		dataType: string
+		lineageTag: 596d5775-53f6-4320-855a-0aae5ba6e599
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	column Town
+		dataType: string
+		lineageTag: 5492ae1e-6597-4231-92ae-b15dce544fa5
+		summarizeBy: none
+		sourceColumn: Town
+
+		annotation SummarizationSetBy = Automatic
+
+	column Wikipedia
+		dataType: string
+		lineageTag: 2390c694-170d-4c21-a842-79bce8085ea6
+		summarizeBy: none
+		sourceColumn: Wikipedia
+
+		annotation SummarizationSetBy = Automatic
+
+	column GeoKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 1cc96102-acb9-49c5-9074-329dee87043b
+		summarizeBy: none
+		sourceColumn: GeoKey
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Geography = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\Bihaag Nepaul\Downloads\YT-Datasets\Dimensions\Geography.xlsx"), null, true),
+				    Geography_Sheet = Source{[Item="Geography",Kind="Sheet"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(Geography_Sheet,{{"Column1", type text}, {"Column2", type text}, {"Column3", type text}}),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Changed Type", [PromoteAllScalars=true]),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Promoted Headers",{{"Country", type text}, {"Town", type text}, {"Wikipedia", type text}}),
+				    #"Added Index" = Table.AddIndexColumn(#"Changed Type1", "Index", 1, 1, Int64.Type),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Index",{{"Index", "GeoKey"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_ResultType = Table
+

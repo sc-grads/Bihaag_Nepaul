@@ -1,0 +1,90 @@
+table 'ADDCOLUMNS DEMO'
+	lineageTag: 9c78068f-3cba-4433-bf0a-e056a0115aae
+
+	column 'Manager Name & Store'
+		dataType: string
+		lineageTag: 5e0b0536-d5ee-4a70-9cbd-ac573675162c
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Manager Name & Store]
+
+		annotation SummarizationSetBy = Automatic
+
+	column staff_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 00f14508-ad99-43ef-922c-dd9beddacfa5
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Employee Lookup[staff_id]
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_name
+		dataType: string
+		lineageTag: d993e98a-9214-4050-88c4-407d1bdd06f5
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Employee Lookup[first_name]
+
+		annotation SummarizationSetBy = Automatic
+
+	column last_name
+		dataType: string
+		lineageTag: ef2e1f1e-af92-4ff0-b23c-0e6edcf527b4
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Employee Lookup[last_name]
+
+		annotation SummarizationSetBy = Automatic
+
+	column position
+		dataType: string
+		lineageTag: 0c655b84-5150-4872-972a-613a9a185c63
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Employee Lookup[position]
+
+		annotation SummarizationSetBy = Automatic
+
+	column start_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: ce4f5934-0059-4415-b4ca-8d516d3f32b8
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Employee Lookup[start_date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column location
+		dataType: string
+		lineageTag: 4e992946-8375-4634-a6f5-1b178be51218
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Employee Lookup[location]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'ADDCOLUMNS DEMO' = calculated
+		mode: import
+		source =
+				
+				ADDCOLUMNS(
+				    FILTER(
+				        'Employee Lookup',
+				        'Employee Lookup'[staff_id] IN {6,16,31}
+				    ),
+				    "Manager Name & Store",
+				    'Employee Lookup'[first_name] & " " & 'Employee Lookup'[last_name] & "-" & 'Employee Lookup'[location]
+				)
+
+	annotation PBI_Id = 9ca18c52b15a44f1a670c21717f4c903
+

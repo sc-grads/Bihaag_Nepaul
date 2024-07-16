@@ -1,0 +1,25 @@
+table 'CALENDAR Demo'
+	lineageTag: 17c593ee-86ae-4276-bdcd-bfbdf886859e
+
+	column Date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 2c605983-b505-4f61-b6d4-ed40896428e2
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'CALENDAR Demo' = calculated
+		mode: import
+		source =
+				
+				CALENDAR (
+				    DATE ( YEAR ( MIN ( 'Calendar'[Transaction_Date] ) ), 1, 1 ),
+				    DATE ( YEAR ( MAX ( 'Calendar'[Transaction_Date] ) ), 12, 31 )
+				)
+
+	annotation PBI_Id = e07b638861e14e66a1f20008e0550726
+

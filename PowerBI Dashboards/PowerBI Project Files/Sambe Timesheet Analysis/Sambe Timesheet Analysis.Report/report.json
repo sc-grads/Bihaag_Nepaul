@@ -1,0 +1,116 @@
+{
+  "config": "{\"version\":\"5.55\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU06\",\"version\":\"5.55\",\"type\":2}},\"activeSectionIndex\":0,\"defaultDrillFilterOtherVisuals\":true,\"linguisticSchemaSyncVersion\":2,\"settings\":{\"useNewFilterPaneExperience\":true,\"allowChangeFilterTypes\":true,\"useStylableVisualContainerHeader\":true,\"queryLimitOption\":6,\"useEnhancedTooltips\":true,\"exportDataMode\":1,\"useDefaultAggregateDisplayName\":true},\"objects\":{\"section\":[{\"properties\":{\"verticalAlignment\":{\"expr\":{\"Literal\":{\"Value\":\"'Top'\"}}}}}],\"outspacePane\":[{\"properties\":{\"expanded\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}]}}",
+  "layoutOptimization": 0,
+  "resourcePackages": [
+    {
+      "resourcePackage": {
+        "disabled": false,
+        "items": [
+          {
+            "name": "CY24SU06",
+            "path": "BaseThemes/CY24SU06.json",
+            "type": 202
+          }
+        ],
+        "name": "SharedResources",
+        "type": 2
+      }
+    }
+  ],
+  "sections": [
+    {
+      "config": "{}",
+      "displayName": "Page 2",
+      "displayOption": 1,
+      "filters": "[]",
+      "height": 720.00,
+      "name": "673de0cd6bb86ec19471",
+      "ordinal": 1,
+      "visualContainers": [],
+      "width": 1280.00
+    },
+    {
+      "config": "{\"objects\":{\"background\":[{\"properties\":{\"color\":{\"solid\":{\"color\":{\"expr\":{\"ThemeDataColor\":{\"ColorId\":1,\"Percent\":0.6}}}}},\"transparency\":{\"expr\":{\"Literal\":{\"Value\":\"38D\"}}}}}]}}",
+      "displayName": "Page 1",
+      "displayOption": 1,
+      "filters": "[]",
+      "height": 720.00,
+      "name": "738f838e298342cb7e70",
+      "visualContainers": [
+        {
+          "config": "{\"name\":\"0fa85c787d44dca6a608\",\"layouts\":[{\"id\":0,\"position\":{\"x\":622.5365853658537,\"y\":50.04878048780488,\"z\":2000,\"width\":382.82926829268297,\"height\":300.2926829268293,\"tabOrder\":2000}}],\"singleVisual\":{\"visualType\":\"columnChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Cleaned_Timesheet.Month\",\"active\":true},{\"queryRef\":\"Clients.ClientName\",\"active\":true}],\"Y\":[{\"queryRef\":\"CountNonNull(Cleaned_Timesheet.TotalHours)\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0},{\"Name\":\"c1\",\"Entity\":\"Clients\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Month\"},\"Name\":\"Cleaned_Timesheet.Month\",\"NativeReferenceName\":\"Month\"},{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"TotalHours\"}},\"Function\":5},\"Name\":\"CountNonNull(Cleaned_Timesheet.TotalHours)\",\"NativeReferenceName\":\"Count of TotalHours\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c1\"}},\"Property\":\"ClientName\"},\"Name\":\"Clients.ClientName\",\"NativeReferenceName\":\"ClientName\"}],\"OrderBy\":[{\"Direction\":1,\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Month\"}}},{\"Direction\":1,\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c1\"}},\"Property\":\"ClientName\"}}}]},\"drillFilterOtherVisuals\":true,\"hasDefaultSort\":true}}",
+          "filters": "[]",
+          "height": 300.29,
+          "width": 382.83,
+          "x": 622.54,
+          "y": 50.05,
+          "z": 2000.00
+        },
+        {
+          "config": "{\"name\":\"59d167a73c7c8317eec9\",\"layouts\":[{\"id\":0,\"position\":{\"x\":88.27586206896551,\"y\":49.94555353901996,\"z\":5000,\"width\":299.6733212341198,\"height\":118.47549909255898,\"tabOrder\":5000}}],\"singleVisual\":{\"visualType\":\"multiRowCard\",\"projections\":{\"Values\":[{\"queryRef\":\"Cleaned_Timesheet.Consultant\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Consultant\"},\"Name\":\"Cleaned_Timesheet.Consultant\",\"NativeReferenceName\":\"Consultant\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Consultant\"}}}]},\"drillFilterOtherVisuals\":true,\"vcObjects\":{\"title\":[{\"properties\":{\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}},\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Top 3 Consultant Hours'\"}}},\"bold\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[{\"name\":\"Filterfa3eea8ea8ac1070e124\",\"expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Entity\":\"Cleaned_Timesheet\"}},\"Property\":\"Consultant\"}},\"filter\":{\"Version\":2,\"From\":[{\"Name\":\"subquery\",\"Expression\":{\"Subquery\":{\"Query\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Consultant\"},\"Name\":\"field\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"TotalHours\"}},\"Function\":2}}}],\"Top\":3}}},\"Type\":2},{\"Name\":\"c\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0}],\"Where\":[{\"Condition\":{\"In\":{\"Expressions\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Consultant\"}}],\"Table\":{\"SourceRef\":{\"Source\":\"subquery\"}}}}}]},\"type\":\"TopN\",\"howCreated\":0,\"objects\":{\"general\":[{\"properties\":{\"isInvertedSelectionMode\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}]",
+          "height": 118.48,
+          "width": 299.67,
+          "x": 88.28,
+          "y": 49.95,
+          "z": 5000.00
+        },
+        {
+          "config": "{\"name\":\"5fb8ba40d56a9169dac3\",\"layouts\":[{\"id\":0,\"position\":{\"x\":88.27586206896551,\"y\":346.13430127041744,\"z\":4000,\"width\":299.6733212341198,\"height\":70.8529945553539,\"tabOrder\":4000}}],\"singleVisual\":{\"visualType\":\"slicer\",\"projections\":{\"Values\":[{\"queryRef\":\"Cleaned_Timesheet.Client\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Client\"},\"Name\":\"Cleaned_Timesheet.Client\",\"NativeReferenceName\":\"Client\"}]},\"drillFilterOtherVisuals\":true,\"objects\":{\"data\":[{\"properties\":{\"mode\":{\"expr\":{\"Literal\":{\"Value\":\"'Basic'\"}}}}}],\"general\":[{\"properties\":{}}]}}}",
+          "filters": "[]",
+          "height": 70.85,
+          "width": 299.67,
+          "x": 88.28,
+          "y": 346.13,
+          "z": 4000.00
+        },
+        {
+          "config": "{\"name\":\"6739604d30b7108dcb79\",\"layouts\":[{\"id\":0,\"position\":{\"x\":850.2359346642468,\"y\":435.5716878402904,\"z\":3000,\"width\":288.05807622504534,\"height\":257.8584392014519,\"tabOrder\":3000}}],\"singleVisual\":{\"visualType\":\"pivotTable\",\"projections\":{\"Rows\":[{\"queryRef\":\"DateMaster.Year\",\"active\":true},{\"queryRef\":\"DateMaster.Month Name\",\"active\":true},{\"queryRef\":\"Cleaned_Timesheet.Consultant\"},{\"queryRef\":\"Cleaned_Timesheet.ClientProjectName\"}],\"Values\":[{\"queryRef\":\"Min(Cleaned_Timesheet.TotalHours)\"}],\"Columns\":[{\"queryRef\":\"Cleaned_Timesheet.Client\",\"active\":true}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d\",\"Entity\":\"DateMaster\",\"Type\":0},{\"Name\":\"c1\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"Year\"},\"Name\":\"DateMaster.Year\",\"NativeReferenceName\":\"Year\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"Month Name\"},\"Name\":\"DateMaster.Month Name\",\"NativeReferenceName\":\"Month Name\"},{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c1\"}},\"Property\":\"TotalHours\"}},\"Function\":5},\"Name\":\"Min(Cleaned_Timesheet.TotalHours)\",\"NativeReferenceName\":\"Count of TotalHours\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c1\"}},\"Property\":\"Client\"},\"Name\":\"Cleaned_Timesheet.Client\",\"NativeReferenceName\":\"Client\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c1\"}},\"Property\":\"Consultant\"},\"Name\":\"Cleaned_Timesheet.Consultant\",\"NativeReferenceName\":\"Consultant\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c1\"}},\"Property\":\"ClientProjectName\"},\"Name\":\"Cleaned_Timesheet.ClientProjectName\",\"NativeReferenceName\":\"ClientProjectName\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c1\"}},\"Property\":\"TotalHours\"}},\"Function\":5}}}]},\"expansionStates\":[{\"roles\":[\"Rows\"],\"levels\":[{\"queryRefs\":[\"DateMaster.Year\"],\"isCollapsed\":true,\"identityKeys\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Entity\":\"DateMaster\"}},\"Property\":\"Year\"}}],\"isPinned\":true},{\"queryRefs\":[\"DateMaster.Month Name\"],\"isCollapsed\":true,\"identityKeys\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Entity\":\"DateMaster\"}},\"Property\":\"Month Name\"}}],\"isPinned\":true},{\"queryRefs\":[\"Cleaned_Timesheet.Consultant\"],\"isCollapsed\":true,\"identityKeys\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Entity\":\"Cleaned_Timesheet\"}},\"Property\":\"Consultant\"}}],\"isPinned\":true},{\"queryRefs\":[\"Cleaned_Timesheet.ClientProjectName\"],\"isCollapsed\":true,\"isPinned\":true}],\"root\":{\"identityValues\":null,\"children\":[{\"identityValues\":[{\"Literal\":{\"Value\":\"2024L\"}}],\"isToggled\":true}]}}],\"drillFilterOtherVisuals\":true,\"objects\":{\"subTotals\":[{\"properties\":{\"rowSubtotals\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}},\"columnSubtotals\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}]},\"vcObjects\":{\"title\":[{\"properties\":{\"show\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}]}}}",
+          "filters": "[]",
+          "height": 257.86,
+          "width": 288.06,
+          "x": 850.24,
+          "y": 435.57,
+          "z": 3000.00
+        },
+        {
+          "config": "{\"name\":\"7924e279213240b06000\",\"layouts\":[{\"id\":0,\"position\":{\"x\":1024.464609800363,\"y\":60.39927404718693,\"z\":1000,\"width\":226.497277676951,\"height\":263.6660617059891,\"tabOrder\":1000}}],\"singleVisual\":{\"visualType\":\"pieChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Cleaned_Timesheet.Client\",\"active\":true}],\"Y\":[{\"queryRef\":\"CountNonNull(Cleaned_Timesheet.TotalHours)\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Client\"},\"Name\":\"Cleaned_Timesheet.Client\",\"NativeReferenceName\":\"Client\"},{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"TotalHours\"}},\"Function\":5},\"Name\":\"CountNonNull(Cleaned_Timesheet.TotalHours)\",\"NativeReferenceName\":\"Count of TotalHours\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"TotalHours\"}},\"Function\":5}}}]},\"drillFilterOtherVisuals\":true,\"hasDefaultSort\":true}}",
+          "filters": "[]",
+          "height": 263.67,
+          "width": 226.50,
+          "x": 1024.46,
+          "y": 60.40,
+          "z": 1000.00
+        },
+        {
+          "config": "{\"name\":\"b05f79e04d398b411ad0\",\"layouts\":[{\"id\":0,\"position\":{\"x\":88.27586206896551,\"y\":185.84392014519057,\"z\":6000,\"width\":299.6733212341198,\"height\":118.47549909255898,\"tabOrder\":6000}}],\"singleVisual\":{\"visualType\":\"multiRowCard\",\"projections\":{\"Values\":[{\"queryRef\":\"Cleaned_Timesheet.Client\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Client\"},\"Name\":\"Cleaned_Timesheet.Client\",\"NativeReferenceName\":\"Client\"}]},\"drillFilterOtherVisuals\":true,\"vcObjects\":{\"title\":[{\"properties\":{\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}},\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'Top Client Hours'\"}}},\"bold\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "filters": "[{\"name\":\"Filterfa3eea8ea8ac1070e124\",\"expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Entity\":\"Cleaned_Timesheet\"}},\"Property\":\"Consultant\"}},\"filter\":{\"Version\":2,\"From\":[{\"Name\":\"subquery\",\"Expression\":{\"Subquery\":{\"Query\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Consultant\"},\"Name\":\"field\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"TotalHours\"}},\"Function\":2}}}],\"Top\":3}}},\"Type\":2},{\"Name\":\"c\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0}],\"Where\":[{\"Condition\":{\"In\":{\"Expressions\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Consultant\"}}],\"Table\":{\"SourceRef\":{\"Source\":\"subquery\"}}}}}]},\"type\":\"TopN\",\"howCreated\":1,\"objects\":{\"general\":[{\"properties\":{\"isInvertedSelectionMode\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}]",
+          "height": 118.48,
+          "width": 299.67,
+          "x": 88.28,
+          "y": 185.84,
+          "z": 6000.00
+        },
+        {
+          "config": "{\"name\":\"bb64c281c77545924c02\",\"layouts\":[{\"id\":0,\"position\":{\"x\":418.82926829268297,\"y\":50.926829268292686,\"z\":7000,\"width\":174.7317073170732,\"height\":149.26829268292684,\"tabOrder\":7000}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"Min(Cleaned_Timesheet.TotalHours)\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0}],\"Select\":[{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"TotalHours\"}},\"Function\":5},\"Name\":\"Min(Cleaned_Timesheet.TotalHours)\",\"NativeReferenceName\":\"Count of TotalHours\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"TotalHours\"}},\"Function\":5}}}]},\"drillFilterOtherVisuals\":true,\"hasDefaultSort\":true}}",
+          "filters": "[]",
+          "height": 149.27,
+          "width": 174.73,
+          "x": 418.83,
+          "y": 50.93,
+          "z": 7000.00
+        },
+        {
+          "config": "{\"name\":\"cb777fc99e4c19e29759\",\"layouts\":[{\"id\":0,\"position\":{\"x\":78.98366606170599,\"y\":435.5716878402904,\"z\":0,\"width\":679.491833030853,\"height\":257.8584392014519,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"columnChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Cleaned_Timesheet.Consultant\",\"active\":true}],\"Y\":[{\"queryRef\":\"CountNonNull(Cleaned_Timesheet.TotalHours)\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"Cleaned_Timesheet\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"Consultant\"},\"Name\":\"Cleaned_Timesheet.Consultant\",\"NativeReferenceName\":\"Consultant\"},{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"TotalHours\"}},\"Function\":5},\"Name\":\"CountNonNull(Cleaned_Timesheet.TotalHours)\",\"NativeReferenceName\":\"Count of TotalHours\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"TotalHours\"}},\"Function\":5}}}]},\"drillFilterOtherVisuals\":true,\"hasDefaultSort\":true}}",
+          "filters": "[]",
+          "height": 257.86,
+          "width": 679.49,
+          "x": 78.98,
+          "y": 435.57,
+          "z": 0.00
+        }
+      ],
+      "width": 1280.00
+    }
+  ]
+}

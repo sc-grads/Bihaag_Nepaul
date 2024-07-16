@@ -1,0 +1,105 @@
+table 'Unsold Pastries'
+	lineageTag: 88b02731-5f17-463d-a089-50ff6871f5a4
+
+	measure 'Food Sold (SUMMARIZE TABLE)' =
+			
+			SUM(
+			    'Unsold Pastries'[quantity_sold]
+			)
+		formatString: #,0
+		lineageTag: e0c22e12-883f-4f29-b3ab-294593c00723
+
+	measure 'Food Unsold (SUMMARIZE TABLE)' =
+			
+			SUMX(
+			    'Unsold Pastries',
+			    'Unsold Pastries'[quantity_start_of_day] - 'Unsold Pastries'[quantity_sold]
+			)
+		formatString: #,0
+		lineageTag: d98dfaa0-5c11-4c10-9fe5-566bf51eb43b
+
+	column transaction_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 0b6546ea-16fa-495e-b388-ce0d04d34c10
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Food Inventory[transaction_date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column store_id
+		dataType: int64
+		formatString: 0
+		lineageTag: e60be0b3-162c-4fb2-8a40-130bdaff4a3e
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Food Inventory[store_id]
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity_sold
+		dataType: int64
+		formatString: 0
+		lineageTag: 855db8c6-2a7c-4174-86bb-cf1ffb9a8bf9
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Food Inventory[quantity_sold]
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity_start_of_day
+		dataType: int64
+		formatString: 0
+		lineageTag: 1bfa1d87-663a-458a-8bb6-45b37a08c73e
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Food Inventory[quantity_start_of_day]
+
+		annotation SummarizationSetBy = Automatic
+
+	column current_retail_price
+		dataType: double
+		lineageTag: 3dbe04dd-152a-4663-a0ba-586231d783e4
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Product Lookup[current_retail_price]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column product
+		dataType: string
+		lineageTag: ab5d92ec-0279-4407-bd4c-c14e48968e0d
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Product Lookup[product]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Unsold Pastries' = calculated
+		mode: import
+		source =
+				
+				SUMMARIZE(
+				    FILTER(
+				        'Food Inventory',
+				        'Food Inventory'[quantity_sold] <> 'Food Inventory'[quantity_start_of_day]
+				    ),
+				    'Food Inventory'[transaction_date],
+				    'Food Inventory'[store_id],
+				    'Food Inventory'[quantity_sold],
+				    'Food Inventory'[quantity_start_of_day],
+				    'Product Lookup'[current_retail_price],
+				    'Product Lookup'[product]
+				)
+
+	annotation PBI_Id = 6c3363527bc64c2abf25aa7424016152
+

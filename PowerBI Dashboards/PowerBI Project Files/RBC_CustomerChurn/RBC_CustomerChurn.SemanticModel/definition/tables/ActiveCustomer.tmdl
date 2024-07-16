@@ -1,0 +1,32 @@
+table ActiveCustomer
+	lineageTag: 2da87613-8935-4214-9077-c0ff1e8de96f
+
+	column ActiveID
+		dataType: int64
+		formatString: 0
+		lineageTag: 00f9168e-f253-4d81-ba21-4a186ac71365
+		summarizeBy: none
+		sourceColumn: ActiveID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ActiveCategory
+		dataType: string
+		lineageTag: cb30971a-ba20-46e3-92e4-662248b8766d
+		summarizeBy: none
+		sourceColumn: ActiveCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ActiveCustomer = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\Bihaag Nepaul\Downloads\YT-Banking-Domain\ActiveCustomer.xlsx"), null, true),
+				    Table1_Table = Source{[Item="Table1",Kind="Table"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(Table1_Table,{{"ActiveID", Int64.Type}, {"ActiveCategory", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

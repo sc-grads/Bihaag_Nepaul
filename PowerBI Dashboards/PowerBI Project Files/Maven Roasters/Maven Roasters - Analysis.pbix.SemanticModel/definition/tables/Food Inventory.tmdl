@@ -1,0 +1,121 @@
+table 'Food Inventory'
+	lineageTag: 346796ec-97ad-475b-8aa3-7b3919a1ffb7
+
+	measure 'SUM Quantity Sold' =
+			
+			SUM(
+			    'Food Inventory'[quantity_sold]
+			)
+		formatString: #,0
+		lineageTag: d400f4d2-97c9-422e-bdd9-60571a068f2a
+
+	measure 'Calculate SUM Quantity Sold' =
+			
+			CALCULATE(
+			    SUM(
+			        'Food Inventory'[quantity_sold]
+			    )
+			)
+		formatString: #,0
+		lineageTag: f1b8dea2-7cb0-44d4-ba1a-458a17f17354
+
+	column store_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 8fb989fd-78c8-4641-86bc-b70221e83867
+		summarizeBy: none
+		sourceColumn: store_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column baked_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: c39a4c5d-dc39-4d02-b798-c370d1a51d34
+		summarizeBy: none
+		sourceColumn: baked_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column transaction_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 32555ad9-794b-45d2-af26-57c586244e32
+		summarizeBy: none
+		sourceColumn: transaction_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column product_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 6a5c07e8-9c6f-456f-ab11-139b875acbb1
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity_start_of_day
+		dataType: int64
+		formatString: 0
+		lineageTag: 22fc1630-e955-476b-b437-3115667e7361
+		summarizeBy: sum
+		sourceColumn: quantity_start_of_day
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity_sold
+		dataType: int64
+		formatString: 0
+		lineageTag: 05b8061d-5a14-4fd3-9beb-fb47440dad2d
+		summarizeBy: sum
+		sourceColumn: quantity_sold
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Quantity Sold (SUM)' =
+			
+			SUM(
+			    'Food Inventory'[quantity_sold]
+			)
+		dataType: int64
+		formatString: 0
+		lineageTag: 2dcf8bc0-8c4a-4b62-bd85-f65c49b215ff
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Quantity Sold (CALCULATE)' =
+			
+			CALCULATE(
+			    SUM(
+			        'Food Inventory'[quantity_sold]
+			    )
+			)
+		dataType: int64
+		formatString: 0
+		lineageTag: cb45d022-fdc1-4f0b-ab80-e26a6c8168df
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Food Inventory' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Downloads\Dax Udemy Files\Advanced DAX Data Files\Food Inventory.csv"),[Delimiter=",", Columns=6, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"store_id", Int64.Type}, {"baked_date", type date}, {"transaction_date", type date}, {"product_id", Int64.Type}, {"quantity_start_of_day", Int64.Type}, {"quantity_sold", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,153 @@
+table 'Customer Lookup'
+	lineageTag: 5952e0c7-ac3c-467f-a3a2-5e28cc7f73d8
+
+	column customer_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 59715b76-2795-4826-8942-e46618bdfe1f
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column home_store
+		dataType: int64
+		formatString: 0
+		lineageTag: e5c9d9d5-98ce-4e32-b0cb-4cd334960b5b
+		summarizeBy: sum
+		sourceColumn: home_store
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_first-name
+		dataType: string
+		lineageTag: a6de9c82-7c35-49d9-8e04-3bcf76e4c707
+		summarizeBy: none
+		sourceColumn: customer_first-name
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_email
+		dataType: string
+		lineageTag: ed590a36-d621-441d-887b-d83c1d2ec4c2
+		summarizeBy: none
+		sourceColumn: customer_email
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_since
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: baeb0367-e536-4a8e-b470-410c8f6d2a0c
+		summarizeBy: none
+		sourceColumn: customer_since
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column loyalty_card_number
+		dataType: string
+		lineageTag: 1bddc98a-e479-47c7-9f5e-c96fac87307f
+		summarizeBy: none
+		sourceColumn: loyalty_card_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column birthdate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 2003e417-ee02-408f-ae4c-04d1bb99407e
+		summarizeBy: none
+		sourceColumn: birthdate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column gender
+		dataType: string
+		lineageTag: b3a7c9a9-8690-4c20-8779-113ecfa1e2c2
+		summarizeBy: none
+		sourceColumn: gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column birth_year
+		dataType: int64
+		formatString: 0
+		lineageTag: a939b622-6dee-48e1-80fe-5a44bf8cb964
+		summarizeBy: sum
+		sourceColumn: birth_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Current Age' =
+			
+			FLOOR(
+			    DATEDIFF(
+			        'Customer Lookup'[birthdate],
+			        TODAY(),--Volatile function(Updates all the time)
+			        DAY
+			    ) / 365.25,
+			    1
+			)
+		dataType: int64
+		lineageTag: 56552acc-9034-41ed-baa5-ff0c4fed7ec7
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Customer Sales (High/Low)' =
+			
+			VAR TotalSales =
+			SUMX(
+			    'Sales by Store',
+			    'Sales by Store'[quantity_sold] * 'Sales by Store'[unit_price]
+			)
+			VAR AllCustomers =
+			COUNTROWS('Customer Lookup')
+			VAR AvgSales =
+			DIVIDE(TotalSales,AllCustomers)
+			VAR CustomerSales =
+			SUMX(
+			    RELATEDTABLE(
+			        'Sales by Store'
+			    ),
+			    'Sales by Store'[quantity_sold] * 'Sales by Store'[unit_price]
+			)
+			
+			VAR HighLow =
+			
+			IF(
+			    CustomerSales > AvgSales,
+			    "High",
+			    "Low"
+			)
+			
+			RETURN
+			HighLow
+		dataType: string
+		lineageTag: aa561988-a932-431b-9953-05dc090a8dbc
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Customer Lookup' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Downloads\Dax Udemy Files\Advanced DAX Data Files\Customer Lookup.csv"),[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"customer_id", Int64.Type}, {"home_store", Int64.Type}, {"customer_first-name", type text}, {"customer_email", type text}, {"customer_since", type date}, {"loyalty_card_number", type text}, {"birthdate", type date}, {"gender", type text}, {"birth_year", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

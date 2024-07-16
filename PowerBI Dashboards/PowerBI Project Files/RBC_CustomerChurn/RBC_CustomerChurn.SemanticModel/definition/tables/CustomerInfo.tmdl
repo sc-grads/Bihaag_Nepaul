@@ -1,0 +1,34 @@
+table CustomerInfo
+	lineageTag: 1f101dfe-ebf6-482e-b13d-a2a8a72af829
+
+	column CustomerId
+		dataType: int64
+		formatString: 0
+		lineageTag: 761de846-5331-4e5c-8b61-cac9522186e9
+		summarizeBy: none
+		sourceColumn: CustomerId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Surname
+		dataType: string
+		lineageTag: 90d1b4be-8c36-46bc-95e2-8492267b74a5
+		summarizeBy: none
+		sourceColumn: Surname
+
+		annotation SummarizationSetBy = Automatic
+
+	partition CustomerInfo = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Downloads\YT-Banking-Domain\CustomerInfo.csv"),[Delimiter=",", Columns=2, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"CustomerId", Int64.Type}, {"Surname", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

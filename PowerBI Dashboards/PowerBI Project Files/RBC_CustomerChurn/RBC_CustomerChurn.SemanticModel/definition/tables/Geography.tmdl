@@ -1,0 +1,34 @@
+table Geography
+	lineageTag: 710bf6cc-9257-4e04-9c13-5ad25244fc9a
+
+	column GeographyID
+		dataType: int64
+		formatString: 0
+		lineageTag: 2972aea1-24f8-4e06-907b-f634f8453fdb
+		summarizeBy: none
+		sourceColumn: GeographyID
+
+		annotation SummarizationSetBy = Automatic
+
+	column GeographyLocation
+		dataType: string
+		lineageTag: b6cb102e-7092-4a39-ade1-0c3f695fdb78
+		summarizeBy: none
+		sourceColumn: GeographyLocation
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Geography = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\Bihaag Nepaul\Downloads\YT-Banking-Domain\Geography.xlsx"), null, true),
+				    Table1_Table = Source{[Item="Table1",Kind="Table"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(Table1_Table,{{"GeographyID", Int64.Type}, {"GeographyLocation", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

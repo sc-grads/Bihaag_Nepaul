@@ -1,0 +1,103 @@
+table 'Date Table (CALENDARAUTO)'
+	lineageTag: 3b5ea56a-ed7c-439e-9fc4-f85121c69333
+
+	column Date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 6e177f34-1e10-4518-b9ba-f71db9846049
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 46096ca0-3768-4954-bd4f-7e680a5ab946
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Quarter Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 41842fa9-5596-4dfa-97c5-45a9461b9e49
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Quarter Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		dataType: string
+		lineageTag: 28c2b7a3-965d-47f4-ad03-3756c28d7301
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Quarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 42afbfce-b2ee-4e64-96f9-40d23c49cc21
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Month Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Short'
+		dataType: string
+		lineageTag: 4c2ae023-1a16-4979-8fc7-2cb842ed0829
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Month Short]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: a07058d0-1bd1-429c-8ed4-310c9067e036
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Week Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Date Table (CALENDARAUTO)' = calculated
+		mode: import
+		source = ```
+				
+				VAR MinYear = YEAR(MIN('Calendar'[Transaction_Date]))
+				VAR MaxYear = YEAR(MAX('Calendar'[Transaction_Date]))
+				
+				RETURN 
+				ADDCOLUMNS(
+				    FILTER(
+				        CALENDARAUTO(),
+				        YEAR([Date]) >= MinYear &&
+				        YEAR([Date]) <= MaxYear 
+				        ),
+				        "Year",YEAR([Date]),
+				        "Quarter Number", INT(FORMAT([Date],"q")),
+				        "Quarter", "Q" & INT(FORMAT([Date], "q")),
+				        "Month Number", MONTH([Date]),
+				        "Month Short", FORMAT([Date],"mmm"),
+				        "Week Number", WEEKNUM([Date])
+				)
+				```
+
+	annotation PBI_Id = 7587f6101bd744448581f9a59719159b
+

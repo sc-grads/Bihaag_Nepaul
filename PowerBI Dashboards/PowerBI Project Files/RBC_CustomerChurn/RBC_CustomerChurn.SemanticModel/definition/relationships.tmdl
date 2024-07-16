@@ -1,0 +1,30 @@
+relationship fc6791a7-173a-811b-45a5-a29c176b2271
+	fromColumn: Bank_Churn.IsActiveMember
+	toColumn: ActiveCustomer.ActiveID
+
+relationship 7b31fbdc-2a47-47ac-3dd9-c336a393fd96
+	fromColumn: Bank_Churn.HasCrCard
+	toColumn: CreditCard.CreditID
+
+relationship 1eedc23b-4cb1-168b-8f6c-931d8bf3106a
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: CustomerInfo.CustomerId
+	toColumn: Bank_Churn.CustomerId
+
+relationship 1ab1b3a4-5cec-e7a4-8578-562ce803c465
+	fromColumn: Bank_Churn.Exited
+	toColumn: ExitCustomer.ExitID
+
+relationship 9f09f52f-40fe-462c-2882-953930038916
+	fromColumn: Bank_Churn.GenderID
+	toColumn: Gender.GenderID
+
+relationship 35213710-109e-ead1-1493-ddc764f346fa
+	fromColumn: Bank_Churn.GeographyID
+	toColumn: Geography.GeographyID
+
+relationship 5a9e834f-5b2d-e74c-3a30-9d3c60f3a252
+	fromColumn: Bank_Churn.'Bank DOJ'
+	toColumn: DateMaster.Date
+

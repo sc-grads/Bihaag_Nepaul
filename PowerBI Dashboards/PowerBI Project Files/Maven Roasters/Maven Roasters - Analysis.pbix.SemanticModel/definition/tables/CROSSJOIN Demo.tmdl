@@ -1,0 +1,55 @@
+table 'CROSSJOIN Demo'
+	lineageTag: b6fcf401-ac78-485c-831e-f9e5f17e52a2
+
+	column product_group
+		dataType: string
+		lineageTag: b8d55bbd-cde0-4aa0-b774-c82e9fb24eb6
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Product Lookup[product_group]
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category
+		dataType: string
+		lineageTag: 3528830b-08e5-407d-b81d-07d40ada625f
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Product Lookup[product_category]
+
+		annotation SummarizationSetBy = Automatic
+
+	column store_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 2e29b664-f74d-4587-a4dd-d1e7d4204f55
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Store Lookup[store_id]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'CROSSJOIN Demo' = calculated
+		mode: import
+		source =
+				
+				CROSSJOIN(
+				    VALUES(
+				        'Product Lookup'[product_category]
+				    ),
+				    VALUES(
+				        'Product Lookup'[product_group]
+				    ),
+				    FILTER(
+				        VALUES(
+				            'Store Lookup'[store_id]
+				    ),
+				    'Store Lookup'[store_id] = 3
+				    )
+				)
+
+	annotation PBI_Id = 8bcf7a8f080049bdaa88ee03c861b43a
+

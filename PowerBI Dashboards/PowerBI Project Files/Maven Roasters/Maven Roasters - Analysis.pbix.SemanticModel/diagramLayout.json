@@ -1,0 +1,380 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 506.929456236765,
+        "y": 163.62912827895579
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 211.38888888888837
+          },
+          "nodeIndex": "Calendar",
+          "nodeLineageTag": "d30f72b1-86f2-4eb2-8482-5bcd4eee6d3c",
+          "size": {
+            "height": 215.55555555555551,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 294.44444444444429,
+            "y": 211.39877371336172
+          },
+          "nodeIndex": "Customer Lookup",
+          "nodeLineageTag": "5952e0c7-ac3c-467f-a3a2-5e28cc7f73d8",
+          "size": {
+            "height": 227.11111111111109,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 581.86202131525408,
+            "y": 218.93989800488654
+          },
+          "nodeIndex": "Employee Lookup",
+          "nodeLineageTag": "f9ea13e9-0185-4f77-98b0-2a03f79bfb8e",
+          "size": {
+            "height": 226.22222222222223,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 725.740816921746,
+            "y": 529.361069846921
+          },
+          "nodeIndex": "Food Inventory",
+          "nodeLineageTag": "346796ec-97ad-475b-8aa3-7b3919a1ffb7",
+          "size": {
+            "height": 299.55555555555554,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 854.910616918211,
+            "y": 213.8276790193139
+          },
+          "nodeIndex": "Product Lookup",
+          "nodeLineageTag": "5571fbc2-ec4b-4073-9a1e-82e2eea9c2f2",
+          "size": {
+            "height": 231.11111111111114,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 355.30886605599773,
+            "y": 528.76753899902235
+          },
+          "nodeIndex": "Sales by Store",
+          "nodeLineageTag": "5c6fe69b-4de5-45ea-9c65-3916d48e7004",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 1114.860462957844,
+            "y": 218.41063640753933
+          },
+          "nodeIndex": "Store Lookup",
+          "nodeLineageTag": "c78f7c83-66ab-4f13-94e9-3f8dd0ff7a0d",
+          "size": {
+            "height": 244.03971715220439,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 1731.9185849602302,
+            "y": 185.95751405312976
+          },
+          "nodeIndex": "Measure Table",
+          "nodeLineageTag": "9bc822b5-61e4-40ae-a0c3-c6d7916a845e",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 1733.0628266039641,
+            "y": 325.70831270123824
+          },
+          "nodeIndex": "Values Example",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 1373.7757634680693,
+            "y": 201.83258418142265
+          },
+          "nodeIndex": "4-5-4 Calendar",
+          "nodeLineageTag": "94e77454-9f68-47ef-b086-8c08a1dd9265",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 10
+        },
+        {
+          "location": {
+            "x": 2301.0628266039639,
+            "y": 0
+          },
+          "nodeIndex": "ADDCOLUMNS DEMO",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 11
+        },
+        {
+          "location": {
+            "x": 2585.0628266039639,
+            "y": 0
+          },
+          "nodeIndex": "SUMMARIZE Demo",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 12
+        },
+        {
+          "location": {
+            "x": 2869.0628266039639,
+            "y": 0
+          },
+          "nodeIndex": "Unsold Pastries",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 13
+        },
+        {
+          "location": {
+            "x": 3153.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "Row Demo",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 14
+        },
+        {
+          "location": {
+            "x": 3437.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "DATATABLE DEMO",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 15
+        },
+        {
+          "location": {
+            "x": 3721.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "Generate Series Demo",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 16
+        },
+        {
+          "location": {
+            "x": 4005.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "Table Constructor Demo",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 17
+        },
+        {
+          "location": {
+            "x": 4289.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "Target Sales - April 2019 (DATATABLE)",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 18
+        },
+        {
+          "location": {
+            "x": 4573.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "CROSSJOIN Demo",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 19
+        },
+        {
+          "location": {
+            "x": 1342.5800290273596,
+            "y": 540.74291938625106
+          },
+          "nodeIndex": "UNION Demo",
+          "nodeLineageTag": "afe57417-b4f1-4c84-851b-07aa1c4583c4",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 20
+        },
+        {
+          "location": {
+            "x": 5141.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "Target Sales - March 2019 (DATATABLE)",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 21
+        },
+        {
+          "location": {
+            "x": 5425.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "EXCEPT Demo",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 22
+        },
+        {
+          "location": {
+            "x": 5709.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "New Employees (INTERSECT)",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 23
+        },
+        {
+          "location": {
+            "x": 5993.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "Repeat Customer Sales (INTERSECT Assignment)",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 24
+        },
+        {
+          "location": {
+            "x": 6277.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "TREATASDEMO",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 25
+        },
+        {
+          "location": {
+            "x": 6561.0628266039639,
+            "y": 0
+          },
+          "nodeIndex": "Average Days",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 26
+        },
+        {
+          "location": {
+            "x": 6845.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "CALENDAR Demo",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 27
+        },
+        {
+          "location": {
+            "x": 7129.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "CALENDARAUTO DEMO",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 28
+        },
+        {
+          "location": {
+            "x": 7413.0628266039639,
+            "y": 314.4583127012383
+          },
+          "nodeIndex": "Date Table (CALENDARAUTO)",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 29
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 62.33608959042418,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

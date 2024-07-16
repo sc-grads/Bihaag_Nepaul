@@ -1,0 +1,69 @@
+table 'Employee Lookup'
+	lineageTag: f9ea13e9-0185-4f77-98b0-2a03f79bfb8e
+
+	column staff_id
+		dataType: int64
+		formatString: 0
+		lineageTag: c2bd222f-43e9-431d-b829-db73a5b1a921
+		summarizeBy: none
+		sourceColumn: staff_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_name
+		dataType: string
+		lineageTag: f45ef8bd-c1a6-44ad-b263-bd203a8a9fe7
+		summarizeBy: none
+		sourceColumn: first_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column last_name
+		dataType: string
+		lineageTag: 1d9f15bd-49dd-4476-a21a-c4885ef7b77f
+		summarizeBy: none
+		sourceColumn: last_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column position
+		dataType: string
+		lineageTag: 5ff55fdf-dcd1-41e4-b907-2bec809fce1d
+		summarizeBy: none
+		sourceColumn: position
+
+		annotation SummarizationSetBy = Automatic
+
+	column start_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 8c461cd8-2147-4ecd-ae35-0e96e1342760
+		summarizeBy: none
+		sourceColumn: start_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column location
+		dataType: string
+		lineageTag: 86d1941a-0ea8-4380-9288-1ca5758b1875
+		summarizeBy: none
+		sourceColumn: location
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Employee Lookup' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Downloads\Dax Udemy Files\Advanced DAX Data Files\Employee Lookup.csv"),[Delimiter=",", Columns=6, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"staff_id", Int64.Type}, {"first_name", type text}, {"last_name", type text}, {"position", type text}, {"start_date", type date}, {"location", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

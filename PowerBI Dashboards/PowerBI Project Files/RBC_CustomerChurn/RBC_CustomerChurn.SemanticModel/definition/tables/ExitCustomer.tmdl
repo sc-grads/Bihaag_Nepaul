@@ -1,0 +1,34 @@
+table ExitCustomer
+	lineageTag: ae538287-55b2-4c80-a4e2-be3e76741157
+
+	column ExitID
+		dataType: int64
+		formatString: 0
+		lineageTag: 3eb48a0a-b49d-485a-9831-e1019a8e5899
+		summarizeBy: none
+		sourceColumn: ExitID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExitCategory
+		dataType: string
+		lineageTag: 9cfa58ee-f768-479d-a790-f49b785dc8bd
+		summarizeBy: none
+		sourceColumn: ExitCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ExitCustomer = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\Bihaag Nepaul\Downloads\YT-Banking-Domain\ExitCustomer.xlsx"), null, true),
+				    Table1_Table = Source{[Item="Table1",Kind="Table"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(Table1_Table,{{"ExitID", Int64.Type}, {"ExitCategory", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

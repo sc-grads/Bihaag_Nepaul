@@ -1,0 +1,241 @@
+table '4-5-4 Calendar'
+	lineageTag: 94e77454-9f68-47ef-b086-8c08a1dd9265
+
+	measure 'Lost Revenue (SUMMARIZE Table)' =
+			
+			SUMX(
+			    'Unsold Pastries',
+			    [Food Unsold (SUMMARIZE TABLE)] * 'Unsold Pastries'[current_retail_price]
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 93152a64-bc94-4352-ab57-a342d7c6b8b7
+
+	measure 'QTD Sales (4-5-4)' =
+			
+			VAR MaxDate = MAX('4-5-4 Calendar'[Date])
+			VAR MaxPeriod = MAX('4-5-4 Calendar'[FiscalQuarterYear])
+			VAR OutPut =
+			    IF (
+			        HASONEVALUE('4-5-4 Calendar'[FiscalQuarterYear]),
+			        CALCULATE (
+			            [Customer Sales],
+			            '4-5-4 Calendar'[Date] <= MaxDate,
+			            '4-5-4 Calendar'[FiscalQuarterYear] = MaxPeriod
+			        ),
+			        "-"
+			    )
+			RETURN
+			    OutPut
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: dd9a91b7-60f6-453a-ade7-a2fdf670cad2
+
+	measure 'Last QTD Sales (4-5-4)' =
+			
+			VAR LastPeriod =
+			    CALCULATE(
+			        [Customer Sales],
+			        FILTER(
+			            ALL('4-5-4 Calendar'),
+			            IF(
+			                SELECTEDVALUE('4-5-4 Calendar'[FiscalQuarter]) = 1,
+			                '4-5-4 Calendar'[FiscalQuarter] = 4 && '4-5-4 Calendar'[FiscalYear] = SELECTEDVALUE('4-5-4 Calendar'[FiscalYear]) - 1,
+			                '4-5-4 Calendar'[FiscalYear] = SELECTEDVALUE('4-5-4 Calendar'[FiscalYear]) &&
+			                '4-5-4 Calendar'[FiscalQuarter] = SELECTEDVALUE('4-5-4 Calendar'[FiscalQuarter]) - 1
+			            )
+			        )
+			    )
+			RETURN
+			    LastPeriod
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 4844dfb0-cf73-4b6e-9c9a-971a5893ff6d
+
+	measure 'MTD Sales (4-5-4)' =
+			
+			VAR MaxDate = MAX('4-5-4 Calendar'[Date])
+			VAR MaxPeriod = MAX('4-5-4 Calendar'[FiscalMonthYear])
+			VAR OutPut =
+			    IF (
+			        HASONEVALUE('4-5-4 Calendar'[FiscalMonthYear]),
+			        CALCULATE (
+			            [Customer Sales],
+			            '4-5-4 Calendar'[Date] <= MaxDate,
+			            '4-5-4 Calendar'[FiscalMonthYear] = MaxPeriod
+			        ),
+			        "-"
+			    )
+			RETURN
+			    OutPut
+		lineageTag: ebdfa0c1-5a05-402a-9196-79028d1b9cdc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'YTD Sales (4-5-4)' =
+			
+			VAR MaxDate = MAX('4-5-4 Calendar'[Date])
+			VAR MaxPeriod = MAX('4-5-4 Calendar'[FiscalYear])
+			VAR MaxSellDate = MAX('Sales by Store'[transaction_date])
+			VAR OutPut =
+			    CALCULATE(
+			        [Customer Sales],
+			        '4-5-4 Calendar'[Date] <= MaxDate,
+			        '4-5-4 Calendar'[FiscalYear] = MaxPeriod,
+			        'Calendar'[Transaction_Date] <= MaxSellDate
+			    )
+			RETURN
+			    OutPut
+		lineageTag: c24d0f07-a07d-442a-bdb7-2421f2dbde19
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Wow % Change (4-5-4)' =
+			
+			DIVIDE(
+			    ([Customer Sales] - [Last Week's Sales 4-5-4 (DATEADD)]),
+			    [Last Week's Sales 4-5-4 (DATEADD)],
+			    BLANK()
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 1a58e669-9630-40c6-bcd2-3c5b31525ef8
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 6b4a5b5a-c0d5-41d2-a016-b9ee25e2a29d
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column FiscalYear
+		dataType: int64
+		formatString: 0
+		lineageTag: a47b2505-f673-4139-b1b1-3e242c0666dc
+		summarizeBy: sum
+		sourceColumn: FiscalYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column FiscalQuarter
+		dataType: int64
+		formatString: 0
+		lineageTag: c1b1a39e-3649-479b-95b6-695bb3416a04
+		summarizeBy: sum
+		sourceColumn: FiscalQuarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column FiscalMonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: a39b5e33-da68-4483-8e7b-31731f91b9ec
+		summarizeBy: sum
+		sourceColumn: FiscalMonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column FiscalMonthOfQuarter
+		dataType: int64
+		formatString: 0
+		lineageTag: ee402a92-52d3-46e1-aa0d-9d9a9c229914
+		summarizeBy: sum
+		sourceColumn: FiscalMonthOfQuarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column FiscalWeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 1c32ab02-ae01-4ff0-b03a-87e9cbe696fc
+		summarizeBy: sum
+		sourceColumn: FiscalWeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 46ee783c-2fbf-4e38-ae27-da64fe8c2545
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column FiscalMonthName
+		dataType: string
+		lineageTag: cd99c087-5f08-43d6-b1c3-6d002673f76f
+		summarizeBy: none
+		sourceColumn: FiscalMonthName
+		sortByColumn: FiscalMonthNumber
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column FiscalMonthYear
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: bbb856a7-3822-42b0-b557-105bef451c71
+		summarizeBy: none
+		sourceColumn: FiscalMonthYear
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column FiscalQuarterYear
+		dataType: int64
+		formatString: 0
+		lineageTag: a550bda4-16d7-47a7-ad6d-f4ba0cec267a
+		summarizeBy: sum
+		sourceColumn: FiscalQuarterYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfMonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 149adec4-7a2a-4b52-b401-0971ee0791aa
+		summarizeBy: sum
+		sourceColumn: DayOfMonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: b3fcf4ee-de24-47bd-8fcc-4b0ffa4937e9
+		summarizeBy: none
+		sourceColumn: DayName
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'FiscalYear Hierarchy'
+		lineageTag: e7d608b3-ae37-42da-a12f-76527c029c65
+
+		level FiscalYear
+			lineageTag: 43faa386-8ed8-4d92-aa2b-e0345866d058
+			column: FiscalYear
+
+		level FiscalMonthName
+			lineageTag: 55eddbfc-cbfc-4e6d-bd89-d1fa75e80700
+			column: FiscalMonthName
+
+		level Date
+			lineageTag: 3d68ef12-c729-4940-b140-60e975182ca3
+			column: Date
+
+	partition '4-5-4 Calendar' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Downloads\Dax Udemy Files\Advanced DAX Data Files\4-5-4 Calendar.csv"),[Delimiter=",", Columns=12, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Date", type date}, {"FiscalYear", Int64.Type}, {"FiscalQuarter", Int64.Type}, {"FiscalMonthNumber", Int64.Type}, {"FiscalMonthOfQuarter", Int64.Type}, {"FiscalWeekOfYear", Int64.Type}, {"DayOfWeek", Int64.Type}, {"FiscalMonthName", type text}, {"FiscalMonthYear", type date}, {"FiscalQuarterYear", Int64.Type}, {"DayOfMonthNumber", Int64.Type}, {"DayName", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

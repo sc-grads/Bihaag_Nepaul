@@ -1,0 +1,48 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-ZA
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["Calendar","Customer Lookup","Employee Lookup","Food Inventory","Product Lookup","Sales by Store","Store Lookup","Measure Table","4-5-4 Calendar"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBIDesktopVersion = 2.130.930.0 (24.06)
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Calendar
+ref table 'Customer Lookup'
+ref table 'Employee Lookup'
+ref table 'Food Inventory'
+ref table 'Product Lookup'
+ref table 'Sales by Store'
+ref table 'Store Lookup'
+ref table 'Measure Table'
+ref table 'Values Example'
+ref table '4-5-4 Calendar'
+ref table 'ADDCOLUMNS DEMO'
+ref table 'SUMMARIZE Demo'
+ref table 'Unsold Pastries'
+ref table 'Row Demo'
+ref table 'DATATABLE DEMO'
+ref table 'Generate Series Demo'
+ref table 'Table Constructor Demo'
+ref table 'Target Sales - April 2019 (DATATABLE)'
+ref table 'CROSSJOIN Demo'
+ref table 'UNION Demo'
+ref table 'Target Sales - March 2019 (DATATABLE)'
+ref table 'EXCEPT Demo'
+ref table 'New Employees (INTERSECT)'
+ref table 'Repeat Customer Sales (INTERSECT Assignment)'
+ref table TREATASDEMO
+ref table 'Average Days'
+ref table 'CALENDAR Demo'
+ref table 'CALENDARAUTO DEMO'
+ref table 'Date Table (CALENDARAUTO)'
+
+ref cultureInfo en-US
+

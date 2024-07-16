@@ -1,0 +1,74 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 652.13589409456347,
+            "y": 111.20414327477039
+          },
+          "nodeIndex": "Clients",
+          "nodeLineageTag": "a3f3445d-a194-45a7-88f7-c230cf2b6278",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 151,
+            "y": 84.258985221449137
+          },
+          "nodeIndex": "Consultants",
+          "nodeLineageTag": "801174a1-9055-4ee1-ac1f-5e39f2575f42",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 355.13589409456347,
+            "y": 401
+          },
+          "nodeIndex": "Cleaned_Timesheet",
+          "nodeLineageTag": "5996c141-7ff4-4283-b5c0-3f3d4ebd1204",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 753.13589409456335,
+            "y": 431.5
+          },
+          "nodeIndex": "DateMaster",
+          "nodeLineageTag": "a3170030-578e-4689-bb47-d1f9b09b59bf",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

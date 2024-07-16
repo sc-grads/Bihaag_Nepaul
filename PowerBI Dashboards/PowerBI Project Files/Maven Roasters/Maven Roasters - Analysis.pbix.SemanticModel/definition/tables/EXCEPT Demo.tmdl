@@ -1,0 +1,135 @@
+table 'EXCEPT Demo'
+	lineageTag: bc21bd3b-6e35-40dd-a14d-a9f5e11205da
+
+	column customer_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 771d59f7-461a-4232-ba86-4470292a5641
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[customer_id]
+
+		annotation SummarizationSetBy = Automatic
+
+	column home_store
+		dataType: int64
+		formatString: 0
+		lineageTag: 7390afa8-5f51-42e4-b292-b982953467c9
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[home_store]
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_first-name
+		dataType: string
+		lineageTag: 2ffb0fcc-253d-472a-b021-d07dde82c3fb
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[customer_first-name]
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_email
+		dataType: string
+		lineageTag: cf3d0b3c-a0d7-4458-a781-5b3f52f978e3
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[customer_email]
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_since
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: e0ad6b2f-f4bd-4f4c-aad1-d547f7c88307
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[customer_since]
+
+		annotation SummarizationSetBy = Automatic
+
+	column loyalty_card_number
+		dataType: string
+		lineageTag: da4a47e5-4c46-4974-b708-7a5d3fba4d81
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[loyalty_card_number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column birthdate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 3a849bbb-15e7-4c07-bea9-0ecb9598912d
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[birthdate]
+
+		annotation SummarizationSetBy = Automatic
+
+	column gender
+		dataType: string
+		lineageTag: fd56e55b-1f4e-4055-b606-201c6dc67033
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[gender]
+
+		annotation SummarizationSetBy = Automatic
+
+	column birth_year
+		dataType: int64
+		formatString: 0
+		lineageTag: 339ebc47-ce1c-4544-b21d-d83754a3a8e2
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[birth_year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Current Age'
+		dataType: int64
+		formatString: 0
+		lineageTag: 28de92bc-19bc-4ef3-a1fd-0b0c555fe4be
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[Current Age]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Sales (High/Low)'
+		dataType: string
+		lineageTag: f0c3ba14-4e74-4826-a1cc-725afb49698b
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: Customer Lookup[Customer Sales (High/Low)]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'EXCEPT Demo' = calculated
+		mode: import
+		source =
+				
+				EXCEPT(
+				    'Customer Lookup',
+				    FILTER(
+				        VALUES(
+				            'Customer Lookup'
+				        ),
+				        'Customer Lookup'[customer_since] > DATE(2017,02,01)
+				    )
+				)
+
+	annotation PBI_Id = fa8dbea0d144463db9898d8c7fa7a8d1
+
