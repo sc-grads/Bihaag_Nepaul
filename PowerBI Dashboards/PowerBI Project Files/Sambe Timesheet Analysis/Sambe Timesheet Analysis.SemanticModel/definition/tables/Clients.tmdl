@@ -1,0 +1,59 @@
+table Clients
+	lineageTag: a3f3445d-a194-45a7-88f7-c230cf2b6278
+
+	column Client_SK
+		dataType: string
+		lineageTag: 3fe6d653-bc35-49f6-99e9-3a19f10f8d5c
+		summarizeBy: none
+		sourceColumn: Client_SK
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientID
+		dataType: int64
+		formatString: 0
+		lineageTag: 82c75869-41e2-46f1-a158-425c9943e86d
+		summarizeBy: count
+		sourceColumn: ClientID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientName
+		dataType: string
+		lineageTag: 35d816a3-f6eb-4240-a8fc-3d20f5d44fcd
+		summarizeBy: none
+		sourceColumn: ClientName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientProjName
+		dataType: string
+		lineageTag: 88d30e20-cc4f-47a7-8e4f-f5e3335b263f
+		summarizeBy: none
+		sourceColumn: ClientProjName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Active
+		dataType: string
+		lineageTag: 30f3909e-48d8-45c0-b61c-48b60bd5bab8
+		summarizeBy: none
+		sourceColumn: Active
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Clients = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\Bihaag Nepaul\Desktop\SSISDest\Client_DIM.xlsx"), null, true),
+				    Clients_Sheet = Source{[Item="Clients",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Clients_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Client_SK", type text}, {"ClientID", Int64.Type}, {"ClientName", type text}, {"ClientProjName", type text}, {"Active", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

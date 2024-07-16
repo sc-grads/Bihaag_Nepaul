@@ -1,0 +1,142 @@
+table Cleaned_Timesheet
+	lineageTag: 5996c141-7ff4-4283-b5c0-3f3d4ebd1204
+
+	column TimeSheetID
+		dataType: int64
+		formatString: 0
+		lineageTag: 9fd4874d-bf52-4561-974d-725eae8ad059
+		summarizeBy: count
+		sourceColumn: TimeSheetID
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 8d7d4bad-6cff-4f35-a77e-958f5c48689b
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Month
+		dataType: string
+		lineageTag: 61c8b022-14a8-4205-8892-0d3870683554
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayofWeek
+		dataType: string
+		lineageTag: 97e41508-768a-40fd-8426-b8eefe7ed5ef
+		summarizeBy: none
+		sourceColumn: DayofWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column Consultant
+		dataType: string
+		lineageTag: 1a79703b-4b29-451c-b64b-aa405716ed09
+		summarizeBy: none
+		sourceColumn: Consultant
+
+		annotation SummarizationSetBy = Automatic
+
+	column Client
+		dataType: string
+		lineageTag: 8248dbdc-0354-48a9-b7be-350f1ed11d05
+		summarizeBy: none
+		sourceColumn: Client
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientProjectName
+		dataType: string
+		lineageTag: 098a9b99-524c-4358-a031-6e5ffbd55910
+		summarizeBy: none
+		sourceColumn: ClientProjectName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		lineageTag: 25296832-ecd4-46d4-9dae-704c9cd5ed54
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	column BillableorNonBillable
+		dataType: string
+		lineageTag: 2debcd4a-552d-4ccc-8468-62d99530b2e9
+		summarizeBy: none
+		sourceColumn: BillableorNonBillable
+
+		annotation SummarizationSetBy = Automatic
+
+	column Comments
+		dataType: string
+		lineageTag: 728824e6-aaf9-4526-a167-5a36821c0c0e
+		summarizeBy: none
+		sourceColumn: Comments
+
+		annotation SummarizationSetBy = Automatic
+
+	column TotalHours
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 62ef3ef6-1617-4178-9d20-90fdaebc11a5
+		summarizeBy: none
+		sourceColumn: TotalHours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column StartTime
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 36656a28-11e2-4a14-b4b8-e6e8140d873d
+		summarizeBy: none
+		sourceColumn: StartTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column EndTime
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 6ab55d7d-924b-4e09-be4d-d220e4ef33f4
+		summarizeBy: none
+		sourceColumn: EndTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	partition Cleaned_Timesheet = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\Bihaag Nepaul\Desktop\SSISDest\Cleaned_Timesheet.txt"),[Delimiter=";", Columns=13, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"TimeSheetID", Int64.Type}, {"Date", type date}, {"Month", type text}, {"DayofWeek", type text}, {"Consultant", type text}, {"Client", type text}, {"ClientProjectName", type text}, {"Description", type text}, {"BillableorNonBillable", type text}, {"Comments", type text}, {"TotalHours", type time}, {"StartTime", type time}, {"EndTime", type time}}),
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Changed Type", {"TimeSheetID"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Errors", each [TimeSheetID] <> null and [TimeSheetID] <> ""),
+				    #"Replaced Value" = Table.ReplaceValue(#"Filtered Rows","Internal Sambe","Internal - SAMBE",Replacer.ReplaceText,{"Client"}),
+				    #"Filtered Rows1" = Table.SelectRows(#"Replaced Value", each ([Client] = "Internal - SAMBE") and ([BillableorNonBillable] = "Non-Billable")),
+				    #"Filtered Rows2" = Table.SelectRows(#"Filtered Rows1", each [TotalHours] <> null and [TotalHours] <> ""),
+				    #"Filtered Rows3" = Table.SelectRows(#"Filtered Rows2", each ([StartTime] <> null and [StartTime] <> "") and ([Consultant] <> "" and [Consultant] <> "Example"))
+				in
+				    #"Filtered Rows3"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -41,6 +41,21 @@ table DateMaster
 
 		annotation SummarizationSetBy = Automatic
 
+	hierarchy 'Date Hierarchy'
+		lineageTag: da4dc000-c8bc-47b8-99ab-55f2faf74c88
+
+		level Date
+			lineageTag: 9851c63e-6951-4637-97b2-3aead8286a5b
+			column: Date
+
+		level year
+			lineageTag: 1d817d0d-1a7f-4d74-9792-13a9a877797e
+			column: year
+
+		level 'Month Name'
+			lineageTag: 762b6e68-a06b-4954-a54f-e15f09235c6d
+			column: 'Month Name'
+
 	partition DateMaster = calculated
 		mode: import
 		source = CALENDAR(FIRSTDATE(Bank_Churn[Bank DOJ]),LASTDATE(Bank_Churn[Bank DOJ]))

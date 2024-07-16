@@ -1,0 +1,73 @@
+table Consultants
+	lineageTag: 801174a1-9055-4ee1-ac1f-5e39f2575f42
+
+	column Consultant_SK
+		dataType: string
+		lineageTag: bd44bcd3-8633-4dfd-a60c-aad53a566cf0
+		summarizeBy: none
+		sourceColumn: Consultant_SK
+
+		annotation SummarizationSetBy = Automatic
+
+	column ConsultantID
+		dataType: string
+		lineageTag: 43db9e95-2ee4-4125-9c9e-2a7503780da9
+		summarizeBy: none
+		sourceColumn: ConsultantID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ConsultantName
+		dataType: string
+		lineageTag: 6afc16ce-0123-4f9b-8c2e-172c51ee9f10
+		summarizeBy: none
+		sourceColumn: ConsultantName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ConsultantSurname
+		dataType: string
+		lineageTag: f5a9eb04-70df-4cd4-8b0d-20e35d385916
+		summarizeBy: none
+		sourceColumn: ConsultantSurname
+
+		annotation SummarizationSetBy = Automatic
+
+	column ValidFrom
+		dataType: string
+		lineageTag: a7275e1f-4473-4061-8b9d-2715329d1189
+		summarizeBy: none
+		sourceColumn: ValidFrom
+
+		annotation SummarizationSetBy = Automatic
+
+	column ValidTo
+		dataType: string
+		lineageTag: 6bb28025-496c-4878-aae6-ece330332038
+		summarizeBy: none
+		sourceColumn: ValidTo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Client_SK
+		dataType: string
+		lineageTag: e05723ea-7e36-4aac-b1ab-111a239a90b8
+		summarizeBy: none
+		sourceColumn: Client_SK
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Consultants = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\Bihaag Nepaul\Desktop\SSISDest\Consultant_DIM.xlsx"), null, true),
+				    Consultants_Sheet = Source{[Item="Consultants",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Consultants_Sheet, [PromoteAllScalars=true])
+				in
+				    #"Promoted Headers"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

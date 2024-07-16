@@ -1,0 +1,51 @@
+table DateMaster
+	lineageTag: a3170030-578e-4689-bb47-d1f9b09b59bf
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: 4f446397-d587-472d-b454-e6efcbf4938e
+		summarizeBy: none
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year = YEAR(DateMaster[Date])
+		dataType: int64
+		formatString: 0
+		lineageTag: 0a9efdc5-4d3c-4d96-af4d-304c0e462201
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month = MONTH(DateMaster[Date])
+		dataType: int64
+		formatString: 0
+		lineageTag: a72a05b2-f476-44dc-afce-9d09c1f76948
+		summarizeBy: none
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name' = FORMAT(DateMaster[Date],"MMM")
+		dataType: string
+		lineageTag: 034e491c-ed79-4dae-8456-4d375966f16d
+		summarizeBy: none
+		isDataTypeInferred
+		sortByColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DateMaster = calculated
+		mode: import
+		source = CALENDAR(FIRSTDATE(Cleaned_Timesheet[Date]),LASTDATE(Cleaned_Timesheet[Date]))
+
+	annotation PBI_Id = 7da885140722490caf0d04deecc6a6dd
+
