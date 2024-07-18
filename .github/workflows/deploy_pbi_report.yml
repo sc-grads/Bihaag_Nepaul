@@ -20,7 +20,16 @@ jobs:
         with:
           lfs: 'true'
 
+      - name: Verify pbixproj.json path
+        run: |
+          if [ -f "./Bihaag_Nepaul/PowerBI DevOps/.pbixproj.json" ]; then
+            echo "Found .pbixproj.json"
+          else
+            echo "Did not find .pbixproj.json"
+            exit 1
+          fi
+
       - name: pbi-tools deploy
-        run: /app/pbi-tools/pbi-tools.core deploy "./PowerBI DevOps/.pbixproj.json" "$PROFILE" "$ENVIRONMENT"
+        run: /app/pbi-tools/pbi-tools.core deploy "./Bihaag_Nepaul/PowerBI DevOps/.pbixproj.json" "$PROFILE" "$ENVIRONMENT"
         env:
           PBI_CLIENT_SECRET: ${{ secrets.PBI_CLIENT_SECRET }}
