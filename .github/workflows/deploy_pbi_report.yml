@@ -30,7 +30,7 @@ jobs:
           env
 
       - name: pbi-tools deploy
-        run: /app/pbi-tools/pbi-tools.core deploy . "$PROFILE" "$ENVIRONMENT"
+        run: /app/pbi-tools/pbi-tools.core deploy "./PowerBI DevOps/Sambe Timesheet Analysis.pbix" "$PROFILE" "$ENVIRONMENT"
         env:
           PBI_CLIENT_SECRET: ${{ secrets.PBI_CLIENT_SECRET }}
 
