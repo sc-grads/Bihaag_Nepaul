@@ -1,0 +1,55 @@
+{
+  "projectionOrdering": {
+    "Values": [
+      0
+    ]
+  },
+  "queryMetadata": {
+    "Select": [
+      {
+        "Restatement": "Count of TotalHours",
+        "Name": "Min(Cleaned_Timesheet.TotalHours)",
+        "Type": 3
+      }
+    ]
+  },
+  "visualElements": [
+    {
+      "DataRoles": [
+        {
+          "Name": "Values",
+          "Projection": 0,
+          "isActive": false
+        }
+      ]
+    }
+  ],
+  "selects": [
+    {
+      "displayName": "Count of TotalHours",
+      "queryName": "Min(Cleaned_Timesheet.TotalHours)",
+      "roles": {
+        "Values": true
+      },
+      "type": {
+        "category": null,
+        "underlyingType": 260
+      },
+      "expr": {
+        "Aggregation": {
+          "Expression": {
+            "Column": {
+              "Expression": {
+                "SourceRef": {
+                  "Entity": "Cleaned_Timesheet"
+                }
+              },
+              "Property": "TotalHours"
+            }
+          },
+          "Function": 5
+        }
+      }
+    }
+  ]
+}

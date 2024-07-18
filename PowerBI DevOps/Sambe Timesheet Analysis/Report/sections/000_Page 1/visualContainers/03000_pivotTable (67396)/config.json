@@ -1,0 +1,288 @@
+{
+  "name": "6739604d30b7108dcb79",
+  "layouts": [
+    {
+      "id": 0,
+      "position": {
+        "x": 850.23593466424677,
+        "y": 435.57168784029039,
+        "z": 3000,
+        "width": 288.05807622504534,
+        "height": 257.85843920145192,
+        "tabOrder": 3000
+      }
+    }
+  ],
+  "singleVisual": {
+    "visualType": "pivotTable",
+    "projections": {
+      "Rows": [
+        {
+          "queryRef": "DateMaster.Year",
+          "active": true
+        },
+        {
+          "queryRef": "DateMaster.Month Name",
+          "active": true
+        },
+        {
+          "queryRef": "Cleaned_Timesheet.Consultant"
+        },
+        {
+          "queryRef": "Cleaned_Timesheet.ClientProjectName"
+        }
+      ],
+      "Values": [
+        {
+          "queryRef": "Min(Cleaned_Timesheet.TotalHours)"
+        }
+      ],
+      "Columns": [
+        {
+          "queryRef": "Cleaned_Timesheet.Client",
+          "active": true
+        }
+      ]
+    },
+    "prototypeQuery": {
+      "Version": 2,
+      "From": [
+        {
+          "Name": "d",
+          "Entity": "DateMaster",
+          "Type": 0
+        },
+        {
+          "Name": "c1",
+          "Entity": "Cleaned_Timesheet",
+          "Type": 0
+        }
+      ],
+      "Select": [
+        {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Source": "d"
+              }
+            },
+            "Property": "Year"
+          },
+          "Name": "DateMaster.Year",
+          "NativeReferenceName": "Year"
+        },
+        {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Source": "d"
+              }
+            },
+            "Property": "Month Name"
+          },
+          "Name": "DateMaster.Month Name",
+          "NativeReferenceName": "Month Name"
+        },
+        {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Source": "c1"
+                  }
+                },
+                "Property": "TotalHours"
+              }
+            },
+            "Function": 5
+          },
+          "Name": "Min(Cleaned_Timesheet.TotalHours)",
+          "NativeReferenceName": "Count of TotalHours"
+        },
+        {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Source": "c1"
+              }
+            },
+            "Property": "Client"
+          },
+          "Name": "Cleaned_Timesheet.Client",
+          "NativeReferenceName": "Client"
+        },
+        {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Source": "c1"
+              }
+            },
+            "Property": "Consultant"
+          },
+          "Name": "Cleaned_Timesheet.Consultant",
+          "NativeReferenceName": "Consultant"
+        },
+        {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Source": "c1"
+              }
+            },
+            "Property": "ClientProjectName"
+          },
+          "Name": "Cleaned_Timesheet.ClientProjectName",
+          "NativeReferenceName": "ClientProjectName"
+        }
+      ],
+      "OrderBy": [
+        {
+          "Direction": 2,
+          "Expression": {
+            "Aggregation": {
+              "Expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Source": "c1"
+                    }
+                  },
+                  "Property": "TotalHours"
+                }
+              },
+              "Function": 5
+            }
+          }
+        }
+      ]
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "DateMaster.Year"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DateMaster"
+                    }
+                  },
+                  "Property": "Year"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DateMaster.Month Name"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DateMaster"
+                    }
+                  },
+                  "Property": "Month Name"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Cleaned_Timesheet.Consultant"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Cleaned_Timesheet"
+                    }
+                  },
+                  "Property": "Consultant"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Cleaned_Timesheet.ClientProjectName"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          }
+        ],
+        "root": {
+          "identityValues": null,
+          "children": [
+            {
+              "identityValues": [
+                {
+                  "Literal": {
+                    "Value": "2024L"
+                  }
+                }
+              ],
+              "isToggled": true
+            }
+          ]
+        }
+      }
+    ],
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "subTotals": [
+        {
+          "properties": {
+            "rowSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "columnSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "vcObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

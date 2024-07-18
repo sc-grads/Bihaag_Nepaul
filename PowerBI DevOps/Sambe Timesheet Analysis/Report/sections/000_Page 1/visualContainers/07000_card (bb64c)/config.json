@@ -1,0 +1,77 @@
+{
+  "name": "bb64c281c77545924c02",
+  "layouts": [
+    {
+      "id": 0,
+      "position": {
+        "x": 418.82926829268297,
+        "y": 50.926829268292686,
+        "z": 7000,
+        "width": 174.73170731707319,
+        "height": 149.26829268292684,
+        "tabOrder": 7000
+      }
+    }
+  ],
+  "singleVisual": {
+    "visualType": "card",
+    "projections": {
+      "Values": [
+        {
+          "queryRef": "Min(Cleaned_Timesheet.TotalHours)"
+        }
+      ]
+    },
+    "prototypeQuery": {
+      "Version": 2,
+      "From": [
+        {
+          "Name": "c",
+          "Entity": "Cleaned_Timesheet",
+          "Type": 0
+        }
+      ],
+      "Select": [
+        {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Source": "c"
+                  }
+                },
+                "Property": "TotalHours"
+              }
+            },
+            "Function": 5
+          },
+          "Name": "Min(Cleaned_Timesheet.TotalHours)",
+          "NativeReferenceName": "Count of TotalHours"
+        }
+      ],
+      "OrderBy": [
+        {
+          "Direction": 2,
+          "Expression": {
+            "Aggregation": {
+              "Expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Source": "c"
+                    }
+                  },
+                  "Property": "TotalHours"
+                }
+              },
+              "Function": 5
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "hasDefaultSort": true
+  }
+}

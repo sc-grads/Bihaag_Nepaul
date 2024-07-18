@@ -1,0 +1,65 @@
+﻿table Consultants
+
+	column Consultant_SK
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Consultant_SK
+
+		annotation SummarizationSetBy = Automatic
+
+	column ConsultantID
+		dataType: string
+		summarizeBy: none
+		sourceColumn: ConsultantID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ConsultantName
+		dataType: string
+		summarizeBy: none
+		sourceColumn: ConsultantName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ConsultantSurname
+		dataType: string
+		summarizeBy: none
+		sourceColumn: ConsultantSurname
+
+		annotation SummarizationSetBy = Automatic
+
+	column ValidFrom
+		dataType: string
+		summarizeBy: none
+		sourceColumn: ValidFrom
+
+		annotation SummarizationSetBy = Automatic
+
+	column ValidTo
+		dataType: string
+		summarizeBy: none
+		sourceColumn: ValidTo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Client_SK
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Client_SK
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Consultants = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\Bihaag Nepaul\Desktop\SSISDest\Consultant_DIM.xlsx"), null, true),
+				    Consultants_Sheet = Source{[Item="Consultants",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Consultants_Sheet, [PromoteAllScalars=true])
+				in
+				    #"Promoted Headers"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,137 @@
+{
+  "projectionOrdering": {
+    "Category": [
+      0,
+      2
+    ],
+    "Y": [
+      1
+    ]
+  },
+  "projectionActiveItems": {
+    "Category": [
+      {
+        "queryRef": "Cleaned_Timesheet.Month",
+        "suppressConcat": false
+      },
+      {
+        "queryRef": "Clients.ClientName",
+        "suppressConcat": false
+      }
+    ]
+  },
+  "queryMetadata": {
+    "Select": [
+      {
+        "Restatement": "Month",
+        "Name": "Cleaned_Timesheet.Month",
+        "Type": 2048
+      },
+      {
+        "Restatement": "Count of TotalHours",
+        "Name": "CountNonNull(Cleaned_Timesheet.TotalHours)",
+        "Type": 3
+      },
+      {
+        "Restatement": "ClientName",
+        "Name": "Clients.ClientName",
+        "Type": 2048
+      }
+    ]
+  },
+  "visualElements": [
+    {
+      "DataRoles": [
+        {
+          "Name": "Category",
+          "Projection": 0,
+          "isActive": true
+        },
+        {
+          "Name": "Category",
+          "Projection": 2,
+          "isActive": true
+        },
+        {
+          "Name": "Y",
+          "Projection": 1,
+          "isActive": false
+        }
+      ]
+    }
+  ],
+  "selects": [
+    {
+      "displayName": "Month",
+      "queryName": "Cleaned_Timesheet.Month",
+      "roles": {
+        "Category": true
+      },
+      "sort": 1,
+      "sortOrder": 0,
+      "type": {
+        "category": null,
+        "underlyingType": 1
+      },
+      "expr": {
+        "Column": {
+          "Expression": {
+            "SourceRef": {
+              "Entity": "Cleaned_Timesheet"
+            }
+          },
+          "Property": "Month"
+        }
+      }
+    },
+    {
+      "displayName": "Count of TotalHours",
+      "queryName": "CountNonNull(Cleaned_Timesheet.TotalHours)",
+      "roles": {
+        "Y": true
+      },
+      "type": {
+        "category": null,
+        "underlyingType": 260
+      },
+      "expr": {
+        "Aggregation": {
+          "Expression": {
+            "Column": {
+              "Expression": {
+                "SourceRef": {
+                  "Entity": "Cleaned_Timesheet"
+                }
+              },
+              "Property": "TotalHours"
+            }
+          },
+          "Function": 5
+        }
+      }
+    },
+    {
+      "displayName": "ClientName",
+      "queryName": "Clients.ClientName",
+      "roles": {
+        "Category": true
+      },
+      "sort": 1,
+      "sortOrder": 1,
+      "type": {
+        "category": null,
+        "underlyingType": 1
+      },
+      "expr": {
+        "Column": {
+          "Expression": {
+            "SourceRef": {
+              "Entity": "Clients"
+            }
+          },
+          "Property": "ClientName"
+        }
+      }
+    }
+  ]
+}

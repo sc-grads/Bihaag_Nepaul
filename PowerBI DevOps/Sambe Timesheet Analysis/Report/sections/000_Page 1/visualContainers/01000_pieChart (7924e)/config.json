@@ -1,0 +1,95 @@
+{
+  "name": "7924e279213240b06000",
+  "layouts": [
+    {
+      "id": 0,
+      "position": {
+        "x": 1024.464609800363,
+        "y": 60.399274047186928,
+        "z": 1000,
+        "width": 226.497277676951,
+        "height": 263.66606170598908,
+        "tabOrder": 1000
+      }
+    }
+  ],
+  "singleVisual": {
+    "visualType": "pieChart",
+    "projections": {
+      "Category": [
+        {
+          "queryRef": "Cleaned_Timesheet.Client",
+          "active": true
+        }
+      ],
+      "Y": [
+        {
+          "queryRef": "CountNonNull(Cleaned_Timesheet.TotalHours)"
+        }
+      ]
+    },
+    "prototypeQuery": {
+      "Version": 2,
+      "From": [
+        {
+          "Name": "c",
+          "Entity": "Cleaned_Timesheet",
+          "Type": 0
+        }
+      ],
+      "Select": [
+        {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Source": "c"
+              }
+            },
+            "Property": "Client"
+          },
+          "Name": "Cleaned_Timesheet.Client",
+          "NativeReferenceName": "Client"
+        },
+        {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Source": "c"
+                  }
+                },
+                "Property": "TotalHours"
+              }
+            },
+            "Function": 5
+          },
+          "Name": "CountNonNull(Cleaned_Timesheet.TotalHours)",
+          "NativeReferenceName": "Count of TotalHours"
+        }
+      ],
+      "OrderBy": [
+        {
+          "Direction": 2,
+          "Expression": {
+            "Aggregation": {
+              "Expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Source": "c"
+                    }
+                  },
+                  "Property": "TotalHours"
+                }
+              },
+              "Function": 5
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "hasDefaultSort": true
+  }
+}
