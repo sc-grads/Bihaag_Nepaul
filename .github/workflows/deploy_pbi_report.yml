@@ -6,7 +6,7 @@ on:
     branches: [ main ]
 
 env:
-  PROFILE: Files
+  PROFILE: report
   ENVIRONMENT: PROD
 
 jobs:
@@ -22,7 +22,15 @@ jobs:
         with:
           lfs: 'true'
 
+      - name: Debug info
+        run: |
+          echo "Current directory contents:"
+          ls -R .
+          echo "Environment variables:"
+          env
+
       - name: pbi-tools deploy
         run: /app/pbi-tools/pbi-tools.core deploy . "$PROFILE" "$ENVIRONMENT"
         env:
           PBI_CLIENT_SECRET: ${{ secrets.PBI_CLIENT_SECRET }}
+
