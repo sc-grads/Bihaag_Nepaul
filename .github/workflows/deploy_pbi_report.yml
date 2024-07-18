@@ -20,6 +20,15 @@ jobs:
         with:
           lfs: 'true'
 
+      - name: Debug info
+        run: |
+          echo "Current directory contents:"
+          ls -R .
+          echo "Listing PowerBI DevOps directory:"
+          ls -R ./PowerBI\ DevOps
+          echo "Environment variables:"
+          env
+
       - name: List PowerBI DevOps directory
         run: ls -R ./PowerBI\ DevOps  # Ensure this directory and file exist
 
