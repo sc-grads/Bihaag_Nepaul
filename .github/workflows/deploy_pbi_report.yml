@@ -20,6 +20,15 @@ jobs:
         with:
           lfs: 'true'
 
+      - name: Debug info
+        run: |
+          echo "Current directory contents:"
+          ls -R .
+          echo "Listing Bihaag_Nepaul directory:"
+          ls -R ./Bihaag_Nepaul
+          echo "Environment variables:"
+          env
+
       - name: Verify pbixproj.json path
         run: |
           if [ -f "./Bihaag_Nepaul/PowerBI DevOps/.pbixproj.json" ]; then
