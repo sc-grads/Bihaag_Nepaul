@@ -6,7 +6,7 @@ on:
     branches: [ main ]
 
 env:
-  PROFILE: report  # Ensure this matches the deployment name in .pbixproj.json
+  PROFILE: report
   ENVIRONMENT: PROD
 
 jobs:
@@ -22,13 +22,7 @@ jobs:
         with:
           lfs: 'true'
 
-      # Debug step to list files in the PowerBI DevOps directory
-      - name: List files in PowerBI DevOps directory
-        run: ls -R ./PowerBI\ DevOps
-
-      # Deploy Power BI report
-      - name: Deploy Power BI report
-        run: /app/pbi-tools/pbi-tools.core deploy "./PowerBI DevOps/Sambe Timesheet Analysis.pbix" "$PROFILE" "$ENVIRONMENT"
+      - name: pbi-tools deploy
+        run: /app/pbi-tools/pbi-tools-core deploy . "$PROFILE" "$ENVIRONMENT"
         env:
           PBI_CLIENT_SECRET: ${{ secrets.PBI_CLIENT_SECRET }}
-
