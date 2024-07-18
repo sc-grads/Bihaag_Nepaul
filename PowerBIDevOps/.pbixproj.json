@@ -6,7 +6,7 @@
       "mode": "Report",
       "source": {
         "type": "File",
-        "path": "./PowerBIDevOps/*.pbix$"
+        "path": "./PowerBIDevOps/Sambe_Timesheet_Analysis/*.pbix$"
       },
       "authentication": {
         "type": "ServicePrincipal",
