@@ -1,35 +1,29 @@
-name: Deployment
+name: Deploy Power BI Report
 
-# Controls when the workflow will run
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 env:
-  PROFILE: Files
+  PBI_CLIENT_SECRET: ${{ secrets.PBI_CLIENT_SECRET }}
+  PROFILE: report  # Assuming "report" matches the deployment name in .pbixproj.json
   ENVIRONMENT: PROD
 
 jobs:
-  Deployment:
+  deploy_report:
     runs-on: ubuntu-latest
-    environment: PROD
     container:
       image: ghcr.io/pbi-tools/pbi-tools-core:latest
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-        with:
-          lfs: 'true'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      - name: List files in PowerBI DevOps directory
+        run: ls -R ./PowerBI\ DevOps
 
-      # Debug steps to list files in root directory and /app directory
-      - name: List files in root directory
-        run: ls -R /
-
-      - name: List files in /app directory
-        run: ls -R /app
-
-      - name: pbi-tools deploy
-        run: /app/pbi-tools/pbi-tools.core deploy . "$PROFILE" "$ENVIRONMENT"
+      - name: Deploy Power BI report
+        run: /app/pbi-tools/pbi-tools.core deploy ./PowerBI\ DevOps/Sambe\ Timesheet\ Analysis.pbix "$PROFILE" "$ENVIRONMENT"
         env:
           PBI_CLIENT_SECRET: ${{ secrets.PBI_CLIENT_SECRET }}
