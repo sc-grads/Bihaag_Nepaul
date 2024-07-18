@@ -22,7 +22,7 @@ jobs:
         with:
           lfs: 'true'
 
-      # Debug steps to list files in /app and / directories
+      # Debug steps to list files in root directory and /app directory
       - name: List files in root directory
         run: ls -R /
 
@@ -30,7 +30,6 @@ jobs:
         run: ls -R /app
 
       - name: pbi-tools deploy
-        run: /app/pbi-tools-core deploy . "$PROFILE" "$ENVIRONMENT"
+        run: /app/pbi-tools/pbi-tools.core deploy . "$PROFILE" "$ENVIRONMENT"
         env:
           PBI_CLIENT_SECRET: ${{ secrets.PBI_CLIENT_SECRET }}
-
