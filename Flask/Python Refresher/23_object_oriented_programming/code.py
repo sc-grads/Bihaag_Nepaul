@@ -22,7 +22,13 @@ class Student:
 
 student = Student()
 print(student.average())
-# Identical to Student.average(student)
+'''
+-> self consists of the attributes grades and name within the context of the Student class. These attributes are associated with any instance created from this class.
+
+-> When you create an object (or instance) of the Student class, named student, this object contains its own set of attributes (name and grades) defined in the class.
+
+-> You can call methods defined in the class (like average) on this object (student). When you do, the method can access the object's attributes and other methods using self.
+'''
 
 
 # -- Parameters in __init__ --

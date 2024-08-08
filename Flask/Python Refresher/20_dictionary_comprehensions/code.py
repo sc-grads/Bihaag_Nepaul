@@ -6,17 +6,17 @@ users = [
 ]
 
 username_mapping = {user[1]: user for user in users}
-userid_mapping = {user[0]: user for user in users}
+# userid_mapping = {user[0]: user for user in users}
 
-print(username_mapping)
+# print(username_mapping)
 
-print(username_mapping["Bob"])  # (0, "Bob", "password")
+# print(username_mapping["Bob"])  # (0, "Bob", "password")
 
 # -- Can be useful to log in for example --
 
 username_input = input("Enter your username: ")
 password_input = input("Enter your password: ")
-
+#Below we are unpacking the tuple
 _, username, password = username_mapping[username_input]
 
 if password_input == password:
