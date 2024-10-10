@@ -1,0 +1,29 @@
+{
+  "version": "0.11",
+  "created": "2024-07-16T18:09:54.2556434+00:00",
+  "deployments": {
+    "Files": {
+      "mode": "Report",
+      "source": {
+        "type": "File",
+        "path": "./PowerBIDevOps/*.pbix$"
+      },
+      "authentication": {
+        "type": "ServicePrincipal",
+        "clientId": "8e9c981c-e7c2-4100-a84d-fbee5d17bb70",
+        "clientSecret": "%PBI_CLIENT_SECRET%",
+        "tenantId": "174c7352-9c5c-4558-b848-be140b444e7d"
+      },
+      "options": {
+        "import": {
+          "nameConflict": "CreateOrOverwrite"
+        }
+      },
+      "environments": {
+        "PROD": {
+          "workspace": "Report DevOps Env"
+        }
+      }
+    }
+  }
+}
