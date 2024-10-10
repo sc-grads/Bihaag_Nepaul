@@ -4,3 +4,8 @@ sqlalchemy
 pydantic[email]
 jinja2
 alembic
+psycopg2-binary
+pydantic
+python-jose
+passlib
+python-multipart

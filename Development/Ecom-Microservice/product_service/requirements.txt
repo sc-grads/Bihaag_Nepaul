@@ -7,3 +7,12 @@ aiofiles
 psycopg2-binary
 jinja2
 alembic
+python-jose
+passlib
+
+
+
+
+
+
+

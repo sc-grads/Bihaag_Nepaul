@@ -1,18 +1,39 @@
 version: '3.8'
 
 services:
+  db:
+      image: postgres:13
+      environment:
+        POSTGRES_USER: fastapi
+        POSTGRES_PASSWORD: fastapipassword
+        POSTGRES_DB: ecommerce_db
+      ports:
+        - "5432:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      networks:
+        - ecommerce-network
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U fastapi -d ecommerce_db"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+
   auth_service:
     build:
       context: ./auth_service
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:///./auth.db
+      - DATABASE_URL=postgresql://fastapi:fastapipassword@db:5432/ecommerce_db
       - GOOGLE_CLIENT_ID=422582982715-i1nckd6lehufls1vihouaag0uflvni95.apps.googleusercontent.com
       - GOOGLE_CLIENT_SECRET=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
     volumes:
       - ./auth_service:/usr/src/app
       - ./auth_service/app/templates:/app/templates
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - ecommerce-network
 
@@ -20,13 +41,16 @@ services:
     build:
       context: ./product_service
     ports:
-      - "8001:8000"  # Product service is exposed on port 8001
+      - "8001:8000"
     environment:
-      - DATABASE_URL=sqlite:///./product.db
+      - DATABASE_URL=postgresql://fastapi:fastapipassword@db:5432/ecommerce_db
     volumes:
       - ./product_service:/app
       - ./product_service/uploaded_images:/app/uploaded_images
       - ./templates:/app/templates
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - ecommerce-network
 
@@ -34,11 +58,14 @@ services:
     build:
       context: ./seller_service
     ports:
-      - "8002:8000"  # Seller service will be exposed on port 8002
+      - "8002:8000"
     environment:
-      - DATABASE_URL=sqlite:///./seller.db
+      - DATABASE_URL=postgresql://fastapi:fastapipassword@db:5432/ecommerce_db
     volumes:
       - ./seller_service:/app
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - ecommerce-network
 
@@ -46,22 +73,14 @@ services:
     build:
       context: ./cart_service
     ports:
-      - "8003:8000"  # Cart service will be exposed on port 8003
+      - "8003:8000"
     environment:
-      - DATABASE_URL=sqlite:///./cart.db
+      - DATABASE_URL=postgresql://fastapi:fastapipassword@db:5432/ecommerce_db
     volumes:
       - ./cart_service:/app
-    networks:
-      - ecommerce-network
-
-  db:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: fastapi
-      POSTGRES_PASSWORD: fastapipassword
-      POSTGRES_DB: ecommerce_db
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - ecommerce-network
 
@@ -77,9 +96,13 @@ services:
       - auth_service
       - product_service
       - seller_service
+      - cart_service
     networks:
       - ecommerce-network
 
 networks:
   ecommerce-network:
     driver: bridge
+
+volumes:
+  postgres_data:
