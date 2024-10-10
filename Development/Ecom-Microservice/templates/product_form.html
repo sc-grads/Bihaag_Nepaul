@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Product</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        /* Existing styles remain unchanged */
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        
+        .card {
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .form-floating > label {
+            padding: 0.75rem 0.75rem;
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #0d6efd;
+        }
+
+        .btn-lg {
+            padding: 0.5rem 2rem;
+            font-size: 1.25rem;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="mb-0">Add New Product</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="/products/" method="post" enctype="multipart/form-data" class="row g-3">
+                            <!-- Product Name -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" id="name" name="name" class="form-control" placeholder="Product Name" required>
+                                    <label for="name">Product Name</label>
+                                </div>
+                            </div>
+                            <!-- Price -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" id="price" name="price" class="form-control" placeholder="Price" required>
+                                    <label for="price">Price (R)</label>
+                                </div>
+                            </div>
+                            <!-- Brand (New Field) -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" id="brand" name="brand" class="form-control" placeholder="Brand" required>
+                                    <label for="brand">Brand</label>
+                                </div>
+                            </div>
+                            <!-- Quantity -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" id="quantity" name="quantity" class="form-control" placeholder="Quantity" required min="1" value="1">
+                                    <label for="quantity">Quantity</label>
+                                </div>
+                            </div>
+                            <!-- Description -->
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <textarea id="description" name="description" class="form-control" placeholder="Product Description" style="height: 100px;" required></textarea>
+                                    <label for="description">Product Description</label>
+                                </div>
+                            </div>
+                            <!-- Image Upload -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="image" class="form-label">Upload Product Image</label>
+                                    <input type="file" id="image" name="image" class="form-control">
+                                </div>
+                            </div>
+                            <!-- Seller ID -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" id="seller_id" name="seller_id" class="form-control" placeholder="Seller ID" required>
+                                    <label for="seller_id">Seller ID</label>
+                                </div>
+                            </div>
+                            <!-- Buttons -->
+                            <div class="col-md-12 text-center mt-4">
+                                <button type="submit" class="btn btn-success btn-lg me-2">
+                                    <i class="bi bi-check-circle me-2"></i>Add Product
+                                </button>
+                                <a href="javascript:history.back()" class="btn btn-secondary btn-lg">
+                                    <i class="bi bi-arrow-left-circle me-2"></i>Go Back
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent the default form submission
+        
+            const formData = new FormData(this);
+            
+            fetch('/products/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/product_list.html'; // Redirect to product_list.html
+                } else {
+                    // Handle errors
+                    alert('Error adding product. Please try again.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

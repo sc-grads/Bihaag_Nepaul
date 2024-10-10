@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block content %}
+<h2>Edit Product</h2>
+<form id="editProductForm" action="/products/{{ product.id }}/edit" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" class="form-control" value="{{ product.name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" class="form-control" value="{{ product.description }}" required>
+    </div>
+    <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" class="form-control" value="{{ product.price }}" required>
+    </div>
+    <div class="form-group">
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" class="form-control">
+        {% if product.image_url %}
+            <img src="{{ product.image_url }}" alt="Product Image" style="max-width: 200px; max-height: 200px;">
+        {% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary">Update Product</button>
+    <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+</form>
+
+<script>
+document.getElementById('editProductForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent the default form submission
+
+    const formData = new FormData(this);
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if required
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Redirect to product_list.html upon successful update
+            window.location.href = '/product_list.html'; 
+        } else {
+            // Handle errors
+            alert('Error updating product. Please try again.');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
+{% endblock %}

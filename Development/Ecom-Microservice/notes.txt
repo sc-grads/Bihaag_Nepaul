@@ -1,0 +1,2237 @@
+pip install -r ../requirements.txt
+
+pip install -r requirements.txt
+
+uvicorn app.main:app --reload
+
+docker build -t auth-image .
+
+docker run -d -p 8000:80 --name auth-container auth-image
+
+docker rm
+
+
+docker-compose.yml 2024/09/18
+
+version: '3'
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth-service
+      - product-service
+      - seller-service
+
+  auth-service:
+    build: ./auth-service
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/auth_db
+
+  product-service:
+    build: ./product-service
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/product_db
+
+  seller-service:
+    build: ./seller-service
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/seller_db
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_MULTIPLE_DATABASES=auth_db,product_db,seller_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
+
+
+  auth-dockerfile:
+
+  FROM python:3.9
+
+WORKDIR /app
+
+COPY ./requirements.txt /app/requirements.txt
+
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+
+COPY ./app /app
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
+
+📦auth_service
+ ┣ 📂app
+ ┃ ┣ 📜auth.py
+ ┃ ┣ 📜database.py
+ ┃ ┣ 📜main.py
+ ┃ ┣ 📜models.py
+ ┃ ┣ 📜schemas.py
+ ┃ ┗ 📜__init__.py
+ ┃
+ ┣ 📜auth.db
+ ┣ 📜Dockerfile
+ ┗ 📜requirements.txt
+
+
+==============================================================================================
+
+
+ I am trying to make microservices of my fast api app, the structure is as follows:
+
+📦ecommerce-microservices
+ ┣ 📂auth_service 
+ ┣ 📂product_service 
+ ┣ 📂seller_service 
+ ┣ 📂templates
+ ┣ 📂nginx
+ ┗ 📜docker-compose.yml
+
+
+
+i implemented the auth_service and the contents are as follows:
+
+📦auth_service
+ ┣ 📂app
+ ┣ ┣ 📜 __init__.py
+ ┃ ┣ 📜database.py
+ ┃ ┣ 📜main.py
+ ┃ ┣ 📜models.py
+ ┃ ┣ 📜schemas.py
+ ┃ ┗ 📜auth.py
+ ┣ 📜requirements.txt
+ ┗ 📜Dockerfile
+
+The code is as follows:
+
+
+auth.py:
+from passlib.context import CryptContext
+from jose import JWTError, jwt
+from datetime import datetime, timedelta
+from . import schemas
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from . import models, database
+
+SECRET_KEY = "e3aac17d09746a3effe0dd1b414b9e3e8d64b30a53d2e27b1b5f69e4ed35d2e0"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def authenticate_user(db: Session, email: str, password: str):
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user or not verify_password(password, user.hashed_password):
+        return False
+    return user
+
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+        token_data = schemas.TokenData(email=email)
+    except JWTError:
+        raise credentials_exception
+    user = db.query(models.User).filter(models.User.email == token_data.email).first()
+    if user is None:
+        raise credentials_exception
+    return user
+
+
+database.py:
+
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import os
+
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./auth.db")
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+main.py:
+
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from app import models, schemas, database, auth
+from datetime import timedelta
+
+app = FastAPI()
+
+# Ensure the database tables are created
+models.Base.metadata.create_all(bind=database.engine)
+
+@app.post("/register", response_model=schemas.UserOut)
+def register_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
+    db_user = db.query(models.User).filter(models.User.email == user.email).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    hashed_password = auth.get_password_hash(user.password)
+    new_user = models.User(username=user.username, email=user.email, hashed_password=hashed_password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+@app.post("/login", response_model=schemas.Token)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
+    user = auth.authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = auth.create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@app.get("/users/me", response_model=schemas.UserOut)
+async def read_users_me(current_user: models.User = Depends(auth.get_current_user)):
+    return current_user
+
+models.py:
+from sqlalchemy import Column, Integer, String
+from .database import Base
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+
+
+schemas.py:
+from pydantic import BaseModel, EmailStr
+
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+
+class UserOut(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+
+    class Config:
+        orm_mode = True
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: str | None = None
+
+
+Dockerfile:
+# Use an official Python runtime as the base image
+FROM python:3.11-slim
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+# Copy the requirements file into the container
+COPY requirements.txt ./
+
+# Install the required packages
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
+COPY . .
+
+# Make port 8000 available to the world outside this container
+EXPOSE 8000
+
+# Define environment variable for SQLAlchemy to not complain about SQLite usage
+ENV SQLALCHEMY_SILENCE_UBER_WARNING=1
+
+# Set Python path
+ENV PYTHONPATH=/usr/src/app
+
+# Run the application
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+//how do i run this auth_service in a docker container and access it in my browser?
+
+
+
+
+===========================================product_service dir
+📦product_service
+ ┣ 📂app
+ ┃ ┣ 📜database.py
+ ┃ ┣ 📜main.py
+ ┃ ┣ 📜models.py
+ ┃ ┗ 📜schemas.py
+ ┣ 📂uploaded_images
+ ┃ ┗ 📜pasta_Jack-to-javck.jpg
+ ┣ 📜Dockerfile
+ ┣ 📜product.db
+ ┗ 📜requirements.txt
+
+
+
+ ===============================seller_service
+
+ 📦seller_service
+ ┣ 📂app
+ ┃ ┣ 📜database.py
+ ┃ ┣ 📜main.py
+ ┃ ┣ 📜models.py
+ ┃ ┣ 📜schemas.py
+ ┃ ┗ 📜seller.py
+ ┣ 📜 Dockerfile
+ ┣ 📜 product.db
+ ┗ 📜 requirements.txt
+
+
+ ================================== run all containers:
+
+ version: '3.8'
+
+services:
+  auth_service:
+    build:
+      context: ./auth_service
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./auth.db
+    volumes:
+      - ./auth_service:/usr/src/app
+    networks:
+      - ecommerce-network
+
+  product_service:
+    build:
+      context: ./product_service
+    ports:
+      - "8001:8000"  # Product service is exposed on port 8001
+    environment:
+      - DATABASE_URL=sqlite:///./product.db
+    volumes:
+      - ./product_service:/app
+      - ./product_service/uploaded_images:/app/uploaded_images
+    networks:
+      - ecommerce-network
+
+  seller_service:
+    build:
+      context: ./seller_service
+    ports:
+      - "8002:8000"  # Seller service will be exposed on port 8002
+    environment:
+      - DATABASE_URL=sqlite:///./seller.db
+    volumes:
+      - ./seller_service:/app
+    networks:
+      - ecommerce-network
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: fastapi
+      POSTGRES_PASSWORD: fastapipassword
+      POSTGRES_DB: ecommerce_db
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      - ecommerce-network
+
+networks:
+  ecommerce-network:
+    driver: bridge
+
+==============================================================
+seller_service main.py
+from fastapi import FastAPI
+from .seller import router as seller_router
+from . import models
+from .database import engine
+from fastapi.staticfiles import StaticFiles
+
+app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+models.Base.metadata.create_all(bind=engine)
+
+app.include_router(seller_router)
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Seller Service"}
+
+
+
+====================================== links
+
+http://localhost:8080/index.html
+
+
+APIs: 
+List of Products: http://localhost:8080/product_list.html
+Product Form: http://localhost:8080/product_form.html
+Product Edit: http://localhost:8080/product_edit.html
+
+Login Page: http://localhost:8080/login.html
+Login Page: http://localhost:8080/index.html
+Register Page: http://localhost:8080/register.html
+
+APIs via Nginx:
+Products API: http://localhost:8080/products/
+Sellers API: http://localhost:8080/sellers/
+Authentication API: http://localhost:8080/auth/
+
+docker-compose down ; docker-compose up --build
+
+
+==================================== html
+
+
+base.html:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Application{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Optional: Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Product Listing</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Bootstrap JS and dependencies (optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+index.html:
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecom Microservices</title>
+</head>
+<body>
+    <h1>Welcome to Ecom Microservices</h1>
+    <p>This is a test page to verify Nginx configuration.</p>
+</body>
+</html>
+
+login.py:
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<h2>Login</h2>
+
+<!-- Existing Login Form -->
+<form action="/login" method="post">
+    <div class="form-group">
+        <label for="username">User Email:</label>
+        <input type="text" id="username" name="username" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+
+<!-- Google Login Button -->
+<div style="margin-top: 20px;">
+    <a href="/login">
+        <img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" alt="Login with Google">
+    </a>
+</div>
+{% endblock %}
+
+product_edit.html:
+{% extends "base.html" %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block content %}
+<h2>Edit Product</h2>
+<form action="/product/edit/{{ product.id }}" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" class="form-control" value="{{ product.name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" class="form-control" value="{{ product.description }}" required>
+    </div>
+    <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" class="form-control" value="{{ product.price }}" required>
+    </div>
+    <div class="form-group">
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" class="form-control">
+        {% if product.image_url %}
+            <img src="{{ product.image_url }}" alt="Product Image" style="max-width: 200px; max-height: 200px;">
+        {% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary">Update Product</button>
+    <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+{% endblock %}
+
+
+
+product_form.html:
+{% extends "base.html" %}
+
+{% block title %}Add Product{% endblock %}
+
+{% block content %}
+<h2>Add New Product</h2>
+<form action="/product/new" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Add Product</button>
+    <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+{% endblock %}
+
+
+product_list.html:
+{% extends "base.html" %}
+
+{% block title %}Product List{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1440' height='560' preserveAspectRatio='none' viewBox='0 0 1440 560'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1500%26quot%3b)' fill='none'%3e%3crect width='1440' height='560' x='0' y='0' fill='url(%26quot%3b%23SvgjsLinearGradient1501%26quot%3b)'%3e%3c/rect%3e%3cpath d='M1440 0L1128.74 0L1440 217.61z' fill='rgba(255%2c 255%2c 255%2c .1)'%3e%3c/path%3e%3cpath d='M1128.74 0L1440 217.61L1440 337.72L607.4 0z' fill='rgba(255%2c 255%2c 255%2c .075)'%3e%3c/path%3e%3cpath d='M607.4 0L1440 337.72L1440 391.96000000000004L261.06 0z' fill='rgba(255%2c 255%2c 255%2c .05)'%3e%3c/path%3e%3cpath d='M261.05999999999995 0L1440 391.96000000000004L1440 447.57000000000005L85.82999999999996 0z' fill='rgba(255%2c 255%2c 255%2c .025)'%3e%3c/path%3e%3cpath d='M0 560L268.59 560L0 344.72z' fill='rgba(0%2c 0%2c 0%2c .1)'%3e%3c/path%3e%3cpath d='M0 344.72L268.59 560L300.30999999999995 560L0 309.46000000000004z' fill='rgba(0%2c 0%2c 0%2c .075)'%3e%3c/path%3e%3cpath d='M0 309.46000000000004L300.30999999999995 560L934.0799999999999 560L0 203.36000000000004z' fill='rgba(0%2c 0%2c 0%2c .05)'%3e%3c/path%3e%3cpath d='M0 203.36L934.0799999999999 560L1056.24 560L0 148.51000000000002z' fill='rgba(0%2c 0%2c 0%2c .025)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1500'%3e%3crect width='1440' height='560' fill='white'%3e%3c/rect%3e%3c/mask%3e%3clinearGradient x1='15.28%25' y1='-39.29%25' x2='84.72%25' y2='139.29%25' gradientUnits='userSpaceOnUse' id='SvgjsLinearGradient1501'%3e%3cstop stop-color='rgba(0%2c 67%2c 112%2c 1)' offset='0'%3e%3c/stop%3e%3cstop stop-color='rgba(0%2c 158%2c 100%2c 1)' offset='1'%3e%3c/stop%3e%3c/linearGradient%3e%3c/defs%3e%3c/svg%3e");
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    .text-block-left {
+        padding-left: 0;
+        margin-left: -0px; /* Adjust this value to move text more or less to the left */
+    }
+    @media (max-width: 768px) {
+        .text-block-left {
+            margin-left: 0; /* Reset for mobile views */
+        }
+    }
+    .search-bar {
+        width: 250px; /* Adjust the width as needed */
+        margin-left: 10px; /* Add space between the button and the search bar */
+    }
+
+    .title {
+        color: white;
+    }
+
+    .btn-primary {
+        background-color: #2ea810;
+        border-color: #00000000;
+    }
+</style>
+
+<h2 class="title">Product List</h2>
+<div class="d-flex mb-3">
+    <a href="/products/new" class="btn btn-primary">Add New Product</a>
+    <!-- Search Input -->
+    <input type="text" id="search" placeholder="Search products..." class="form-control search-bar" onkeyup="filterProducts()">
+</div>
+
+<ul class="list-group" id="product-list">
+    <!-- Product list rendered via AJAX -->
+</ul>
+
+<!-- JavaScript to handle live search -->
+<script>
+    function filterProducts() {
+        const searchQuery = document.getElementById("search").value;
+
+        fetch(`/products/search?query=${searchQuery}`)
+            .then(response => response.json())
+            .then(data => {
+                const productList = document.getElementById("product-list");
+                productList.innerHTML = '';  // Clear the current product list
+
+                data.products.forEach(product => {
+                    const listItem = `
+                        <li class="list-group-item">
+                            <div class="row align-items-center">
+                                <!-- Product Image -->
+                                <div class="col-md-2">
+                                    <img src="${product.image_url}" alt="${product.name}" class="img-fluid img-thumbnail" style="max-width: 150px;">
+                                </div>
+                                <!-- Product Details -->
+                                <div class="col-md-7 text-block-left">
+                                    <h4 class="product-name" style="font-weight: normal;">${product.name}</h4>
+                                    <h5>Description</h5>
+                                    <p>${product.description}</p>
+                                    <h5>Price</h5>
+                                    <p class="text-muted">${product.price}</p>
+                                </div>
+                                <!-- Action Buttons -->
+                                <div class="col-md-3 text-end">
+                                    <a href="/products/edit/${product.id}" class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="/products/delete/${product.id}" class="btn btn-danger btn-sm">Delete</a>
+                                </div>
+                            </div>
+                        </li>
+                    `;
+                    productList.innerHTML += listItem;  // Append new products to the list
+                });
+            });
+    }
+
+    // Trigger search when the page loads to show all products initially
+    document.addEventListener("DOMContentLoaded", () => filterProducts());
+</script>
+{% endblock %}
+
+
+
+register.html:
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<h2>Register</h2>
+
+<!-- Registration Form -->
+<form action="/register" method="post">
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+    <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+</form>
+
+<!-- Google Login Button -->
+<div style="margin-top: 20px;">
+    <a href="/login">
+        <img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" alt="Login with Google">
+    </a>
+</div>
+{% endblock %}
+ 
+ ========================================================================================= main.pys
+
+ auth_service main.py
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from app import models, schemas, database, auth
+from datetime import timedelta
+
+
+app = FastAPI()
+
+
+
+# Ensure the database tables are created
+models.Base.metadata.create_all(bind=database.engine)
+
+@app.post("/register", response_model=schemas.UserOut)
+def register_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
+    db_user = db.query(models.User).filter(models.User.email == user.email).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    hashed_password = auth.get_password_hash(user.password)
+    new_user = models.User(username=user.username, email=user.email, hashed_password=hashed_password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+@app.post("/login", response_model=schemas.Token)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
+    user = auth.authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = auth.create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@app.get("/users/me", response_model=schemas.UserOut)
+async def read_users_me(current_user: models.User = Depends(auth.get_current_user)):
+    return current_user
+
+ product_service main.py
+from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, Form
+from sqlalchemy.orm import Session
+from . import models, schemas, database
+from typing import List
+import os
+
+
+app = FastAPI()
+
+
+
+# Ensure the database tables are created
+models.Base.metadata.create_all(bind=database.engine)
+
+# Define the upload directory
+UPLOAD_DIRECTORY = "uploaded_images"
+if not os.path.exists(UPLOAD_DIRECTORY):
+    os.makedirs(UPLOAD_DIRECTORY)
+
+@app.post("/products/", response_model=schemas.Product)
+async def create_product(
+    name: str = Form(...),
+    description: str = Form(...),
+    price: int = Form(...),
+    seller_id: int = Form(...),
+    image: UploadFile = File(None),
+    db: Session = Depends(database.get_db)
+):
+    image_url = None
+    if image and image.filename:
+        filename = f"{name}_{image.filename}"
+        filepath = os.path.join(UPLOAD_DIRECTORY, filename)
+        with open(filepath, "wb") as buffer:
+            buffer.write(await image.read())
+        image_url = f"/uploaded_images/{filename}"
+
+    db_product = models.Product(name=name, description=description, price=price, image_url=image_url, seller_id=seller_id)
+    db.add(db_product)
+    db.commit()
+    db.refresh(db_product)
+    return db_product
+
+@app.get("/products/", response_model=List[schemas.Product])
+def read_products(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)):
+    products = db.query(models.Product).offset(skip).limit(limit).all()
+    return products
+
+@app.get("/products/{product_id}", response_model=schemas.Product)
+def read_product(product_id: int, db: Session = Depends(database.get_db)):
+    db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if db_product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return db_product
+
+@app.put("/products/{product_id}", response_model=schemas.Product)
+async def update_product(
+    product_id: int,
+    product_update: schemas.ProductUpdate,
+    db: Session = Depends(database.get_db)
+):
+    db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if db_product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    update_data = product_update.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_product, key, value)
+    
+    db.commit()
+    db.refresh(db_product)
+    return db_product
+
+@app.delete("/products/{product_id}", response_model=schemas.Product)
+def delete_product(product_id: int, db: Session = Depends(database.get_db)):
+    db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if db_product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    db.delete(db_product)
+    db.commit()
+    return db_product
+
+@app.get("/products/search/", response_model=List[schemas.Product])
+def search_products(query: str, db: Session = Depends(database.get_db)):
+    products = db.query(models.Product).filter(
+        (models.Product.name.ilike(f"%{query}%")) | 
+        (models.Product.description.ilike(f"%{query}%"))
+    ).all()
+    return products
+
+ seller_service main.py
+ from fastapi import FastAPI
+from .seller import router as seller_router
+from . import models
+from .database import engine
+
+
+app = FastAPI()
+
+
+
+models.Base.metadata.create_all(bind=engine)
+
+app.include_router(seller_router)
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Seller Service"}
+
+=============================================================== main.py for product_service 2024/09/23
+from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, Form, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+from . import models, schemas, database
+from typing import List
+import os
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# Set up Jinja2 templates
+templates = Jinja2Templates(directory="templates")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
+# Ensure the database tables are created
+models.Base.metadata.create_all(bind=database.engine)
+
+# Define the upload directory
+UPLOAD_DIRECTORY = "uploaded_images"
+if not os.path.exists(UPLOAD_DIRECTORY):
+    os.makedirs(UPLOAD_DIRECTORY)
+
+# Route to serve the product creation form
+# Route to serve the product creation form
+@app.get("/products/new", response_class=HTMLResponse)
+async def new_product_form(request: Request):
+    return templates.TemplateResponse("product_form.html", {"request": request})
+
+# Route to create a new product (remains unchanged)
+@app.post("/products/", response_model=schemas.Product)
+async def create_product(
+    name: str = Form(...),
+    description: str = Form(...),
+    price: float = Form(...),
+    seller_id: int = Form(...),
+    image: UploadFile = File(None),
+    db: Session = Depends(database.get_db)
+):
+    image_url = None
+    if image and image.filename:
+        filename = f"{name}_{image.filename}"
+        filepath = os.path.join(UPLOAD_DIRECTORY, filename)
+        with open(filepath, "wb") as buffer:
+            buffer.write(await image.read())
+        image_url = f"/uploaded_images/{filename}"
+
+    db_product = models.Product(name=name, description=description, price=price, image_url=image_url, seller_id=seller_id)
+    db.add(db_product)
+    db.commit()
+    db.refresh(db_product)
+    return db_product
+
+# Route to read all products
+@app.get("/products/", response_model=List[schemas.Product])
+def read_products(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)):
+    products = db.query(models.Product).offset(skip).limit(limit).all()
+    return products
+
+# Route to read a single product by ID
+@app.get("/products/{product_id}", response_model=schemas.Product)
+def read_product(product_id: int, db: Session = Depends(database.get_db)):
+    db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if db_product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return db_product
+
+# Route to update a product
+@app.post("/products/{product_id}/edit", response_model=schemas.Product)
+async def update_product(
+    product_id: int,
+    name: str = Form(...),
+    description: str = Form(...),
+    price: float = Form(...),
+    image: UploadFile = File(None),
+    db: Session = Depends(database.get_db)
+):
+    db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if db_product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    db_product.name = name
+    db_product.description = description
+    db_product.price = price
+    
+    if image and image.filename:
+        filename = f"{name}_{image.filename}"
+        filepath = os.path.join(UPLOAD_DIRECTORY, filename)
+        with open(filepath, "wb") as buffer:
+            buffer.write(await image.read())
+        db_product.image_url = f"/uploaded_images/{filename}"
+    
+    db.commit()
+    db.refresh(db_product)
+    return db_product
+
+# Route to delete a product
+@app.delete("/products/{product_id}", response_model=schemas.Product)
+def delete_product(product_id: int, db: Session = Depends(database.get_db)):
+    db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if db_product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    db.delete(db_product)
+    db.commit()
+    return db_product
+
+# Route to search for products
+@app.get("/products/search/", response_model=List[schemas.Product])
+def search_products(query: str, db: Session = Depends(database.get_db)):
+    products = db.query(models.Product).filter(
+        (models.Product.name.ilike(f"%{query}%")) | 
+        (models.Product.description.ilike(f"%{query}%"))
+    ).all()
+    return products
+==============================================docker condensed cmd
+
+docker-compose down ; docker-compose up --build
+
+====================================================
+
+login.html 2024/09/30
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .google-login img {
+            width: 100%;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Login</h2>
+    
+    <!-- Login Form -->
+    <form action="/auth/login" method="post" id="loginForm">
+        <div class="form-group">
+            <label for="username">User Email:</label>
+            <input type="email" id="username" name="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+
+    <!-- Google Login Button -->
+    <div class="google-login" style="margin-top: 20px;">
+        <a href="/login">
+            <img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" alt="Login with Google">
+        </a>
+    </div>
+
+    <!-- Registration Link -->
+    <div class="register-link">
+        <p>Don't have an account? <a href="register.html">Click here to register</a></p>
+    </div>
+</div>
+
+<!-- Bootstrap JS and Popper.js -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Login Script -->
+<script>
+document.getElementById("loginForm").onsubmit = function(event) {
+    event.preventDefault(); // Prevent the default form submission
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    fetch("/auth/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.access_token) {
+            // Store the token in local storage or handle it as needed
+            localStorage.setItem('token', data.access_token);
+            alert("Login successful!");
+            // Redirect to a protected page or the dashboard
+            window.location.href = "/product_list.html"; // Change this as needed
+        } else {
+            alert("Login failed: " + data.detail);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred. Please try again.");
+    });
+};
+</script>
+
+</body>
+</html>
+=========================================================== login.html 2024/10/01
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        .background-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .login-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            z-index: 1;
+            transition: border 0.3s ease;
+        }
+        .login-container:hover {
+            border: 2px solid #3f7fc2;
+        }
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .google-login {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-svg">
+        <!-- SVG Background -->
+        <svg id="visual" viewBox="0 0 1000 480" width="1000" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+            <rect x="0" y="0" width="1000" height="480" fill="#ffffff"></rect>
+            <defs>
+                <linearGradient id="grad1_0" x1="55%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="5.555555555555554%" stop-color="#3f7fc2" stop-opacity="1"></stop>
+                    <stop offset="94.44444444444446%" stop-color="#3f7fc2" stop-opacity="1"></stop>
+                </linearGradient>
+            </defs>
+            <g transform="translate(1020, -100)">
+                <path d="M0 405C-47 385.3 -94.1 365.7 -144.7 349.2C-195.2 332.8 -249.3 319.5 -286.4 286.4C-323.4 253.3 -343.4 200.3 -360.3 149.2C-377.2 98.2 -391.1 49.1 -405 0L0 0Z" fill="#d3ddf0"></path>
+                <path d="M0 270C-31.4 256.9 -62.7 243.8 -96.4 232.8C-130.2 221.8 -166.2 213 -190.9 190.9C-215.6 168.8 -228.9 133.5 -240.2 99.5C-251.5 65.5 -260.7 32.7 -270 0L0 0Z" fill="#789dd1"></path>
+                <path d="M0 135C-15.7 128.4 -31.4 121.9 -48.2 116.4C-65.1 110.9 -83.1 106.5 -95.5 95.5C-107.8 84.4 -114.5 66.8 -120.1 49.7C-125.7 32.7 -130.4 16.4 -135 0L0 0Z" fill="#3f7fc2"></path>
+            </g>
+            <g transform="translate(-20, 550)">
+                <path d="M0 -405C51.9 -398.5 103.8 -392 155 -374.2C206.1 -356.4 256.5 -327.2 285.7 -285.7C314.8 -244.1 322.7 -190.1 339.1 -140.4C355.4 -90.8 380.2 -45.4 405 0L0 0Z" fill="#d3ddf0"></path>
+                <path d="M0 -270C34.6 -265.7 69.2 -261.3 103.3 -249.4C137.4 -237.6 171 -218.2 190.4 -190.4C209.9 -162.7 215.1 -126.8 226 -93.6C236.9 -60.5 253.5 -30.3 270 0L0 0Z" fill="#789dd1"></path>
+                <path d="M0 -135C17.3 -132.8 34.6 -130.7 51.7 -124.7C68.7 -118.8 85.5 -109.1 95.2 -95.2C104.9 -81.4 107.6 -63.4 113 -46.8C118.5 -30.3 126.7 -15.1 135 0L0 0Z" fill="#3f7fc2"></path>
+            </g>
+        </svg>
+    </div>
+
+    <div class="login-container">
+        <h2>Login</h2>
+        
+        <!-- Login Form -->
+        <form action="/auth/login" method="post" id="loginForm">
+            <div class="form-group">
+                <label for="username">Email:</label>
+                <input type="email" id="username" name="username" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+
+        <!-- Google Login Button -->
+        <div class="google-login">
+            <div id="g_id_onload"
+                 data-client_id="422582982715-i1nckd6lehufls1vihouaag0uflvni95.apps.googleusercontent.com"
+                 data-callback="handleCredentialResponse">
+            </div>
+            <div class="g_id_signin" data-type="standard"></div>
+        </div>
+
+        <!-- Registration Link -->
+        <div class="register-link">
+            <p>Don't have an account? <a href="register.html">Click here to register</a></p>
+        </div>
+    </div>
+
+    <!-- Google Sign-In API Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <script>
+        // Regular login form submission
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+
+            fetch("/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.access_token) {
+                    localStorage.setItem('token', data.access_token);
+                    alert("Login successful!");
+                    window.location.href = "/product_list.html";
+                } else {
+                    alert("Login failed: " + data.detail);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred. Please try again.");
+            });
+        };
+
+        // Google Sign-In handling
+        function handleCredentialResponse(response) {
+            fetch('/auth/google-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `token=${response.credential}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.access_token) {
+                    localStorage.setItem('token', data.access_token);
+                    alert("Google login successful!");
+                    window.location.href = "/product_list.html";
+                } else {
+                    alert("Google login failed: " + (data.detail || "Unknown error"));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred during Google login. Please try again.");
+            });
+        }
+    </script>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+
+
+============================================ product_list.html 2024/10/04
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        .custom-card {
+            border-radius: 15px;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .cart-total {
+            padding: 10px;
+            font-weight: bold;
+            text-align: right;
+        }
+        #cart-container {
+            padding: 15px;
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .quantity-control button {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+        }
+        .quantity-control input {
+            width: 50px;
+            text-align: center;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card shadow-lg border-0 mb-5 custom-card">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h2 class="mb-0">Product Catalog</h2>
+            </div>
+
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search products...">
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                        <a href="/products/new" class="btn btn-success me-2">Add New Product</a>
+                        <a href="/auth/logout" class="btn btn-outline-danger">Logout</a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div id="cart-container" class="card">
+                            <h3>Your Cart</h3>
+                            <div class="cart-items">
+                                <!-- Cart items will be dynamically inserted here -->
+                            </div>
+                            <div class="cart-total">
+                                <!-- Cart total will be dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div id="product-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                            <!-- Products will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+    <!-- Cart and Product Management Scripts -->
+    <script>
+        // Utility function to get current user ID
+        function getCurrentUserId() {
+            // Implement based on your auth system
+            // For now, we'll use a placeholder
+            return 1;
+        }
+
+        // Cart functionality
+        async function addToCart(productId) {
+            const quantityInput = document.getElementById(`quantity-${productId}`);
+            const quantity = parseInt(quantityInput.value);
+            
+            const userId = getCurrentUserId();
+            try {
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: quantity
+                    })
+                });
+                if (!response.ok) throw new Error('Failed to add to cart');
+                await updateCartUI();
+                
+                // Show success message
+                alert('Product added to cart!');
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                alert('Failed to add product to cart');
+            }
+        }
+
+        async function removeFromCart(itemId) {
+            const userId = getCurrentUserId();
+            try {
+                const response = await fetch(`/cart/${userId}/${itemId}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error('Failed to remove from cart');
+                await updateCartUI();
+            } catch (error) {
+                console.error('Error removing from cart:', error);
+                alert('Failed to remove item from cart');
+            }
+        }
+
+        async function updateCartUI() {
+            const cartContainer = document.getElementById('cart-container');
+            const userId = getCurrentUserId();
+            try {
+                const response = await fetch(`/cart/${userId}`);
+                if (!response.ok) throw new Error('Failed to get cart');
+                const cartData = await response.json();
+                
+                let cartHTML = '<h3>Your Cart</h3>';
+                if (cartData.items.length === 0) {
+                    cartHTML += '<p>Your cart is empty</p>';
+                } else {
+                    cartHTML += '<div class="cart-items">';
+                    cartData.items.forEach(item => {
+                        cartHTML += `
+                            <div class="cart-item">
+                                <span>${item.name}</span>
+                                <span>${item.quantity} x $${item.price}</span>
+                                <button class="btn btn-sm btn-danger" onclick="removeFromCart(${item.id})">Remove</button>
+                            </div>
+                        `;
+                    });
+                    cartHTML += '</div>';
+                    cartHTML += `
+                        <div class="cart-total">
+                            Total: $${cartData.total.toFixed(2)}
+                        </div>
+                    `;
+                }
+                cartContainer.innerHTML = cartHTML;
+            } catch (error) {
+                console.error('Error updating cart:', error);
+                cartContainer.innerHTML = '<p>Failed to load cart</p>';
+            }
+        }
+
+        function adjustQuantity(productId, change) {
+            const input = document.getElementById(`quantity-${productId}`);
+            let value = parseInt(input.value) + change;
+            if (value < 1) value = 1;
+            input.value = value;
+        }
+
+        // Product loading functionality
+        async function loadProducts() {
+            const container = document.getElementById('product-container');
+            try {
+                const response = await fetch('/products/');
+                const products = await response.json();
+                
+                container.innerHTML = products.map(product => `
+                    <div class="col">
+                        <div class="card h-100">
+                            <img src="${product.image_url}" class="card-img-top" alt="${product.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${product.name}</h5>
+                                <p class="card-text">${product.description}</p>
+                                <p class="card-text"><strong>$${product.price}</strong></p>
+                                <div class="quantity-control">
+                                    <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, -1)">-</button>
+                                    <input type="number" id="quantity-${product.id}" value="1" min="1" class="form-control">
+                                    <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, 1)">+</button>
+                                </div>
+                                <button onclick="addToCart(${product.id})" class="btn btn-primary w-100">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading products:', error);
+                container.innerHTML = '<p>Failed to load products</p>';
+            }
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const productCards = document.querySelectorAll('#product-container .col');
+                
+                productCards.forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    const description = card.querySelector('.card-text').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            updateCartUI();
+            setupSearch();
+        });
+    </script>
+</body>
+</html>
+
+=================================================== product_list.html 2024/10/04
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        .custom-card {
+            border-radius: 15px;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .cart-total {
+            padding: 10px;
+            font-weight: bold;
+            text-align: right;
+        }
+        #cart-container {
+            padding: 15px;
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .quantity-control button {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+        }
+        .quantity-control input {
+            width: 50px;
+            text-align: center;
+            margin: 0 5px;
+        }
+        #debug-log {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 300px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card shadow-lg border-0 mb-5 custom-card">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h2 class="mb-0">Product Catalog</h2>
+            </div>
+
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search products...">
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                        <button onclick="debugCartService()" class="btn btn-warning me-2">Debug Cart</button>
+                        <a href="/products/new" class="btn btn-success me-2">Add New Product</a>
+                        <a href="/auth/logout" class="btn btn-outline-danger">Logout</a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div id="cart-container" class="card">
+                            <h3>Your Cart</h3>
+                            <div class="cart-items">
+                                <!-- Cart items will be dynamically inserted here -->
+                            </div>
+                            <div class="cart-total">
+                                <!-- Cart total will be dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div id="product-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                            <!-- Products will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="debug-log"></div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+    <!-- Cart and Product Management Scripts -->
+    <script>
+        // Debug logging
+        function logDebug(message, data = null) {
+            const debugLog = document.getElementById('debug-log');
+            const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+            let logMessage = `${timestamp} - ${message}`;
+            if (data) {
+                logMessage += `\n${JSON.stringify(data, null, 2)}`;
+            }
+            debugLog.innerHTML += logMessage + '\n\n';
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(message, data);
+        }
+
+        // Utility function to get current user ID
+        function getCurrentUserId() {
+            // For debug purposes, return a hardcoded ID
+            return 1;
+        }
+
+        // Utility function to format price in Rands
+        function formatPriceInRands(price) {
+            return `R ${price.toFixed(2)}`;
+        }
+
+        // Debug function for cart service
+        async function debugCartService() {
+            const debugLog = document.getElementById('debug-log');
+            debugLog.style.display = 'block';
+            logDebug('Starting cart service debug...');
+
+            try {
+                // Test direct cart service access
+                logDebug('Testing direct cart service access...');
+                const directResponse = await fetch('http://localhost:8003/');
+                const directData = await directResponse.text();
+                logDebug('Direct access response:', directData);
+            } catch (error) {
+                logDebug('Direct access error:', error.message);
+            }
+
+            try {
+                // Test cart service through nginx
+                logDebug('Testing cart service through nginx...');
+                const nginxResponse = await fetch('/cart/');
+                const nginxData = await nginxResponse.text();
+                logDebug('Nginx proxy response:', nginxData);
+            } catch (error) {
+                logDebug('Nginx proxy error:', error.message);
+            }
+        }
+
+        // Cart functionality
+        // Add to Cart functionality
+        async function addToCart(productId) {
+            const quantityInput = document.getElementById(`quantity-${productId}`);
+            const quantity = parseInt(quantityInput.value);
+            const userId = getCurrentUserId();
+
+            logDebug('Adding to cart...', { productId, quantity, userId });
+
+            try {
+                const response = await fetch(`/cart/add?user_id=${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: quantity,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                logDebug('Added to cart successfully', data);
+                
+                // Update the cart UI to reflect the new item
+                await updateCartUI();
+                alert('Product added to cart!');
+            } catch (error) {
+                logDebug('Error adding to cart:', error.message);
+                alert(`Failed to add product to cart: ${error.message}`);
+            }
+        }
+
+        async function removeFromCart(itemId) {
+            const userId = getCurrentUserId();
+            logDebug('Removing from cart...', { itemId, userId });
+            
+            try {
+                const response = await fetch(`/cart/${userId}/${itemId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                }
+                
+                logDebug('Removed from cart successfully');
+                await updateCartUI();
+            } catch (error) {
+                logDebug('Error removing from cart:', error.message);
+                alert(`Failed to remove item from cart: ${error.message}`);
+            }
+        }
+
+        // Update Cart UI function
+        async function updateCartUI() {
+            const cartContainer = document.getElementById('cart-container');
+            const userId = getCurrentUserId();
+            logDebug('Updating cart UI...', { userId });
+
+            try {
+                const response = await fetch(`/cart/${userId}`);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                }
+
+                const cartData = await response.json();
+                logDebug('Cart data received', cartData);
+
+                let cartHTML = '<h3>Your Cart</h3>';
+                if (cartData.items.length === 0) {
+                    cartHTML += '<p>Your cart is empty</p>';
+                } else {
+                    cartHTML += '<div class="cart-items">';
+                    cartData.items.forEach(item => {
+                        cartHTML += `
+                            <div class="cart-item">
+                                <span>Product ID: ${item.product_id} (Price: ${formatPriceInRands(item.price)})</span>
+                                <span>${item.quantity} x ${formatPriceInRands(item.price)}</span>
+                                <button class="btn btn-sm btn-danger" onclick="removeFromCart(${item.id})">Remove</button>
+                            </div>
+                        `;
+                    });
+                    cartHTML += '</div>';
+                    cartHTML += `
+                        <div class="cart-total">
+                            Total: ${formatPriceInRands(cartData.total)}
+                        </div>
+                    `;
+                }
+                cartContainer.innerHTML = cartHTML;
+            } catch (error) {
+                logDebug('Error updating cart:', error.message);
+                cartContainer.innerHTML = `<p>Failed to load cart: ${error.message}</p>`;
+            }
+        }
+
+        function adjustQuantity(productId, change) {
+            const input = document.getElementById(`quantity-${productId}`);
+            let value = parseInt(input.value) + change;
+            if (value < 1) value = 1;
+            input.value = value;
+        }
+
+        // Product loading functionality
+        async function loadProducts() {
+            const container = document.getElementById('product-container');
+            logDebug('Loading products...');
+            
+            try {
+                const response = await fetch('/products/');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const products = await response.json();
+                logDebug('Products loaded successfully', { count: products.length });
+                
+                container.innerHTML = products.map(product => `
+                    <div class="col">
+                        <div class="card h-100">
+                            <img src="${product.image_url}" class="card-img-top" alt="${product.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${product.name}</h5>
+                                <p class="card-text">${product.description}</p>
+                                <p class="card-text"><strong>${formatPriceInRands(product.price)}</strong></p>
+                                <div class="quantity-control">
+                                    <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, -1)">-</button>
+                                    <input type="number" id="quantity-${product.id}" value="1" min="1" class="form-control">
+                                    <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, 1)">+</button>
+                                </div>
+                                <button onclick="addToCart(${product.id})" class="btn btn-primary w-100">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                logDebug('Error loading products:', error.message);
+                container.innerHTML = `<p class="col-12 text-center">Failed to load products: ${error.message}</p>`;
+            }
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const productCards = document.querySelectorAll('#product-container .col');
+                
+                productCards.forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    const description = card.querySelector('.card-text').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            logDebug('Initializing page...');
+            loadProducts();
+            updateCartUI();
+            setupSearch();
+        });
+    </script>
+</body>
+</html>
+
+
+
+=========================================== auth, shcemas, main 2024/10/08
+
+main.py:
+from fastapi import FastAPI, Depends, HTTPException, Request, status, Form
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from app import models, schemas, database, auth
+from datetime import timedelta
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+app = FastAPI()
+
+# CORS settings
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this to restrict origins as needed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Templates setup
+templates = Jinja2Templates(directory="templates")
+
+# Ensure the database tables are created
+models.Base.metadata.create_all(bind=database.engine)
+
+@app.get("/auth/register")
+async def get_register_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
+# Updated /auth/register route to include user roles
+@app.post("/auth/register", response_model=schemas.UserOut)
+def register_user(
+    username: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    role: schemas.RoleEnum = Form(default=schemas.RoleEnum.USER),  # Include role with default
+    db: Session = Depends(database.get_db)
+):
+    try:
+        logger.debug(f"Attempting to register user: {username}, {email}, role: {role}")
+        db_user = db.query(models.User).filter(models.User.email == email).first()
+        if db_user:
+            logger.warning(f"Email already registered: {email}")
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        hashed_password = auth.get_password_hash(password)
+        new_user = models.User(username=username, email=email, hashed_password=hashed_password, role=role)
+        
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        
+        logger.info(f"Successfully registered user: {username}, {email}, role: {role}")
+        return new_user
+    except Exception as e:
+        logger.error(f"Error registering user: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@app.post("/auth/login", response_model=schemas.Token)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
+    user = auth.authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = auth.create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    
+    # Ensure the user role is returned
+    logger.info(f"User logged in: {user.username}, role: {user.role}")
+    return {"access_token": access_token, "token_type": "bearer", "role": user.role}
+
+@app.get("/users/me", response_model=schemas.UserOut)
+async def read_users_me(current_user: models.User = Depends(auth.get_current_user)):
+    return current_user
+
+schemas.py:
+from pydantic import BaseModel, EmailStr
+from enum import Enum
+
+# Enum for user roles
+class RoleEnum(str, Enum):
+    USER = "user"
+    ADMIN = "admin"
+
+# Schema for creating a new user
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+    role: RoleEnum = RoleEnum.USER  # Default to 'user' role
+
+# Schema for outputting user details
+class UserOut(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+    role: RoleEnum  # Include user role in the output
+
+    class Config:
+        orm_mode = True
+
+# Schema for user login
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+# Schema for authentication tokens
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+# Schema for token data (used during authentication)
+class TokenData(BaseModel):
+    email: str | None = None
+
+
+login.py:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        .background-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .login-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            z-index: 1;
+            transition: border 0.3s ease;
+        }
+        .login-container:hover {
+            border: 2px solid #3f7fc2;
+        }
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .google-login {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-svg">
+        <!-- SVG Background -->
+        <svg id="visual" viewBox="0 0 1000 480" width="1000" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+            <rect x="0" y="0" width="1000" height="480" fill="#ffffff"></rect>
+            <defs>
+                <linearGradient id="grad1_0" x1="55%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="5.555555555555554%" stop-color="#3f7fc2" stop-opacity="1"></stop>
+                    <stop offset="94.44444444444446%" stop-color="#3f7fc2" stop-opacity="1"></stop>
+                </linearGradient>
+            </defs>
+            <g transform="translate(1020, -100)">
+                <path d="M0 405C-47 385.3 -94.1 365.7 -144.7 349.2C-195.2 332.8 -249.3 319.5 -286.4 286.4C-323.4 253.3 -343.4 200.3 -360.3 149.2C-377.2 98.2 -391.1 49.1 -405 0L0 0Z" fill="#d3ddf0"></path>
+                <path d="M0 270C-31.4 256.9 -62.7 243.8 -96.4 232.8C-130.2 221.8 -166.2 213 -190.9 190.9C-215.6 168.8 -228.9 133.5 -240.2 99.5C-251.5 65.5 -260.7 32.7 -270 0L0 0Z" fill="#789dd1"></path>
+                <path d="M0 135C-15.7 128.4 -31.4 121.9 -48.2 116.4C-65.1 110.9 -83.1 106.5 -95.5 95.5C-107.8 84.4 -114.5 66.8 -120.1 49.7C-125.7 32.7 -130.4 16.4 -135 0L0 0Z" fill="#3f7fc2"></path>
+            </g>
+            <g transform="translate(-20, 550)">
+                <path d="M0 -405C51.9 -398.5 103.8 -392 155 -374.2C206.1 -356.4 256.5 -327.2 285.7 -285.7C314.8 -244.1 322.7 -190.1 339.1 -140.4C355.4 -90.8 380.2 -45.4 405 0L0 0Z" fill="#d3ddf0"></path>
+                <path d="M0 -270C34.6 -265.7 69.2 -261.3 103.3 -249.4C137.4 -237.6 171 -218.2 190.4 -190.4C209.9 -162.7 215.1 -126.8 226 -93.6C236.9 -60.5 253.5 -30.3 270 0L0 0Z" fill="#789dd1"></path>
+                <path d="M0 -135C17.3 -132.8 34.6 -130.7 51.7 -124.7C68.7 -118.8 85.5 -109.1 95.2 -95.2C104.9 -81.4 107.6 -63.4 113 -46.8C118.5 -30.3 126.7 -15.1 135 0L0 0Z" fill="#3f7fc2"></path>
+            </g>
+        </svg>
+    </div>
+
+    <div class="login-container">
+        <h2>Login</h2>
+        
+        <!-- Login Form -->
+        <form action="/auth/login" method="post" id="loginForm">
+            <div class="form-group">
+                <label for="username">Email:</label>
+                <input type="email" id="username" name="username" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+
+        <!-- Google Login Button -->
+        <div class="google-login">
+            <div id="g_id_onload"
+                 data-client_id="422582982715-i1nckd6lehufls1vihouaag0uflvni95.apps.googleusercontent.com"
+                 data-callback="handleCredentialResponse">
+            </div>
+            <div class="g_id_signin" data-type="standard"></div>
+        </div>
+
+        <!-- Registration Link -->
+        <div class="register-link">
+            <p>Don't have an account? <a href="register.html">Click here to register</a></p>
+        </div>
+    </div>
+
+    <!-- Google Sign-In API Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <script>
+        // Regular login form submission
+// Regular login form submission
+document.getElementById('loginForm').onsubmit = function(e) {
+    e.preventDefault();
+    var username = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
+
+    fetch("/auth/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data); // Log the response data for debugging
+        if (data.access_token) {
+            localStorage.setItem('token', data.access_token);
+            // Check the role and redirect accordingly
+            if (data.role === "ADMIN") {
+                window.location.href = "/product_list.html"; // Redirect to admin page
+            } else {
+                window.location.href = "/index.html"; // Redirect to user page
+            }
+        } else {
+            alert("Login failed: " + data.detail);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred. Please try again.");
+    });
+};
+
+// Google Sign-In handling
+function handleCredentialResponse(response) {
+    fetch('/auth/google-login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `token=${response.credential}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data); // Log the response data for debugging
+        if (data.access_token) {
+            localStorage.setItem('token', data.access_token);
+            // Check the role and redirect accordingly
+            if (data.role === "ADMIN") {
+                window.location.href = "/product_list.html"; // Redirect to admin page
+            } else {
+                window.location.href = "/index.html"; // Redirect to user page
+            }
+        } else {
+            alert("Google login failed: " + (data.detail || "Unknown error"));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("An error occurred during Google login. Please try again.");
+    });
+}
+
+    </script>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+
+

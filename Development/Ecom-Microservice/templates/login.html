@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login</title>
+	<!-- Bootstrap CSS CDN -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+	body {
+		background-color: #f8f9fa;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100vh;
+		overflow: hidden;
+		position: relative;
+	}
+
+	.background-svg {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: -1;
+	}
+
+	svg {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.login-container {
+		background-color: white;
+		padding: 30px;
+		border-radius: 10px;
+		box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+		width: 100%;
+		max-width: 400px;
+		z-index: 1;
+		transition: border 0.3s ease;
+	}
+
+	.login-container:hover {
+		border: 2px solid #3f7fc2;
+	}
+
+	.login-container h2 {
+		text-align: center;
+		margin-bottom: 20px;
+	}
+
+	.google-login {
+		display: flex;
+		justify-content: center;
+		margin-top: 20px;
+	}
+
+	.register-link {
+		text-align: center;
+		margin-top: 20px;
+	}
+	</style>
+</head>
+
+<body>
+	<div class="background-svg">
+		<!-- SVG Background -->
+		<svg id="visual" viewBox="0 0 1000 480" width="1000" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+			<rect x="0" y="0" width="1000" height="480" fill="#ffffff"></rect>
+			<defs>
+				<linearGradient id="grad1_0" x1="55%" y1="0%" x2="100%" y2="100%">
+					<stop offset="5.555555555555554%" stop-color="#3f7fc2" stop-opacity="1"></stop>
+					<stop offset="94.44444444444446%" stop-color="#3f7fc2" stop-opacity="1"></stop>
+				</linearGradient>
+			</defs>
+			<g transform="translate(1020, -100)">
+				<path d="M0 405C-47 385.3 -94.1 365.7 -144.7 349.2C-195.2 332.8 -249.3 319.5 -286.4 286.4C-323.4 253.3 -343.4 200.3 -360.3 149.2C-377.2 98.2 -391.1 49.1 -405 0L0 0Z" fill="#d3ddf0"></path>
+				<path d="M0 270C-31.4 256.9 -62.7 243.8 -96.4 232.8C-130.2 221.8 -166.2 213 -190.9 190.9C-215.6 168.8 -228.9 133.5 -240.2 99.5C-251.5 65.5 -260.7 32.7 -270 0L0 0Z" fill="#789dd1"></path>
+				<path d="M0 135C-15.7 128.4 -31.4 121.9 -48.2 116.4C-65.1 110.9 -83.1 106.5 -95.5 95.5C-107.8 84.4 -114.5 66.8 -120.1 49.7C-125.7 32.7 -130.4 16.4 -135 0L0 0Z" fill="#3f7fc2"></path>
+			</g>
+			<g transform="translate(-20, 550)">
+				<path d="M0 -405C51.9 -398.5 103.8 -392 155 -374.2C206.1 -356.4 256.5 -327.2 285.7 -285.7C314.8 -244.1 322.7 -190.1 339.1 -140.4C355.4 -90.8 380.2 -45.4 405 0L0 0Z" fill="#d3ddf0"></path>
+				<path d="M0 -270C34.6 -265.7 69.2 -261.3 103.3 -249.4C137.4 -237.6 171 -218.2 190.4 -190.4C209.9 -162.7 215.1 -126.8 226 -93.6C236.9 -60.5 253.5 -30.3 270 0L0 0Z" fill="#789dd1"></path>
+				<path d="M0 -135C17.3 -132.8 34.6 -130.7 51.7 -124.7C68.7 -118.8 85.5 -109.1 95.2 -95.2C104.9 -81.4 107.6 -63.4 113 -46.8C118.5 -30.3 126.7 -15.1 135 0L0 0Z" fill="#3f7fc2"></path>
+			</g>
+		</svg>
+	</div>
+	<div class="login-container">
+		<h2>Login</h2>
+		<!-- Login Form -->
+		<form action="/auth/login" method="post" id="loginForm">
+			<div class="form-group">
+				<label for="username">Email:</label>
+				<input type="email" id="username" name="username" class="form-control" required>
+			</div>
+			<div class="form-group">
+				<label for="password">Password:</label>
+				<input type="password" id="password" name="password" class="form-control" required>
+			</div>
+			<button type="submit" class="btn btn-primary btn-block">Login</button>
+		</form>
+		<!-- Google Login Button -->
+		<div class="google-login">
+			<div id="g_id_onload" data-client_id="422582982715-i1nckd6lehufls1vihouaag0uflvni95.apps.googleusercontent.com" data-callback="handleCredentialResponse">
+			</div>
+			<div class="g_id_signin" data-type="standard"></div>
+		</div>
+		<!-- Registration Link -->
+		<div class="register-link">
+			<p>Don't have an account? <a href="register.html">Click here to register</a></p>
+		</div>
+	</div>
+	<!-- Google Sign-In API Script -->
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
+	<script>
+	// Regular login form submission
+	// Regular login form submission
+	document.getElementById('loginForm').onsubmit = function(e) {
+		e.preventDefault();
+		var username = document.getElementById('username').value;
+		var password = document.getElementById('password').value;
+		fetch("/auth/login", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded",
+			},
+			body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+		}).then(response => response.json()).then(data => {
+			console.log(data); // Log the response data for debugging
+			if(data.access_token) {
+				localStorage.setItem('token', data.access_token);
+				// Force redirect to product_list.html regardless of role
+				window.location.href = "/product_list.html";
+			} else {
+				alert("Login failed: " + data.detail);
+			}
+		}).catch(error => {
+			console.error("Error:", error);
+			alert("An error occurred. Please try again.");
+		});
+	};
+	// Google Sign-In handling
+	function handleCredentialResponse(response) {
+		fetch('/auth/google-login', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+			body: `token=${response.credential}`
+		}).then(response => response.json()).then(data => {
+			console.log(data); // Log the response data for debugging
+			if(data.access_token) {
+				localStorage.setItem('token', data.access_token);
+				// Check the role and redirect accordingly
+				if(data.role === "ADMIN") {
+					window.location.href = "/product_list.html"; // Redirect to admin page
+				} else {
+					window.location.href = "/product_list.html"; // Redirect to user page
+				}
+			} else {
+				alert("Google login failed: " + (data.detail || "Unknown error"));
+			}
+		}).catch(error => {
+			console.error('Error:', error);
+			alert("An error occurred during Google login. Please try again.");
+		});
+	}
+	</script>
+	<!-- Bootstrap JS and Popper.js -->
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
