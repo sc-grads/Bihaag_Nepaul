@@ -1,0 +1,23 @@
+docker-compose exec db psql -U fastapi -d ecommerce_db
+
+# Once inside psql, you can use these commands:
+# List all tables
+\dt
+
+# Count rows in a specific table
+SELECT COUNT(*) FROM users;
+SELECT COUNT(*) FROM products;
+SELECT COUNT(*) FROM cart_items;
+
+# See the structure of a table
+\d users
+\d products
+\d cart_items
+
+# Sample data from tables
+SELECT * FROM users LIMIT 5;
+SELECT * FROM products LIMIT 5;
+SELECT * FROM cart_items LIMIT 5;
+
+# To exit psql
+\q

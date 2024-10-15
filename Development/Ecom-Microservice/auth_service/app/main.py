@@ -76,7 +76,7 @@ async def login(
         )
     
     # Set cookie on successful login
-    response.set_cookie(key="user_id", value=user.id, httponly=True)
+    response.set_cookie(key="user_id", value=str(user.id), httponly=True)
 
     access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = auth.create_access_token(

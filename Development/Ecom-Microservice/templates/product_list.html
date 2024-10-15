@@ -78,9 +78,9 @@
 			<div class="card-header bg-primary text-white text-center py-3">
 				<h2 class="mb-0">Product Catalog</h2>
 			</div>
-            <div id="userProfile" class="mt-3">
-                <!-- User profile will be dynamically inserted here -->
-            </div>
+			<div id="userProfile" class="mt-3">
+				<!-- User profile will be dynamically inserted here -->
+			</div>
 			<div class="card-body">
 				<div class="row mb-4">
 					<div class="col-md-6">
@@ -220,6 +220,7 @@
 			alert(`Failed to remove item from cart: ${error.message}`);
 		}
 	}
+	/////////////////////////////////////////////////////////////////////////////
 	// Update Cart UI function
 	async function updateCartUI() {
 		const cartContainer = document.getElementById('cart-container');
@@ -228,34 +229,42 @@
 			userId
 		});
 		try {
-			const response = await fetch(`/cart/${userId}`);
+			const response = await fetch(`/cart`, {
+				credentials: 'include' // Important for sending cookies
+			});
 			if(!response.ok) {
 				const errorData = await response.json();
 				throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
 			}
 			const cartData = await response.json();
 			logDebug('Cart data received', cartData);
+			// Prepare HTML for cart display
 			let cartHTML = '<h3>Your Cart</h3>';
+			const cartItems = document.querySelector('.cart-items');
+			const cartTotal = document.querySelector('.cart-total');
+			// Clear existing cart items
+			cartItems.innerHTML = '';
 			if(cartData.items.length === 0) {
 				cartHTML += '<p>Your cart is empty</p>';
 			} else {
 				cartHTML += '<div class="cart-items">';
 				cartData.items.forEach(item => {
 					cartHTML += `
-                            <div class="cart-item">
-                                <span>Product ID: ${item.product_id} (Price: ${formatPriceInRands(item.price)})</span>
-                                <span>${item.quantity} x ${formatPriceInRands(item.price)}</span>
-                                <button class="btn btn-sm btn-danger" onclick="removeFromCart(${item.id})">Remove</button>
-                            </div>
-                        `;
+                    <div class="cart-item">
+                        <span>Product ID: ${item.product_id} (Price: ${formatPriceInRands(item.price)})</span>
+                        <span>${item.quantity} x ${formatPriceInRands(item.price)}</span>
+                        <button class="btn btn-sm btn-danger" onclick="removeFromCart(${item.id})">Remove</button>
+                    </div>
+                `;
 				});
 				cartHTML += '</div>';
-				cartHTML += `
-                        <div class="cart-total">
-                            Total: ${formatPriceInRands(cartData.total)}
-                        </div>
-                    `;
 			}
+			// Update total
+			cartHTML += `
+            <div class="cart-total">
+                Total: ${formatPriceInRands(cartData.total)}
+            </div>
+        `;
 			cartContainer.innerHTML = cartHTML;
 		} catch (error) {
 			logDebug('Error updating cart UI:', error.message);
@@ -401,7 +410,6 @@
 			productContainer.innerHTML += productCard;
 		});
 	}
-
 	// Call loadUserProfile on page load
 	window.onload = () => {
 		loadUserProfile();
