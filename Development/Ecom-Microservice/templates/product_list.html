@@ -84,12 +84,32 @@
 						<div class="input-group">
 							<span class="input-group-text"><i class="bi bi-search"></i></span>
 							<input type="text" class="form-control" id="searchInput" placeholder="Search products...">
+							<div id="searchResults" class="mt-2"></div>
 						</div>
 					</div>
 					<div class="col-md-6 text-md-end mt-3 mt-md-0">
 						<button onclick="debugCartService()" class="btn btn-warning me-2">Debug Cart</button>
 						<a href="/products/new" class="btn btn-success me-2">Add New Product</a>
 						<a href="/auth/logout" class="btn btn-outline-danger">Logout</a>
+					</div>
+				</div>
+				<div class="row mb-4">
+					<div class="col-md-4">
+						<select id="brandFilter" class="form-select" onchange="filterByBrand()">
+							<option value="">Select Brand</option>
+							<option value="Brand1">Brand 1</option>
+							<option value="Brand2">Brand 2</option>
+							<!-- Add more brands as needed -->
+						</select>
+					</div>
+					<div class="col-md-4">
+						<select id="yearFilter" class="form-select" onchange="filterByYear()">
+							<option value="">Select Year</option>
+							<option value="2022">2022</option>
+							<option value="2023">2023</option>
+							<option value="2024">2024</option>
+							<!-- Add more years as needed -->
+						</select>
 					</div>
 				</div>
 				<div class="row">
@@ -196,42 +216,41 @@
 		}
 	}
 	// Function to update the cart UI
-    // Function to update the cart UI
-    async function updateCartUI() {
-        const cartContainer = document.getElementById('cart-container');
-        logDebug('Updating cart UI...');
-        try {
-            logDebug('Fetching cart data...');
-            const response = await fetch(`http://localhost:8003/cart`, {
-                method: 'GET',
-                credentials: 'include' // This ensures cookies are sent with the request
-            });
-            logDebug('Response received', {
-                status: response.status,
-                statusText: response.statusText,
-                headers: Object.fromEntries(response.headers.entries())
-            });
-            if (!response.ok) {
-                let errorMessage;
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.detail || `HTTP error! status: ${response.status}`;
-                } catch (e) {
-                    errorMessage = `HTTP error! status: ${response.status}`;
-                }
-                throw new Error(errorMessage);
-            }
-            const cartData = await response.json();
-            logDebug('Cart data received', cartData);
-
-            // Clear previous cart HTML
-            let cartHTML = '<h3>Your Cart</h3>';
-            if (cartData.items.length === 0) {
-                cartHTML += '<p>Your cart is empty</p>';
-            } else {
-                cartHTML += '<div class="cart-items">';
-                cartData.items.forEach(item => {
-                    cartHTML += `
+	// Function to update the cart UI
+	async function updateCartUI() {
+		const cartContainer = document.getElementById('cart-container');
+		logDebug('Updating cart UI...');
+		try {
+			logDebug('Fetching cart data...');
+			const response = await fetch(`http://localhost:8003/cart`, {
+				method: 'GET',
+				credentials: 'include' // This ensures cookies are sent with the request
+			});
+			logDebug('Response received', {
+				status: response.status,
+				statusText: response.statusText,
+				headers: Object.fromEntries(response.headers.entries())
+			});
+			if(!response.ok) {
+				let errorMessage;
+				try {
+					const errorData = await response.json();
+					errorMessage = errorData.detail || `HTTP error! status: ${response.status}`;
+				} catch (e) {
+					errorMessage = `HTTP error! status: ${response.status}`;
+				}
+				throw new Error(errorMessage);
+			}
+			const cartData = await response.json();
+			logDebug('Cart data received', cartData);
+			// Clear previous cart HTML
+			let cartHTML = '<h3>Your Cart</h3>';
+			if(cartData.items.length === 0) {
+				cartHTML += '<p>Your cart is empty</p>';
+			} else {
+				cartHTML += '<div class="cart-items">';
+				cartData.items.forEach(item => {
+					cartHTML += `
                         <div class="cart-item">
                             <span>${item.product_id}</span> <!-- You might want to fetch the product name -->
                             <span>Quantity: ${item.quantity}</span>
@@ -239,22 +258,20 @@
                             <button onclick="removeFromCart(${item.id})" class="btn btn-danger btn-sm">Remove</button>
                         </div>
                     `;
-                });
-                cartHTML += '</div>';
-            }
-            cartHTML += `<div class="cart-total">Total: ${formatPriceInRands(cartData.total)}</div>`;
-            
-            // Insert the updated HTML
-            cartContainer.innerHTML = cartHTML;
-        } catch (error) {
-            logDebug('Error updating cart:', {
-                message: error.message,
-                stack: error.stack
-            });
-            cartContainer.innerHTML = `<p>Failed to load cart: ${error.message}</p>`;
-        }
-    }
-
+				});
+				cartHTML += '</div>';
+			}
+			cartHTML += `<div class="cart-total">Total: ${formatPriceInRands(cartData.total)}</div>`;
+			// Insert the updated HTML
+			cartContainer.innerHTML = cartHTML;
+		} catch (error) {
+			logDebug('Error updating cart:', {
+				message: error.message,
+				stack: error.stack
+			});
+			cartContainer.innerHTML = `<p>Failed to load cart: ${error.message}</p>`;
+		}
+	}
 	// Function to adjust product quantity
 	function adjustQuantity(productId, change) {
 		const input = document.getElementById(`quantity-${productId}`);
@@ -301,6 +318,80 @@
 			container.innerHTML = `<p class="col-12 text-center">Failed to load products: ${error.message}</p>`;
 		}
 	}
+	async function filterByBrand() {
+		const brandFilter = document.getElementById('brandFilter').value;
+		let url = '/products';
+		if(brandFilter) {
+			url = `/products/brand/${brandFilter}`;
+		}
+		const response = await fetch(url);
+		const products = await response.json();
+		const productContainer = document.getElementById('product-container');
+		logDebug('Products filtered by brand', {
+			brandFilter,
+			products
+		});
+		productContainer.innerHTML = '';
+		products.forEach(product => {
+			const productCard = `
+            <div class="col mb-4">
+                <div class="card custom-card">
+                    <img src="${product.image_url}" alt="${product.name}" class="img-fluid img-thumbnail" style="max-width: 150px;">
+                    <div class="card-body">
+                        <h5 class="card-title">${product.name}</h5>
+                        <p class="card-text">Brand: ${product.brand}</p>
+                        <p class="card-text">Price: ${formatPriceInRands(product.price)}</p>
+                        <p class="card-text">Year: ${new Date(product.time_added).getFullYear()}</p>
+                        <div class="quantity-control">
+                            <button onclick="document.getElementById('quantity-${product.id}').stepDown()">-</button>
+                            <input type="number" id="quantity-${product.id}" value="1" min="1">
+                            <button onclick="document.getElementById('quantity-${product.id}').stepUp()">+</button>
+                        </div>
+                        <button class="btn btn-primary" onclick="addToCart(${product.id})">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        `;
+			productContainer.innerHTML += productCard;
+		});
+	}
+	async function filterByYear() {
+		const yearFilter = document.getElementById('yearFilter').value;
+		let url = '/products';
+		if(yearFilter) {
+			url = `/products/year/${yearFilter}`;
+		}
+		const response = await fetch(url);
+		const products = await response.json();
+		const productContainer = document.getElementById('product-container');
+		logDebug('Products filtered by year', {
+			yearFilter,
+			products
+		});
+		productContainer.innerHTML = '';
+		products.forEach(product => {
+			const productCard = `
+            <div class="col mb-4">
+                <div class="card custom-card">
+                    <img src="${product.image_url}" alt="${product.name}" class="img-fluid img-thumbnail" style="max-width: 150px;">
+                    <div class="card-body">
+                        <h5 class="card-title">${product.name}</h5>
+                        <p class="card-text">Brand: ${product.brand}</p>
+                        <p class="card-text">Price: ${formatPriceInRands(product.price)}</p>
+                        <p class="card-text">Year: ${new Date(product.time_added).getFullYear()}</p>
+                        <div class="quantity-control">
+                            <button onclick="document.getElementById('quantity-${product.id}').stepDown()">-</button>
+                            <input type="number" id="quantity-${product.id}" value="1" min="1">
+                            <button onclick="document.getElementById('quantity-${product.id}').stepUp()">+</button>
+                        </div>
+                        <button class="btn btn-primary" onclick="addToCart(${product.id})">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        `;
+			productContainer.innerHTML += productCard;
+		});
+	}
 	// Function to set up search functionality
 	function setupSearch() {
 		const searchInput = document.getElementById('searchInput');
@@ -318,6 +409,69 @@
 			});
 		});
 	}
+	//////////////////////////////////////////SEARCH
+	function setupSearch() {
+		const searchInput = document.getElementById('searchInput');
+		const searchResults = document.getElementById('searchResults');
+		let debounceTimer;
+		searchInput.addEventListener('input', function(e) {
+			clearTimeout(debounceTimer);
+			debounceTimer = setTimeout(() => {
+				const searchTerm = e.target.value.trim();
+				if(searchTerm.length > 2) {
+					performSearch(searchTerm);
+				} else {
+					searchResults.innerHTML = '';
+				}
+			}, 300);
+		});
+	}
+	// Function to perform the search
+	// Function to set up search functionality
+	function setupSearch() {
+		const searchInput = document.getElementById('searchInput');
+		let debounceTimer;
+		searchInput.addEventListener('input', function(e) {
+			clearTimeout(debounceTimer);
+			debounceTimer = setTimeout(() => {
+				const searchTerm = e.target.value.trim().toLowerCase();
+				filterProducts(searchTerm);
+			}, 300);
+		});
+	}
+	// Function to filter products based on search term
+	function filterProducts(searchTerm) {
+		const productCards = document.querySelectorAll('#product-container .col');
+		let visibleProducts = 0;
+		productCards.forEach(card => {
+			const title = card.querySelector('.card-title').textContent.toLowerCase();
+			const description = card.querySelector('.card-text').textContent.toLowerCase();
+			if(title.includes(searchTerm) || description.includes(searchTerm)) {
+				card.style.display = '';
+				visibleProducts++;
+			} else {
+				card.style.display = 'none';
+			}
+		});
+		// Show a message if no products match the search
+		const noResultsMessage = document.getElementById('no-results-message');
+		if(visibleProducts === 0) {
+			if(!noResultsMessage) {
+				const message = document.createElement('p');
+				message.id = 'no-results-message';
+				message.className = 'col-12 text-center mt-4';
+				message.textContent = 'No products found matching your search.';
+				document.getElementById('product-container').appendChild(message);
+			}
+		} else if(noResultsMessage) {
+			noResultsMessage.remove();
+		}
+		logDebug('Filtered products', {
+			searchTerm,
+			visibleProducts
+		});
+	}
+	/////////////////////////////////////
 	// Initialize the page
 	document.addEventListener('DOMContentLoaded', function() {
 		logDebug('Initializing page...');
