@@ -78,9 +78,6 @@
 			<div class="card-header bg-primary text-white text-center py-3">
 				<h2 class="mb-0">Product Catalog</h2>
 			</div>
-			<div id="userProfile" class="mt-3">
-				<!-- User profile will be dynamically inserted here -->
-			</div>
 			<div class="card-body">
 				<div class="row mb-4">
 					<div class="col-md-6">
@@ -90,29 +87,9 @@
 						</div>
 					</div>
 					<div class="col-md-6 text-md-end mt-3 mt-md-0">
+						<button onclick="debugCartService()" class="btn btn-warning me-2">Debug Cart</button>
 						<a href="/products/new" class="btn btn-success me-2">Add New Product</a>
-						<a href="/login.html" class="btn btn-outline-danger">Logout</a>
-					</div>
-				</div>
-				<div class="row mb-4">
-					<div class="col-md-6">
-						<h5>Filter by Brand:</h5>
-						<select id="brandFilter" class="form-select" onchange="filterByBrand()">
-							<option value="">All Brands</option>
-							<option value="Brand1">Brand1</option>
-							<option value="Brand2">Brand2</option>
-							<option value="Brand3">Brand3</option>
-							<!-- Add more brands as needed -->
-						</select>
-					</div>
-					<div class="col-md-6">
-						<h5>Filter by Year:</h5>
-						<select id="yearFilter" class="form-select" onchange="filterByYear()">
-							<option value="">All Years</option>
-							<option value="2023">2023</option>
-							<option value="2024">2024</option>
-							<!-- Add more years as needed -->
-						</select>
+						<a href="/auth/logout" class="btn btn-outline-danger">Logout</a>
 					</div>
 				</div>
 				<div class="row">
@@ -156,33 +133,31 @@
 	}
 	// Utility function to get current user ID
 	function getCurrentUserId() {
-		// For debug purposes, return a hardcoded ID
-		return 1;
+		return 2; // Assuming you are using user ID of 2
 	}
 	// Utility function to format price in Rands
 	function formatPriceInRands(price) {
 		return `R ${price.toFixed(2)}`;
 	}
-	// Cart functionality
-	// Add to Cart functionality
+	// Debug function for adding to cart
 	async function addToCart(productId) {
 		const quantityInput = document.getElementById(`quantity-${productId}`);
 		const quantity = parseInt(quantityInput.value);
-		const userId = getCurrentUserId();
 		logDebug('Adding to cart...', {
 			productId,
-			quantity,
-			userId
+			quantity
 		});
 		try {
-			const response = await fetch(`/cart/add?user_id=${userId}`, {
+			const response = await fetch(`/cart/add`, {
 				method: 'POST',
+				credentials: 'include', // Include cookies for CORS
 				headers: {
 					'Content-Type': 'application/json',
 				},
+				mode: 'cors',
 				body: JSON.stringify({
 					product_id: productId,
-					quantity: quantity,
+					quantity
 				}),
 			});
 			if(!response.ok) {
@@ -191,7 +166,6 @@
 			}
 			const data = await response.json();
 			logDebug('Added to cart successfully', data);
-			// Update the cart UI to reflect the new item
 			await updateCartUI();
 			alert('Product added to cart!');
 		} catch (error) {
@@ -199,15 +173,16 @@
 			alert(`Failed to add product to cart: ${error.message}`);
 		}
 	}
+	// Function for removing items from the cart
 	async function removeFromCart(itemId) {
-		const userId = getCurrentUserId();
 		logDebug('Removing from cart...', {
-			itemId,
-			userId
+			itemId
 		});
 		try {
-			const response = await fetch(`/cart/${userId}/${itemId}`, {
-				method: 'DELETE'
+			const response = await fetch(`/cart/${itemId}`, {
+				method: 'DELETE',
+				credentials: 'include', // Include cookies for CORS
+				mode: 'cors',
 			});
 			if(!response.ok) {
 				const errorData = await response.json();
@@ -220,201 +195,136 @@
 			alert(`Failed to remove item from cart: ${error.message}`);
 		}
 	}
-	/////////////////////////////////////////////////////////////////////////////
-	// Update Cart UI function
-	async function updateCartUI() {
-		const cartContainer = document.getElementById('cart-container');
-		const userId = getCurrentUserId();
-		logDebug('Updating cart UI...', {
-			userId
-		});
+	// Function to update the cart UI
+    // Function to update the cart UI
+    async function updateCartUI() {
+        const cartContainer = document.getElementById('cart-container');
+        logDebug('Updating cart UI...');
+        try {
+            logDebug('Fetching cart data...');
+            const response = await fetch(`http://localhost:8003/cart`, {
+                method: 'GET',
+                credentials: 'include' // This ensures cookies are sent with the request
+            });
+            logDebug('Response received', {
+                status: response.status,
+                statusText: response.statusText,
+                headers: Object.fromEntries(response.headers.entries())
+            });
+            if (!response.ok) {
+                let errorMessage;
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.detail || `HTTP error! status: ${response.status}`;
+                } catch (e) {
+                    errorMessage = `HTTP error! status: ${response.status}`;
+                }
+                throw new Error(errorMessage);
+            }
+            const cartData = await response.json();
+            logDebug('Cart data received', cartData);
+
+            // Clear previous cart HTML
+            let cartHTML = '<h3>Your Cart</h3>';
+            if (cartData.items.length === 0) {
+                cartHTML += '<p>Your cart is empty</p>';
+            } else {
+                cartHTML += '<div class="cart-items">';
+                cartData.items.forEach(item => {
+                    cartHTML += `
+                        <div class="cart-item">
+                            <span>${item.product_id}</span> <!-- You might want to fetch the product name -->
+                            <span>Quantity: ${item.quantity}</span>
+                            <span>Price: ${formatPriceInRands(item.price)}</span>
+                            <button onclick="removeFromCart(${item.id})" class="btn btn-danger btn-sm">Remove</button>
+                        </div>
+                    `;
+                });
+                cartHTML += '</div>';
+            }
+            cartHTML += `<div class="cart-total">Total: ${formatPriceInRands(cartData.total)}</div>`;
+            
+            // Insert the updated HTML
+            cartContainer.innerHTML = cartHTML;
+        } catch (error) {
+            logDebug('Error updating cart:', {
+                message: error.message,
+                stack: error.stack
+            });
+            cartContainer.innerHTML = `<p>Failed to load cart: ${error.message}</p>`;
+        }
+    }
+
+	// Function to adjust product quantity
+	function adjustQuantity(productId, change) {
+		const input = document.getElementById(`quantity-${productId}`);
+		let value = parseInt(input.value) + change;
+		if(value < 1) value = 1;
+		input.value = value;
+	}
+	// Function to load products
+	async function loadProducts() {
+		const container = document.getElementById('product-container');
+		logDebug('Loading products...');
 		try {
-			const response = await fetch(`/cart`, {
-				credentials: 'include' // Important for sending cookies
+			const response = await fetch('/products/', {
+				credentials: 'include', // Include cookies for CORS
+				mode: 'cors',
 			});
 			if(!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+				throw new Error(`HTTP error! status: ${response.status}`);
 			}
-			const cartData = await response.json();
-			logDebug('Cart data received', cartData);
-			// Prepare HTML for cart display
-			let cartHTML = '<h3>Your Cart</h3>';
-			const cartItems = document.querySelector('.cart-items');
-			const cartTotal = document.querySelector('.cart-total');
-			// Clear existing cart items
-			cartItems.innerHTML = '';
-			if(cartData.items.length === 0) {
-				cartHTML += '<p>Your cart is empty</p>';
-			} else {
-				cartHTML += '<div class="cart-items">';
-				cartData.items.forEach(item => {
-					cartHTML += `
-                    <div class="cart-item">
-                        <span>Product ID: ${item.product_id} (Price: ${formatPriceInRands(item.price)})</span>
-                        <span>${item.quantity} x ${formatPriceInRands(item.price)}</span>
-                        <button class="btn btn-sm btn-danger" onclick="removeFromCart(${item.id})">Remove</button>
+			const products = await response.json();
+			logDebug('Products loaded successfully', {
+				count: products.length
+			});
+			container.innerHTML = products.map(product => `
+                    <div class="col">
+                        <div class="card h-100">
+                            <img src="${product.image_url}" class="card-img-top" alt="${product.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${product.name}</h5>
+                                <p class="card-text">${product.description}</p>
+                                <p class="card-text"><strong>${formatPriceInRands(product.price)}</strong></p>
+                                <div class="quantity-control">
+                                    <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, -1)">-</button>
+                                    <input type="number" id="quantity-${product.id}" value="1" min="1" class="form-control">
+                                    <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, 1)">+</button>
+                                </div>
+                                <button onclick="addToCart(${product.id})" class="btn btn-primary w-100">Add to Cart</button>
+                            </div>
+                        </div>
                     </div>
-                `;
-				});
-				cartHTML += '</div>';
-			}
-			// Update total
-			cartHTML += `
-            <div class="cart-total">
-                Total: ${formatPriceInRands(cartData.total)}
-            </div>
-        `;
-			cartContainer.innerHTML = cartHTML;
+                `).join('');
 		} catch (error) {
-			logDebug('Error updating cart UI:', error.message);
-			alert(`Failed to update cart: ${error.message}`);
+			logDebug('Error loading products:', error.message);
+			container.innerHTML = `<p class="col-12 text-center">Failed to load products: ${error.message}</p>`;
 		}
 	}
-	////////////////////////////////////////////////////////////////
-	// Utility function to get cookie value
-	function getCookieValue(name) {
-		const value = `; ${document.cookie}`;
-		const parts = value.split(`; ${name}=`);
-		if(parts.length === 2) return parts.pop().split(';').shift();
-	}
-	// Load User Profile
-	async function loadUserProfile() {
-		const userId = getCookieValue("user_id");
-		if(userId) {
-			const response = await fetch(`/user/${userId}`);
-			if(response.ok) {
-				const userProfile = await response.json();
-				document.getElementById('userProfile').innerHTML = `
-                        <h5>${userProfile.name}</h5>
-                        <p>Email: ${userProfile.email}</p>
-                        <a href="/logout" class="btn btn-outline-danger" onclick="logout()">Logout</a>
-                    `;
-			} else {
-				console.error("Failed to load user profile");
-			}
-		}
-	}
-	// Logout function
-	async function logout() {
-		await fetch("/logout", {
-			method: "POST",
-			credentials: "include",
-		});
-		document.getElementById('userProfile').innerHTML = '';
-		alert("Logged out successfully!");
-		window.location.href = "/login.html"; // Redirect to login page
-	}
-	////////////////////////////////////////////////////////////////
-	// Product loading and filtering functions
-	async function loadProducts() {
-		const response = await fetch('/products');
-		const products = await response.json();
-		const productContainer = document.getElementById('product-container');
-		logDebug('Products loaded', products);
-		productContainer.innerHTML = '';
-		products.forEach(product => {
-			const productCard = `
-                    <div class="col mb-4">
-                        <div class="card custom-card">
-                            <img src="${product.image_url}" alt="${product.name}" class="img-fluid img-thumbnail" style="max-width: 150px;">
-                            <div class="card-body">
-                                <h5 class="card-title">${product.name}</h5>
-                                <p class="card-text">Brand: ${product.brand}</p>
-                                <p class="card-text">Price: ${formatPriceInRands(product.price)}</p>
-                                <p class="card-text">Year: ${new Date(product.time_added).getFullYear()}</p>
-                                <div class="quantity-control">
-                                    <button onclick="document.getElementById('quantity-${product.id}').stepDown()">-</button>
-                                    <input type="number" id="quantity-${product.id}" value="1" min="1">
-                                    <button onclick="document.getElementById('quantity-${product.id}').stepUp()">+</button>
-                                </div>
-                                <button class="btn btn-primary" onclick="addToCart(${product.id})">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-			productContainer.innerHTML += productCard;
+	// Function to set up search functionality
+	function setupSearch() {
+		const searchInput = document.getElementById('searchInput');
+		searchInput.addEventListener('input', function(e) {
+			const searchTerm = e.target.value.toLowerCase();
+			const productCards = document.querySelectorAll('#product-container .col');
+			productCards.forEach(card => {
+				const title = card.querySelector('.card-title').textContent.toLowerCase();
+				const description = card.querySelector('.card-text').textContent.toLowerCase();
+				if(title.includes(searchTerm) || description.includes(searchTerm)) {
+					card.style.display = '';
+				} else {
+					card.style.display = 'none';
+				}
+			});
 		});
 	}
-	async function filterByBrand() {
-		const brandFilter = document.getElementById('brandFilter').value;
-		let url = '/products';
-		if(brandFilter) {
-			url = `/products/brand/${brandFilter}`;
-		}
-		const response = await fetch(url);
-		const products = await response.json();
-		const productContainer = document.getElementById('product-container');
-		logDebug('Products filtered by brand', {
-			brandFilter,
-			products
-		});
-		productContainer.innerHTML = '';
-		products.forEach(product => {
-			const productCard = `
-                    <div class="col mb-4">
-                        <div class="card custom-card">
-                            <img src="${product.image_url}" alt="${product.name}" class="img-fluid img-thumbnail" style="max-width: 150px;">
-                            <div class="card-body">
-                                <h5 class="card-title">${product.name}</h5>
-                                <p class="card-text">Brand: ${product.brand}</p>
-                                <p class="card-text">Price: ${formatPriceInRands(product.price)}</p>
-                                <p class="card-text">Year: ${new Date(product.time_added).getFullYear()}</p>
-                                <div class="quantity-control">
-                                    <button onclick="document.getElementById('quantity-${product.id}').stepDown()">-</button>
-                                    <input type="number" id="quantity-${product.id}" value="1" min="1">
-                                    <button onclick="document.getElementById('quantity-${product.id}').stepUp()">+</button>
-                                </div>
-                                <button class="btn btn-primary" onclick="addToCart(${product.id})">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-			productContainer.innerHTML += productCard;
-		});
-	}
-	async function filterByYear() {
-		const yearFilter = document.getElementById('yearFilter').value;
-		let url = '/products';
-		if(yearFilter) {
-			url = `/products/year/${yearFilter}`;
-		}
-		const response = await fetch(url);
-		const products = await response.json();
-		const productContainer = document.getElementById('product-container');
-		logDebug('Products filtered by year', {
-			yearFilter,
-			products
-		});
-		productContainer.innerHTML = '';
-		products.forEach(product => {
-			const productCard = `
-                    <div class="col mb-4">
-                        <div class="card custom-card">
-                            <img src="${product.image_url}" alt="${product.name}" class="img-fluid img-thumbnail" style="max-width: 150px;">
-                            <div class="card-body">
-                                <h5 class="card-title">${product.name}</h5>
-                                <p class="card-text">Brand: ${product.brand}</p>
-                                <p class="card-text">Price: ${formatPriceInRands(product.price)}</p>
-                                <p class="card-text">Year: ${new Date(product.time_added).getFullYear()}</p>
-                                <div class="quantity-control">
-                                    <button onclick="document.getElementById('quantity-${product.id}').stepDown()">-</button>
-                                    <input type="number" id="quantity-${product.id}" value="1" min="1">
-                                    <button onclick="document.getElementById('quantity-${product.id}').stepUp()">+</button>
-                                </div>
-                                <button class="btn btn-primary" onclick="addToCart(${product.id})">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-			productContainer.innerHTML += productCard;
-		});
-	}
-	// Call loadUserProfile on page load
-	window.onload = () => {
-		loadUserProfile();
-		loadProducts(); // Load products function should be defined
-	};
+	// Initialize the page
+	document.addEventListener('DOMContentLoaded', function() {
+		logDebug('Initializing page...');
+		loadProducts();
+		updateCartUI();
+		setupSearch();
+	});
 	</script>
 </body>
 

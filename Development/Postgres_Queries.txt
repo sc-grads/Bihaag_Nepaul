@@ -21,3 +21,7 @@ SELECT * FROM cart_items LIMIT 5;
 
 # To exit psql
 \q
+
+SELECT * FROM cart_items;
+
+TRUNCATE TABLE cart_items;
