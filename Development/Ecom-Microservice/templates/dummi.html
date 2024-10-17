@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .card-img-top {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .card-text {
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        .card-footer {
+            background-color: transparent;
+            border-top: none;
+            padding: 0.75rem 1.25rem;
+        }
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .edit-btn {
+            position: absolute;
+            bottom: 0.75rem;
+            right: 1.25rem;
+        }
+        .btn-floating {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: background-color 0.3s;
+        }
+        .btn-lg {
+            padding: 0.5rem 2rem;
+            font-size: 1.25rem;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+        }
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #0d6efd;
+        }
+        .input-group-text {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card shadow-lg border-0 mb-5">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h2 class="mb-0">Product Catalog</h2>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="search" id="productSearch" class="form-control" placeholder="Search products...">
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                        <button id="addProductBtn" class="btn btn-primary btn-lg">
+                            <i class="bi bi-plus-circle me-2"></i>Add New Product
+                        </button>
+                    </div>
+                </div>
+
+                <div id="product-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("addProductBtn").onclick = function() {
+            window.location.href = "/product_form.html";
+        };
+
+        function fetchProducts() {
+            fetch('/products/')
+                .then(response => response.json())
+                .then(products => {
+                    const container = document.getElementById('product-container');
+                    container.innerHTML = '';
+                    products.forEach(product => {
+                        const productElement = document.createElement('div');
+                        productElement.className = 'col';
+                        
+                        let imageUrl = product.image_url;
+                        if (!imageUrl.startsWith('http') && !imageUrl.startsWith('/')) {
+                            imageUrl = '/uploaded_images/' + imageUrl;
+                        }
+                        
+                        productElement.innerHTML = `
+                            <div class="card h-100 shadow-sm position-relative">
+                                <img src="${imageUrl}" class="card-img-top" alt="${product.name}" onerror="this.src='/static/default_image.jpg'">
+                                <div class="card-body">
+                                    <h5 class="card-title">${product.name}</h5>
+                                    <p class="card-text">${product.description}</p>
+                                </div>
+                                <div class="card-footer">
+                                    <span class="product-price">$${product.price.toFixed(2)}</span>
+                                    <button class="btn btn-outline-primary btn-sm edit-btn" data-id="${product.id}">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </button>
+                                </div>
+                                <button class="btn btn-danger btn-floating delete-btn" data-id="${product.id}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        container.appendChild(productElement);
+                    });
+
+                    // Add event listeners for edit and delete buttons
+                    document.querySelectorAll('.edit-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const productId = this.getAttribute('data-id');
+                            window.location.href = `/products/${productId}/edit`;
+                        });
+                    });
+
+                    document.querySelectorAll('.delete-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const productId = this.getAttribute('data-id');
+                            confirmDelete(productId);
+                        });
+                    });
+                })
+                .catch(error => console.error('Error fetching products:', error));
+        }
+
+        function confirmDelete(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteProduct(productId);
+                }
+            });
+        }
+
+        function deleteProduct(productId) {
+            fetch(`/products/${productId}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.ok) {
+                    Swal.fire(
+                        'Deleted!',
+                        'The product has been deleted.',
+                        'success'
+                    );
+                    fetchProducts(); // Refresh the product list
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'Failed to delete the product.',
+                        'error'
+                    );
+                }
+            })
+            .catch(error => console.error('Error deleting product:', error));
+        }
+
+        // Fetch products when the page loads
+        fetchProducts();
+
+        // Simple search functionality
+        document.getElementById('productSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('#product-container .col').forEach(card => {
+                const productName = card.querySelector('.card-title').textContent.toLowerCase();
+                const productDesc = card.querySelector('.card-text').textContent.toLowerCase();
+                if (productName.includes(searchTerm) || productDesc.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
