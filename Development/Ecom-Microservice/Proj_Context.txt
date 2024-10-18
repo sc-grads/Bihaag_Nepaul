@@ -42,12 +42,25 @@ http {
     tcp_nopush on;
     tcp_nodelay on;
     keepalive_timeout 65;
+    gzip on;                      # Enable gzip compression
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
 
     server {
         listen 80;
 
+        root /usr/share/nginx/html;
+        index index.html;
+
         location /static/ {
             alias /usr/share/nginx/html/static/;
+            expires 1h;
+            add_header Cache-Control "public";
+
+            # Specific rules for video files
+            location ~* \.(mp4|webm)$ {
+                add_header Content-Disposition "inline";
+                add_header Accept-Ranges bytes;
+            }
         }
 
         location /uploaded_images/ {
@@ -70,10 +83,6 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
-            
-            proxy_method $request_method;
-            proxy_pass_request_headers on;
-            proxy_pass_request_body on;
         }
 
         location /sellers/ {
@@ -86,23 +95,38 @@ http {
 
         location /cart/ {
             proxy_pass http://cart_service:8000;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # Handle preflight (OPTIONS) requests
+            if ($request_method = 'OPTIONS') {
+                add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+                return 204;  # No content for preflight response
+            }
+
+            # Add CORS headers for actual requests
+            add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
         }
 
         location / {
-            root /usr/share/nginx/html;
-            index index.html;
             try_files $uri $uri/ /index.html;
         }
 
         location = /product_edit.html {
             root /usr/share/nginx/html;
         }
+
+        # Security headers
+        add_header X-Content-Type-Options nosniff;
+        add_header X-Frame-Options DENY;
+        add_header X-XSS-Protection "1; mode=block";
     }
 }
+
 
 docker-compose.yml:
 
@@ -215,7 +239,6 @@ networks:
 volumes:
   postgres_data:
 
-
 I implemented the auth_service and the contents are as follows:
 
 📦auth_service
@@ -236,16 +259,21 @@ Templates contains the following:
  ┃ ┣ 📂css
  ┃ ┃ ┗ 📜style.css
  ┃ ┣ 📂images
+ ┃ ┃ ┗ 📜abstract-timekeeper.svg
  ┃ ┗ 📂js
  ┃ ┃ ┗ 📜script.js
+ ┣ 📂videos
+ ┃ ┗ 📜vinyl.mp4
  ┣ 📜base.html
+ ┣ 📜dummi.html
+ ┣ 📜home.html
  ┣ 📜index.html
  ┣ 📜login.html
  ┣ 📜product_edit.html
  ┣ 📜product_form.html
  ┣ 📜product_list.html
+ ┣ 📜profile.html
  ┗ 📜register.html
- 
 
 📦product_service
  ┣ 📂app

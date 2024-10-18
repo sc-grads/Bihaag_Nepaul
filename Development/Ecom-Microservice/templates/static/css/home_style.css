@@ -1,0 +1,64 @@
+/* Video container styles */
+.video-container {
+    position: fixed; /* Keep the video fixed to the viewport */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: hidden; /* Hide any overflow */
+    z-index: -1; /* Ensure video is behind all other content */
+}
+
+#background-video {
+    position: absolute; /* Position video absolutely within container */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    min-width: 100%; /* Ensure video covers full width */
+    min-height: 100%; /* Ensure video covers full height */
+    width: auto; /* Auto width for aspect ratio */
+    height: auto; /* Auto height for aspect ratio */
+    transform: translate(-50%, -50%); /* Center the video */
+}
+
+/* Main content area styles */
+main {
+    position: relative; /* Relative positioning for the main content */
+    z-index: 1; /* Keep main content above the video */
+    padding: 20px; /* Padding for content */
+    color: #ffffff; /* White text color */
+}
+
+/* Content overlay styles */
+.content-overlay {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better readability */
+    padding: 40px; /* More padding for better spacing */
+    border-radius: 8px; /* Rounded corners */
+    text-align: center; /* Center align text */
+    position: absolute; /* Position overlay absolutely */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust position */
+    width: 80%; /* Adjust width as needed */
+}
+
+/* Title styles */
+.title {
+    font-size: 3rem; /* Large font size */
+    margin: 0; /* Remove margin */
+    color: #ffffff; /* White text color */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Optional shadow for better visibility */
+}
+
+/* Optional: Add styles for other headings and paragraphs */
+h2, p {
+    color: #ffffff; /* White text color for headings and paragraphs */
+    margin: 10px 0; /* Margin for spacing */
+}
+
+/* Header styles (if needed) */
+header {
+    /* You can add styles for your header here if needed */
+    z-index: 1; /* Ensure header is above the video */
+    position: relative;
+    color: red; /* Position relative for stacking context */
+}

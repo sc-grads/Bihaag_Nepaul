@@ -434,7 +434,7 @@ Product Edit: http://localhost:8080/product_edit.html
 Login Page: http://localhost:8080/login.html
 Login Page: http://localhost:8080/index.html
 Register Page: http://localhost:8080/register.html
-
+Home Page: http://localhost:8080/home.html
 APIs via Nginx:
 Products API: http://localhost:8080/products/
 Sellers API: http://localhost:8080/sellers/
