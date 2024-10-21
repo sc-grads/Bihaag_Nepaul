@@ -4,10 +4,23 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Home Page</title>
+	<title>TNMP Store</title>
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
 	<style>
-	/* Video container styles */
+	/* Reset and Base Styles */
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	body {
+		font-family: 'Open Sans', sans-serif;
+		overflow-x: hidden;
+		background-color: rgb(34, 34, 34);
+	}
+
+	/* Video Background */
 	.video-container {
 		position: absolute;
 		top: 0;
@@ -29,7 +42,7 @@
 		transform: translate(-50%, -50%);
 	}
 
-	/* Header styles */
+	/* Header Styles */
 	header {
 		z-index: 1000;
 		position: relative;
@@ -43,22 +56,24 @@
 		border-radius: 50px;
 	}
 
-	/* Button styles */
+	/* Button Styles */
 	.button {
-		width: 40px;
-		height: 40px;
+		width: 50px;
+		height: 50px;
 		border-radius: 50%;
 		background-color: rgba(255, 81, 0, 0.884);
 		border: none;
 		color: white;
 		cursor: pointer;
-		font-size: 20px;
+		font-size: 25px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		transition: all 0.3s ease;
 		position: relative;
 		z-index: 1000;
+		margin-top: 50px;
+
 	}
 
 	.button:hover {
@@ -67,19 +82,19 @@
 	}
 
 	.button.active {
-        position: fixed;
-        top: 20px;
-        left: 240px;
-        background-color: transparent;
-        transform: rotate(45deg);
-        font-size: 24px;
-    }
+		position: fixed;
+		top: 20px;
+		left: 240px;
+		background-color: transparent;
+		transform: rotate(45deg);
+		font-size: 24px;
+	}
 
-    .button.active:hover {
-        background-color: rgba(255, 81, 0, 0.884);
-    }
+	.button.active:hover {
+		background-color: rgba(255, 81, 0, 0.884);
+	}
 
-	/* Main content area styles */
+	/* Main Content Area */
 	main {
 		position: relative;
 		z-index: 1;
@@ -91,7 +106,7 @@
 		flex-direction: column;
 	}
 
-	/* Title styles */
+	/* Title Styles */
 	.title {
 		font-size: 10rem;
 		font-weight: bold;
@@ -104,25 +119,52 @@
 		z-index: 2;
 	}
 
-	/* Rectangle behind title */
+	/* Background Rectangle */
 	.rectangle {
-		width: 90%;
+		width: 80%;
 		height: 200px;
 		background-color: rgba(0, 0, 0, 0.7);
 		position: absolute;
-		top: 22%;
+		top: 180px;
 		z-index: 1;
 		animation: swing-in-bottom-fwd 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
 		border-radius: 20px;
 	}
 
-	.dummidiv {
-		height: 100px;
-		background-color: red;
+	/* Content Sections */
+	.content-section {
+		min-height: 100vh;
+		padding: 50px 20px;
+		background-color: rgb(59, 59, 59);
+		margin: 20px 0;
+		opacity: 0;
+		transform: translateY(50px);
+		transition: all 0.6s ease-out;
+		color: white;
 		text-align: center;
+		font-family: Tahoma, Verdana, sans-serif;
+		font-size: 20px;
 	}
 
-	/* Navigation Menu Styles */
+	.content-section.visible {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.content-section:nth-child(odd) {
+		transform: translateX(-50px);
+	}
+
+	.content-section:nth-child(even) {
+		transform: translateX(50px);
+	}
+
+	.content-section.visible:nth-child(odd),
+	.content-section.visible:nth-child(even) {
+		transform: translateX(0);
+	}
+
+	/* Navigation Menu */
 	.nav-menu {
 		position: fixed;
 		left: -300px;
@@ -134,7 +176,7 @@
 		transition: left 0.3s ease-in-out;
 		padding: 20px;
 		box-sizing: border-box;
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
+		font-family: Verdana, Geneva, Tahoma, sans-serif;
 	}
 
 	.nav-menu.active {
@@ -166,6 +208,7 @@
 		padding-left: 20px;
 	}
 
+	/* Overlay */
 	.overlay {
 		position: fixed;
 		top: 0;
@@ -181,7 +224,86 @@
 		display: block;
 	}
 
-	/* Your existing animations */
+	/* Scroll Progress Bar */
+	.scroll-header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 1001;
+		width: 100%;
+		background-color: transparent;
+	}
+
+	.progress-container {
+		width: 100%;
+		height: 10px;
+		background: rgba(255, 255, 255, 0.2);
+		position: absolute;
+		top: 0;
+	}
+
+	.progress-bar {
+		height: 100%;
+		background: rgba(255, 81, 0, 0.884);
+		width: 0%;
+		transition: width 0.1s ease;
+	}
+
+	/* Product Grid */
+	.product-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 20px;
+		padding: 20px;
+		font-family: Tahoma, Verdana, sans-serif;
+	}
+
+	.product-card {
+		background-color: rgb(255, 255, 255);
+		padding: 20px;
+		border-radius: 10px;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		color: white;
+		transition: transform 0.3s ease;
+	}
+
+	.product-card:hover {
+		transform: translateY(-5px);
+	}
+
+	.product-card img {
+		width: 100%;
+		height: 400px; /* Fixed height */
+		object-fit: cover; /* This will crop the image to fit the container */
+		border-radius: 4px;
+		margin-bottom: 10px;
+	}
+
+	.product-card h3 {
+		font-size: 1.2em;
+		margin: 10px 0;
+		font-family: Tahoma, Verdana, sans-serif;
+		color: #000000;
+	}
+
+	.product-card p {
+		font-size: 1.5em;
+		color: #000000;
+		font-style: bold;
+		font-family: Tahoma, Verdana, sans-serif;
+	}
+
+	.product-card .price {
+		font-weight: bold;
+		color: #e44d26;
+		margin-top: auto;
+		font-style: bold;
+		font-family: Tahoma, Verdana, sans-serif; /* This pushes the price to the bottom of the card */
+	}
+
+	/* Animations */
 	@keyframes swing-in-bottom-fwd {
 		0% {
 			transform: rotateX(100deg);
@@ -204,84 +326,195 @@
 
 		100% {
 			transform: translateY(-50px);
-			text-shadow: 0 1px 0 #ccc, 0 2px 0 #ccc, 0 3px 0 #ccc, 0 4px 0 #ccc, 0 5px 0 #ccc, 0 6px 0 #ccc, 0 7px 0 #ccc, 0 8px 0 #ccc, 0 9px 0 #ccc, 0 50px 30px rgba(0, 0, 0, 0.3);
+			text-shadow: 0 1px 0 #ccc, 0 2px 0 #ccc, 0 3px 0 #ccc, 0 4px 0 #ccc,
+				0 5px 0 #ccc, 0 6px 0 #ccc, 0 7px 0 #ccc, 0 8px 0 #ccc,
+				0 9px 0 #ccc, 0 50px 30px rgba(0, 0, 0, 0.3);
 		}
 	}
+	
 	</style>
 </head>
 
 <body>
+	<!-- Scroll Progress Bar -->
+	<div class="scroll-header">
+		<div class="progress-container">
+			<div class="progress-bar" id="scrollIndicator"></div>
+		</div>
+	</div>
 	<!-- Navigation Menu -->
 	<div class="overlay" id="overlay"></div>
 	<nav class="nav-menu" id="nav-menu">
 		<ul>
 			<li><a href="#home">Home</a></li>
-			<li><a href="#shop">Shop</a></li>
-			<li><a href="#categories">Categories</a></li>
+			<li><a href="#featured">Featured</a></li>
 			<li><a href="#new-arrivals">New Arrivals</a></li>
 			<li><a href="#bestsellers">Bestsellers</a></li>
+			<li><a href="#categories">Categories</a></li>
 			<li><a href="#about">About Us</a></li>
 			<li><a href="#contact">Contact</a></li>
 		</ul>
 	</nav>
+	<!-- Header -->
 	<header>
 		<button class="button" id="menu-btn">☰</button>
 		<div></div>
 		<div style="display: flex; gap: 10px;">
-			<button class="button" onclick="alert('Button 1 clicked!')">L</button>
-			<button class="button" onclick="alert('Button 2 clicked!')">R</button>
+			<button class="button">L</button>
+			<button class="button">R</button>
 		</div>
 	</header>
+	<!-- Video Background -->
 	<div class="video-container">
 		<video id="background-video" autoplay muted loop playsinline>
 			<source src="/static/videos/vinyl.mp4" type="video/mp4"> Your browser does not support the video tag. </video>
 	</div>
-	<main role="main">
+	<!-- Main Content -->
+	<main id="home" role="main">
 		<div class="rectangle"></div>
 		<h1 class="title">TNMP-STORE</h1>
 	</main>
-	<div class="dummidiv">
-		<h3>Featured Products</h3>
-	</div>
-	<div class="dummidiv">
-		<h3>Featured Products</h3>
-	</div>
+	<!-- Content Sections -->
+    <section id="featured" class="section content-section">
+        <h2>FEATURED PRODUCTS</h2>
+        <div class="product-grid">
+            {% for product in featured_products %}
+            <div class="product-card">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                <h3>{{ product.name }}</h3>
+                <p>{{ product.description }}</p>
+                <p>Price: R{{ product.price }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="new-arrivals" class="section content-section">
+        <h2>NEW ARRIVALS</h2>
+        <div class="product-grid">
+            {% for product in new_arrivals %}
+            <div class="product-card">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                <h3>{{ product.name }}</h3>
+                <p>{{ product.description }}</p>
+                <p>Price: R{{ product.price }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="bestsellers" class="section content-section">
+        <h2>BESTSELLERS</h2>
+        <div class="product-grid">
+            {% for product in bestsellers %}
+            <div class="product-card">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                <h3>{{ product.name }}</h3>
+                <p>{{ product.description }}</p>
+                <p>Price: R{{ product.price }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
 	<script>
 	document.addEventListener('DOMContentLoaded', function() {
-        const menuBtn = document.getElementById('menu-btn');
-        const navMenu = document.getElementById('nav-menu');
-        const overlay = document.getElementById('overlay');
-        let isOpen = false;
+		// Menu elements
+		const menuBtn = document.getElementById('menu-btn');
+		const navMenu = document.getElementById('nav-menu');
+		const overlay = document.getElementById('overlay');
+		let isOpen = false;
+		// Menu toggle functionality
+		menuBtn.addEventListener('click', function(e) {
+			e.preventDefault();
+			toggleMenu();
+		});
+		// Close menu when clicking overlay
+		overlay.addEventListener('click', function() {
+			closeMenu();
+		});
+		// Close menu with ESC key
+		document.addEventListener('keydown', function(e) {
+			if(e.key === 'Escape' && isOpen) {
+				closeMenu();
+			}
+		});
+		// Menu functions
+		function toggleMenu() {
+			if(!isOpen) {
+				openMenu();
+			} else {
+				closeMenu();
+			}
+		}
 
-        menuBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (!isOpen) {
-                // Open menu
-                navMenu.classList.add('active');
-                overlay.classList.add('active');
-                menuBtn.classList.add('active');
-                menuBtn.innerHTML = '+'; // Change to plus sign that will look like X when rotated
-                document.body.style.overflow = 'hidden';
-            } else {
-                // Close menu
-                navMenu.classList.remove('active');
-                overlay.classList.remove('active');
-                menuBtn.classList.remove('active');
-                menuBtn.innerHTML = '☰';
-                document.body.style.overflow = '';
-            }
-            isOpen = !isOpen;
-        });
+		function openMenu() {
+			navMenu.classList.add('active');
+			overlay.classList.add('active');
+			menuBtn.classList.add('active');
+			menuBtn.innerHTML = '+';
+			document.body.style.overflow = 'hidden';
+			isOpen = true;
+		}
 
-        overlay.addEventListener('click', function() {
-            navMenu.classList.remove('active');
-            overlay.classList.remove('active');
-            menuBtn.classList.remove('active');
-            menuBtn.innerHTML = '☰';
-            document.body.style.overflow = '';
-            isOpen = false;
-        });
-    });
+		function closeMenu() {
+			navMenu.classList.remove('active');
+			overlay.classList.remove('active');
+			menuBtn.classList.remove('active');
+			menuBtn.innerHTML = '☰';
+			document.body.style.overflow = '';
+			isOpen = false;
+		}
+		// Scroll Animation Implementation
+		const observerOptions = {
+			root: null,
+			rootMargin: '0px',
+			threshold: 0.2
+		};
+		const observerCallback = (entries, observer) => {
+			entries.forEach(entry => {
+				if(entry.isIntersecting) {
+					entry.target.classList.add('visible');
+				}
+			});
+		};
+		const scrollObserver = new IntersectionObserver(observerCallback, observerOptions);
+		// Observe all content sections
+		document.querySelectorAll('.content-section').forEach(section => {
+			scrollObserver.observe(section);
+		});
+		// Scroll Progress Bar
+		const scrollIndicator = document.getElementById('scrollIndicator');
+		let ticking = false;
+		let lastKnownScrollPosition = 0;
+		let lastCalculatedProgress = 0;
+		// Calculate total scrollable height
+		let totalScrollHeight = calculateTotalScrollHeight();
+		window.addEventListener('resize', function() {
+			totalScrollHeight = calculateTotalScrollHeight();
+		});
+		window.addEventListener('scroll', function() {
+			lastKnownScrollPosition = window.scrollY;
+			if(!ticking) {
+				window.requestAnimationFrame(function() {
+					updateScrollIndicator(lastKnownScrollPosition);
+					ticking = false;
+				});
+				ticking = true;
+			}
+		});
+
+		function calculateTotalScrollHeight() {
+			return document.body.scrollHeight - window.innerHeight;
+		}
+
+		function updateScrollIndicator(scrollPosition) {
+			const scrollPercentage = (scrollPosition / totalScrollHeight) * 100;
+			if(scrollPercentage !== lastCalculatedProgress) {
+				scrollIndicator.style.width = `${scrollPercentage}%`;
+				lastCalculatedProgress = scrollPercentage;
+			}
+		}
+	});
 	</script>
 </body>
 

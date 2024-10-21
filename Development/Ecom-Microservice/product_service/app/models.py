@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
 from .database import Base
 from datetime import datetime
 
@@ -19,3 +19,6 @@ class Product(Base):
     category_id = Column(Integer, ForeignKey("categories.id"))  # Foreign key to Category
     time_added = Column(DateTime, default=datetime.utcnow)
     quantity = Column(Integer, default=1)  # New quantity field
+    sales_count = Column(Integer, default=0)
+    is_featured = Column(Boolean, default=False)
+    is_bestseller = Column(Boolean, default=False)

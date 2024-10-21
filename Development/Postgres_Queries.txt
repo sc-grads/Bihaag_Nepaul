@@ -25,3 +25,7 @@ SELECT * FROM cart_items LIMIT 5;
 SELECT * FROM cart_items;
 
 TRUNCATE TABLE cart_items;
+
+DELETE TABLE products;
+
+SELECT * FROM products;

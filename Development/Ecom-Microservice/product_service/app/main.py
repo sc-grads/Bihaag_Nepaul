@@ -97,14 +97,16 @@ async def edit_product_form(product_id: int, request: Request, db: Session = Dep
 
 
 
-# Route to update a product
+# Route to EDIT a product
 @app.post("/products/{product_id}/edit", response_model=schemas.Product)
 async def update_product(
     product_id: int,
     name: str = Form(...),
     description: str = Form(...),
     price: float = Form(...),
-    quantity: int = Form(...),  # New field for quantity update
+    quantity: int = Form(...),
+    is_bestseller: str = Form('0'),
+    is_featured: str = Form('0'),
     image: UploadFile = File(None),
     db: Session = Depends(database.get_db)
 ):
@@ -112,10 +114,13 @@ async def update_product(
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
     
+    # Convert string values to boolean
     db_product.name = name
     db_product.description = description
     db_product.price = price
-    db_product.quantity = quantity  # Update quantity here
+    db_product.quantity = quantity
+    db_product.is_bestseller = bool(int(is_bestseller))
+    db_product.is_featured = bool(int(is_featured))
     
     if image and image.filename:
         filename = f"{name}_{image.filename}"
@@ -124,10 +129,15 @@ async def update_product(
             buffer.write(await image.read())
         db_product.image_url = f"/uploaded_images/{filename}"
     
-    db.commit()
-    db.refresh(db_product)
-    return db_product
-
+    try:
+        db.commit()
+        db.refresh(db_product)
+        print(f"Updated product {product_id}: bestseller={db_product.is_bestseller}, featured={db_product.is_featured}")  # Debug line
+        return db_product
+    except Exception as e:
+        print(f"Error updating product: {e}")  # Debug line
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Route to delete a product
 @app.delete("/products/{product_id}", response_model=schemas.Product)
@@ -169,4 +179,25 @@ def read_products_by_brand(brand: str, db: Session = Depends(database.get_db)):
 def read_products_by_year(year: int, db: Session = Depends(database.get_db)):
     products = db.query(models.Product).filter(func.extract('year', models.Product.time_added) == year).all()
     return products
+
+
+@app.get("/home", response_class=HTMLResponse)
+async def home(request: Request, db: Session = Depends(database.get_db)):
+    # Fetch featured products based on 'is_featured' flag
+    featured_products = db.query(models.Product).filter(models.Product.is_featured == True).order_by(func.random()).limit(3).all()
+    
+    # Fetch new arrivals sorted by 'time_added'
+    new_arrivals = db.query(models.Product).order_by(models.Product.time_added.desc()).limit(3).all()
+
+    # Fetch bestseller products based on 'is_bestseller' flag
+    bestsellers = db.query(models.Product).filter(models.Product.is_bestseller == True).order_by(models.Product.sales_count.desc()).limit(3).all()
+
+    return templates.TemplateResponse("home.html", {
+        "request": request,
+        "featured_products": featured_products,
+        "new_arrivals": new_arrivals,
+        "bestsellers": bestsellers
+    })
+
+
 

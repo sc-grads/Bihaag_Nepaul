@@ -13,7 +13,9 @@ class ProductBase(BaseModel):
     brand: str
     category_id: Optional[int] = None
     time_added: Optional[datetime] = None
-    quantity: Optional[int] = 1  # Add the quantity field with default value
+    quantity: Optional[int] = 1
+    is_bestseller: bool = False
+    is_featured: bool = False  # Add the quantity field with default value
 
 class ProductCreate(ProductBase):
     pass
