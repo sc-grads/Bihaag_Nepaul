@@ -116,25 +116,36 @@
 	</div>
 	<!-- Google Sign-In API Script -->
 	<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+
 	<script>
 	// Regular login form submission
-	// Regular login form submission
 	document.getElementById('loginForm').onsubmit = function(e) {
-		e.preventDefault();
+		e.preventDefault(); // Prevent the form from submitting the default way
 		var username = document.getElementById('username').value;
 		var password = document.getElementById('password').value;
+		const token = localStorage.getItem('token');
+		// Send the login request to your auth API
 		fetch("/auth/login", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded",
+				Authorization: `Bearer ${token}`
 			},
 			body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
 		}).then(response => response.json()).then(data => {
 			console.log(data); // Log the response data for debugging
 			if(data.access_token) {
+				// Store the access token in localStorage
 				localStorage.setItem('token', data.access_token);
-				// Force redirect to product_list.html regardless of role
-				window.location.href = "/product_list.html";
+				// Optionally, you can store the user's role too, if needed
+				localStorage.setItem('role', data.role);
+				// Redirect the user based on their role
+				if(data.role === "admin") {
+					window.location.href = "/product_list.html"; // Redirect to admin dashboard
+				} else {
+					window.location.href = "/dummi.html"; // Redirect to general product list
+				}
 			} else {
 				alert("Login failed: " + data.detail);
 			}
@@ -143,6 +154,11 @@
 			alert("An error occurred. Please try again.");
 		});
 	};
+
+
+
+
+
 	// Google Sign-In handling
 	function handleCredentialResponse(response) {
 		fetch('/auth/google-login', {

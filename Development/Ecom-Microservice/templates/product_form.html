@@ -9,7 +9,6 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
-        /* Existing styles remain unchanged */
         body {
             background-color: #f8f9fa;
             padding-top: 20px;
@@ -93,7 +92,7 @@
                                     <label for="price">Price (R)</label>
                                 </div>
                             </div>
-                            <!-- Brand (New Field) -->
+                            <!-- Brand -->
                             <div class="col-md-6">
                                 <div class="form-floating">
                                     <input type="text" id="brand" name="brand" class="form-control" placeholder="Brand" required>
@@ -145,20 +144,39 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = localStorage.getItem('role');
+            if (role !== 'admin') {
+                alert("You do not have permission to add products.");
+                window.location.href = '/product_list.html';
+            }
+        });
+
         document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevent the default form submission
-        
-            const formData = new FormData(this);
+            const role = localStorage.getItem('role');
+
             
+            if (role !== 'admin') {
+                e.preventDefault(); // Prevent the default form submission
+                alert("You do not have permission to add products.");
+                return; // Exit the function early
+            }
+
+            // If the user is an admin, allow the form submission
+            const token = localStorage.getItem('token');
+            const formData = new FormData(this);
+
             fetch('/products/', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             })
             .then(response => {
                 if (response.ok) {
-                    window.location.href = '/product_list.html'; // Redirect to product_list.html
+                    window.location.href = '/product_list.html';
                 } else {
-                    // Handle errors
                     alert('Error adding product. Please try again.');
                 }
             })

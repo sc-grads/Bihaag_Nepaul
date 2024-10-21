@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+ACCESS_TOKEN_EXPIRE_MINUTES = 30  # Set the desired number of minutes here
 
 # CORS settings
 app.add_middleware(
@@ -75,22 +76,15 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Create access token with role information
-    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = auth.create_access_token(
-        data={"sub": user.email, "role": user.role},  # Include role in token
+        data={"sub": user.email, "role": user.role},  # Include user role in the token
         expires_delta=access_token_expires
     )
-    
-    # Set both cookies
-    response.set_cookie(
-        key="access_token",
-        value=f"Bearer {access_token}",
-        httponly=True,
-        samesite='lax',
-        secure=True  # Set to True in production
-    )
-    response.set_cookie(key="user_id", value=str(user.id), httponly=True)
+
+    # Explicitly return the role in the response
+    return {"access_token": access_token, "token_type": "bearer", "role": user.role}
+
     
     logger.info(f"User logged in: {user.username}, role: {user.role}")
     return {

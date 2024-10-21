@@ -28,6 +28,7 @@ services:
       - DATABASE_URL=postgresql://fastapi:fastapipassword@db:5432/ecommerce_db
       - GOOGLE_CLIENT_ID=422582982715-i1nckd6lehufls1vihouaag0uflvni95.apps.googleusercontent.com
       - GOOGLE_CLIENT_SECRET=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
+      - SECRET_KEY=e3aac17d09746a3effe0dd1b414b9e3e8d64b30a53d2e27b1b5f69e4ed35d2e0
     volumes:
       - ./auth_service:/usr/src/app
       - ./auth_service/app/templates:/app/templates
@@ -44,6 +45,7 @@ services:
       - "8001:8000"
     environment:
       - DATABASE_URL=postgresql://fastapi:fastapipassword@db:5432/ecommerce_db
+      - SECRET_KEY=e3aac17d09746a3effe0dd1b414b9e3e8d64b30a53d2e27b1b5f69e4ed35d2e0
     volumes:
       - ./product_service:/app
       - ./product_service/uploaded_images:/app/uploaded_images
