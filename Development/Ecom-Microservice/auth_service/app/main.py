@@ -75,16 +75,29 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Set cookie on successful login
-    response.set_cookie(key="user_id", value=str(user.id), httponly=True)
-
+    # Create access token with role information
     access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = auth.create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
+        data={"sub": user.email, "role": user.role},  # Include role in token
+        expires_delta=access_token_expires
     )
     
+    # Set both cookies
+    response.set_cookie(
+        key="access_token",
+        value=f"Bearer {access_token}",
+        httponly=True,
+        samesite='lax',
+        secure=True  # Set to True in production
+    )
+    response.set_cookie(key="user_id", value=str(user.id), httponly=True)
+    
     logger.info(f"User logged in: {user.username}, role: {user.role}")
-    return {"access_token": access_token, "token_type": "bearer", "role": user.role}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "role": user.role
+    }
 
 @app.post("/auth/logout")
 async def logout(response: Response):

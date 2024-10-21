@@ -9,7 +9,7 @@ jinja2
 alembic
 python-jose
 passlib
-
+httpx
 
 
 

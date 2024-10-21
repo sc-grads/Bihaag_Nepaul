@@ -190,7 +190,7 @@ async def home(request: Request, db: Session = Depends(database.get_db)):
     new_arrivals = db.query(models.Product).order_by(models.Product.time_added.desc()).limit(3).all()
 
     # Fetch bestseller products based on 'is_bestseller' flag
-    bestsellers = db.query(models.Product).filter(models.Product.is_bestseller == True).order_by(models.Product.sales_count.desc()).limit(3).all()
+    bestsellers = db.query(models.Product).filter(models.Product.is_bestseller == True).order_by(func.random()).limit(3).all()
 
     return templates.TemplateResponse("home.html", {
         "request": request,

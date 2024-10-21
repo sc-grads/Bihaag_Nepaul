@@ -73,7 +73,6 @@
 		position: relative;
 		z-index: 1000;
 		margin-top: 50px;
-
 	}
 
 	.button:hover {
@@ -261,22 +260,29 @@
 	.product-card {
 		background-color: rgb(255, 255, 255);
 		padding: 20px;
-		border-radius: 10px;
+		border-radius: 20px;
 		text-align: center;
 		display: flex;
 		flex-direction: column;
 		color: white;
-		transition: transform 0.3s ease;
+		transition: transform 0.3s ease, border-color 0.3s ease, border-width 0.3s ease; /* Add border-color and border-width */
+		border-width: 8px;
+		border-style: solid;
+		border-color: transparent; /* Set default border color to transparent */
 	}
 
 	.product-card:hover {
 		transform: translateY(-5px);
+		border-color: #ff7e4a;
+
 	}
 
 	.product-card img {
 		width: 100%;
-		height: 400px; /* Fixed height */
-		object-fit: cover; /* This will crop the image to fit the container */
+		height: 400px;
+		/* Fixed height */
+		object-fit: cover;
+		/* This will crop the image to fit the container */
 		border-radius: 4px;
 		margin-bottom: 10px;
 	}
@@ -285,14 +291,15 @@
 		font-size: 1.2em;
 		margin: 10px 0;
 		font-family: Tahoma, Verdana, sans-serif;
-		color: #000000;
+		color: white; /* Change TEXT color to white */
 	}
 
 	.product-card p {
-		font-size: 1.5em;
-		color: #000000;
+		font-size: 1.0em;
+		color: white; /* Change TEXT color to white */
 		font-style: bold;
 		font-family: Tahoma, Verdana, sans-serif;
+		font-weight: bold;
 	}
 
 	.product-card .price {
@@ -300,7 +307,8 @@
 		color: #e44d26;
 		margin-top: auto;
 		font-style: bold;
-		font-family: Tahoma, Verdana, sans-serif; /* This pushes the price to the bottom of the card */
+		font-family: Tahoma, Verdana, sans-serif;
+		/* This pushes the price to the bottom of the card */
 	}
 
 	/* Animations */
@@ -331,7 +339,33 @@
 				0 9px 0 #ccc, 0 50px 30px rgba(0, 0, 0, 0.3);
 		}
 	}
-	
+
+	.inner-div {
+		background-color: rgba(58, 58, 58, 0.884);
+		border-radius: 30px;
+		width: 60%;
+		position: relative;
+		margin-left: 85px;
+		border: rgba(165, 165, 165, 0.884);
+		border-width: 3px;
+		border-style: solid;
+	}
+	.new-badge {
+		display: inline-block;
+		background-color: rgb(255, 94, 0); /* Green background */
+		color: white;
+		padding: 5px 10px;
+		width: 100px;
+
+		border-radius: 3px;
+
+		font-size: 0.9em;
+		margin-bottom: 10px; /* Add some space below the badge */
+		position: relative; /* Position relative for better placement */
+		top: -10px;
+		left: 330px; /* Adjust position to overlap with the card */
+	}
+
 	</style>
 </head>
 
@@ -375,47 +409,44 @@
 		<h1 class="title">TNMP-STORE</h1>
 	</main>
 	<!-- Content Sections -->
-    <section id="featured" class="section content-section">
-        <h2>FEATURED PRODUCTS</h2>
-        <div class="product-grid">
-            {% for product in featured_products %}
-            <div class="product-card">
-                <img src="{{ product.image_url }}" alt="{{ product.name }}">
-                <h3>{{ product.name }}</h3>
-                <p>{{ product.description }}</p>
-                <p>Price: R{{ product.price }}</p>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-
-    <section id="new-arrivals" class="section content-section">
-        <h2>NEW ARRIVALS</h2>
-        <div class="product-grid">
-            {% for product in new_arrivals %}
-            <div class="product-card">
-                <img src="{{ product.image_url }}" alt="{{ product.name }}">
-                <h3>{{ product.name }}</h3>
-                <p>{{ product.description }}</p>
-                <p>Price: R{{ product.price }}</p>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-
-    <section id="bestsellers" class="section content-section">
-        <h2>BESTSELLERS</h2>
-        <div class="product-grid">
-            {% for product in bestsellers %}
-            <div class="product-card">
-                <img src="{{ product.image_url }}" alt="{{ product.name }}">
-                <h3>{{ product.name }}</h3>
-                <p>{{ product.description }}</p>
-                <p>Price: R{{ product.price }}</p>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
+	<section id="featured" class="section content-section">
+		<h2>FEATURED PRODUCTS</h2>
+		<div class="product-grid"> {% for product in featured_products %} <div class="product-card">
+				<img src="{{ product.image_url }}" alt="{{ product.name }}">
+				<div class="inner-div">
+					<h3>{{ product.name }}</h3>
+					<p>{{ product.description }}</p>
+					<p>Price: R{{ product.price }}</p>
+				</div>
+			</div> {% endfor %} </div>
+	</section>
+	<section id="new-arrivals" class="section content-section">
+		<h2>NEW ARRIVALS</h2>
+		<div class="product-grid"> 
+			{% for product in new_arrivals %} 
+			<div class="product-card">
+				<span class="new-badge">New</span> <!-- New badge -->
+				<img src="{{ product.image_url }}" alt="{{ product.name }}">
+				<div class="inner-div">
+					<h3>{{ product.name }}</h3>
+					<p>{{ product.description }}</p>
+					<p>Price: R{{ product.price }}</p>
+				</div>
+			</div> 
+			{% endfor %} 
+		</div>
+	</section>
+	<section id="bestsellers" class="section content-section">
+		<h2>BESTSELLERS</h2>
+		<div class="product-grid"> {% for product in bestsellers %} <div class="product-card">
+				<img src="{{ product.image_url }}" alt="{{ product.name }}">
+				<div class="inner-div">
+					<h3>{{ product.name }}</h3>
+					<p>{{ product.description }}</p>
+					<p>Price: R{{ product.price }}</p>
+				</div>
+			</div> {% endfor %} </div>
+	</section>
 	<script>
 	document.addEventListener('DOMContentLoaded', function() {
 		// Menu elements
