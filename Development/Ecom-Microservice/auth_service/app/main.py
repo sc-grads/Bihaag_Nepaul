@@ -68,6 +68,7 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(database.get_db)
 ):
+    # Authenticate the user
     user = auth.authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -76,22 +77,26 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
+    # Create the access token with expiration and role included
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = auth.create_access_token(
         data={"sub": user.email, "role": user.role},  # Include user role in the token
         expires_delta=access_token_expires
     )
+    
+    # Set the user_id as an HttpOnly cookie (to prevent client-side access)
+    response.set_cookie(
+        key="user_id",
+        value=str(user.id),
+        httponly=True,  # HttpOnly flag makes it inaccessible via JavaScript
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # Set cookie expiration
+        secure=True,  # Use secure flag in production (HTTPS)
+        samesite="Lax"  # Adjust based on your security needs (Lax, Strict, or None)
+    )
 
-    # Explicitly return the role in the response
+    # Explicitly return the role in the response, along with the access token
     return {"access_token": access_token, "token_type": "bearer", "role": user.role}
 
-    
-    logger.info(f"User logged in: {user.username}, role: {user.role}")
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "role": user.role
-    }
 
 @app.post("/auth/logout")
 async def logout(response: Response):

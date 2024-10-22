@@ -6,6 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>TNMP Store</title>
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">
 	<style>
 	/* Reset and Base Styles */
 	* {
@@ -107,24 +108,24 @@
 
 	/* Title Styles */
 	.title {
-		font-size: 10rem;
+		font-size: 8rem;
 		font-weight: bold;
 		margin: 0;
 		color: #ffffff;
 		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 		animation: text-pop-up-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 		font-family: Tahoma, Verdana, sans-serif;
-		position: relative;
+		position: absolute;
 		z-index: 2;
 	}
 
 	/* Background Rectangle */
 	.rectangle {
 		width: 80%;
-		height: 200px;
+		height: 140px;
 		background-color: rgba(0, 0, 0, 0.7);
 		position: absolute;
-		top: 180px;
+		top: 140px;
 		z-index: 1;
 		animation: swing-in-bottom-fwd 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
 		border-radius: 20px;
@@ -279,7 +280,7 @@
 
 	.product-card img {
 		width: 100%;
-		height: 400px;
+		height: 300px;
 		/* Fixed height */
 		object-fit: cover;
 		/* This will crop the image to fit the container */
@@ -345,7 +346,7 @@
 		border-radius: 30px;
 		width: 60%;
 		position: relative;
-		margin-left: 85px;
+		margin-left: 70px;
 		border: rgba(165, 165, 165, 0.884);
 		border-width: 3px;
 		border-style: solid;
@@ -363,7 +364,14 @@
 		margin-bottom: 10px; /* Add some space below the badge */
 		position: relative; /* Position relative for better placement */
 		top: -10px;
-		left: 330px; /* Adjust position to overlap with the card */
+		left: 220px; /* Adjust position to overlap with the card */
+	}
+
+	.button {
+
+		--balloon-color: rgb(255, 94, 0);
+		--balloon-font-size: 15px;
+		--balloon-font-color: rgb(0, 0, 0);
 	}
 
 	</style>
@@ -394,8 +402,8 @@
 		<button class="button" id="menu-btn">☰</button>
 		<div></div>
 		<div style="display: flex; gap: 10px;">
-			<button class="button">L</button>
-			<button class="button">R</button>
+			<button aria-label="Login" data-balloon-pos="left" class="button"  onclick="window.location.href='login.html'">L</button>
+			<button aria-label="Register" data-balloon-pos="down" class="button" onclick="window.location.href='register.html'">R</button>
 		</div>
 	</header>
 	<!-- Video Background -->
