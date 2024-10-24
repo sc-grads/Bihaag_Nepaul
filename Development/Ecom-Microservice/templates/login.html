@@ -130,6 +130,8 @@
 				// Optionally, you can store the user's role too, if needed
 				localStorage.setItem('role', data.role);
 				// Redirect the user based on their role
+				localStorage.setItem('username', data.username);
+            	localStorage.setItem('email', data.email);
 				if(data.role === "admin") {
 					window.location.href = "/dummi.html"; // Redirect to admin dashboard
 				} else {

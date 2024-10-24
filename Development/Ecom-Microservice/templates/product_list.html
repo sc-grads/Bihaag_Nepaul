@@ -7,11 +7,17 @@
 	<title>Product Catalog</title>
 	<!-- Bootstrap CSS -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap Icons -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
 	<!-- Custom CSS -->
 	<style>
+	.body {
+		background-color: #09070c;
+		background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20L0 20z' fill='%23454348' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+	}
+
 	.custom-card {
 		border-radius: 15px;
-
 	}
 
 	.cart-item {
@@ -19,6 +25,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 10px;
+		margin-left: 20px;
 		border-bottom: 1px solid #eee;
 	}
 
@@ -28,12 +35,27 @@
 		text-align: right;
 	}
 
-	#cart-container {
-		padding: 15px;
+	.card-img-top {
+		width: 100%;
+		height: 220px;
+		/* Fixed height */
+		/* This will crop the image to fit the container */
+		border-radius: 4px;
 	}
 
-	.card-img-top {
-		height: 200px;
+	#imgcontainer {
+		position: relative;
+		border-width: solid;
+		overflow: hidden;
+		border-radius: 30px;
+	}
+
+	#myimg {
+		transform-origin: center center;
+		transform-origin: 20px 20px;
+		height: 280px;
+		transform: scale(1);
+		cursor: pointer;
 		object-fit: cover;
 	}
 
@@ -59,11 +81,11 @@
 		position: fixed;
 		bottom: 0;
 		right: 0;
-		width: 300px;
+		width: 200px;
 		max-height: 200px;
 		overflow-y: auto;
 		background: rgba(0, 0, 0, 0.8);
-		color: white;
+		color: rgba(255, 255, 255, 0);
 		padding: 10px;
 		font-family: monospace;
 		font-size: 12px;
@@ -71,63 +93,153 @@
 		display: none;
 	}
 
+	/* New styles for cart icon */
+	.cart-icon-container {
+		position: fixed;
+		top: 10px;
+		right: 20px;
+		z-index: 1000;
+	}
 
+	.cart-icon {
+		position: relative;
+		cursor: pointer;
+		font-size: 24px;
+		background: #ffffff;
+		border-radius: 50%;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+		width: 40px;
+		height: 40px;
+		padding-left: 8px;
+	}
+
+	.cart-badge {
+		position: absolute;
+		top: -8px;
+		right: -14px;
+		background: #ff0000;
+		color: white;
+		border-radius: 50%;
+		padding: 4px 8px;
+		font-size: 12px;
+		font-weight: bold;
+	}
+
+	/* Cart modal styles */
+	.cart-modal {
+		display: none;
+		position: fixed;
+		top: 60px;
+		right: 20px;
+		width: 450px;
+		background: white;
+		border-radius: 10px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		z-index: 1000;
+		max-height: 80vh;
+		overflow-y: auto;
+	}
+
+	.cart-modal.show {
+		display: block;
+	}
+
+	/* Input focus styles */
+	input:focus {
+		border-color: #ff5e00;
+		/* Change the border color to your desired color */
+		outline: none;
+		/* Optional: remove the default outline */
+	}
+
+	.user-email {
+		color: #000000;
+		cursor: pointer;
+	}
+
+	.user-email:hover {
+		text-decoration: underline;
+		color: #ff5e00;
+		transition: 1s;
+	}
+
+	.card-header {
+		background: #ff5e00;
+		text-align: center;
+		color: #eee;
+	}
+
+	.quantity-control {
+		margin-left: 96px;
+	}
+
+	.card-body {
+		background-color: rgba(255, 255, 255, 0.8)
+	}
+
+	.form-select-brand {
+		width: 200px;
+	}
+
+	.mb-0 {
+		font-weight: bold;
+	}
 	</style>
 </head>
 
-<body>
+<body class="body">
+	<!-- Cart Icon -->
+	<div class="cart-icon-container">
+		<div class="cart-icon" onclick="toggleCart()">
+			<i class="bi bi-cart"></i>
+			<span class="cart-badge">0</span>
+		</div>
+	</div>
+	<!-- Cart Modal -->
+	<div id="cart-modal" class="cart-modal">
+		<div id="cart-container" class="p-3">
+			<!-- Cart contents will be dynamically inserted here -->
+		</div>
+	</div>
 	<div class="container mt-5">
 		<div class="card shadow-lg border-0 mb-5 custom-card">
-			<div class="card-header bg-primary text-white text-center py-3">
-				<h2 class="mb-0">Product Catalog</h2>
+			<div class="card-header">
+				<h2 class="mb-0">PRODUCT CATALOG</h2>
 			</div>
 			<div class="card-body">
 				<div class="row mb-4">
 					<div class="col-md-6">
-						<div class="input-group">
-							<span class="input-group-text"><i class="bi bi-search"></i></span>
-							<input type="text" class="form-control" id="searchInput" placeholder="Search products...">
+						<div class="input-group" style="width: 350px;">
+							<span class="input-group-text" style="color: #eee; background-color: #ff7322; border-radius: 40px;"><i class="bi bi-search"></i></span>
+							<input type="text" style="border-radius: 50px; left: 10px;" class="form-control" id="searchInput" placeholder="Search products..." oninput="searchProducts()">
 							<div id="searchResults" class="mt-2"></div>
 						</div>
 					</div>
 					<div class="col-md-6 text-md-end mt-3 mt-md-0">
-						<button onclick="debugCartService()" class="btn btn-warning me-2">Debug Cart</button>
-						<a href="/products/new" class="btn btn-success me-2">Add New Product</a>
+						<img class="user-icon" src="static/images/user.png" alt="User Icon" style="width: 30px; height: 30px; margin-right: 10px;">
+						<span id="userEmail" class="user-email" onclick="window.location.href='profile.html';"></span>
 						<a href="/auth/logout" class="btn btn-outline-danger">Logout</a>
 					</div>
 				</div>
 				<div class="row mb-4">
 					<div class="col-md-4">
-						<select id="brandFilter" class="form-select" onchange="filterByBrand()">
+						<select id="brandFilter" class="form-select" style="width: 150px; margin-left: 380px; margin-top: -62px" onchange="filterByBrand()">
 							<option value="">Select Brand</option>
 							<option value="Brand1">Brand 1</option>
 							<option value="Brand2">Brand 2</option>
-							<!-- Add more brands as needed -->
 						</select>
 					</div>
 					<div class="col-md-4">
-						<select id="yearFilter" class="form-select" onchange="filterByYear()">
+						<select id="yearFilter" class="form-select" style="margin-left: 180px; width: 150px; margin-top: -62px;" onchange="filterByYear()">
 							<option value="">Select Year</option>
 							<option value="2022">2022</option>
 							<option value="2023">2023</option>
 							<option value="2024">2024</option>
-							<!-- Add more years as needed -->
 						</select>
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-md-4">
-						<div id="cart-container" class="card">
-							<h3>Your Cart</h3>
-							<div class="cart-items">
-								<!-- Cart items will be dynamically inserted here -->
-							</div>
-							<div class="cart-total">
-								<!-- Cart total will be dynamically inserted here -->
-							</div>
-						</div>
-					</div>
-					<div class="col-md-8">
+					<div class="col-12">
 						<div id="product-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 							<!-- Products will be dynamically inserted here -->
 						</div>
@@ -142,6 +254,45 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
 	<!-- Cart and Product Management Scripts -->
 	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		// Get user email from localStorage
+		const userEmail = localStorage.getItem('email');
+		const userEmailElement = document.getElementById('userEmail');
+		// Display email if it exists
+		if(userEmail) {
+			userEmailElement.textContent = userEmail;
+		} else {
+			// Redirect to login if no email found
+			window.location.href = 'login.html';
+		}
+	});
+	//cart-----------------------------------------start
+
+	function updateCartBadge(cartItems) {
+		const cartBadge = document.querySelector('.cart-badge');
+		if(cartBadge) {
+			// Sum up the quantities of all items
+			const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+			cartBadge.textContent = totalItems;
+			// Optionally animate the badge
+			cartBadge.style.transform = 'scale(1.2)';
+			setTimeout(() => {
+				cartBadge.style.transform = 'scale(1)';
+			}, 200);
+		}
+	}
+	function toggleCart() {
+		const cartModal = document.getElementById('cart-modal');
+		cartModal.classList.toggle('show');
+	}
+	document.addEventListener('click', function(event) {
+		const cartModal = document.getElementById('cart-modal');
+		const cartIcon = document.querySelector('.cart-icon');
+		if(!cartModal.contains(event.target) && !cartIcon.contains(event.target)) {
+			cartModal.classList.remove('show');
+		}
+	});
+	//cart--------------------------------------------------end
 	// Debug logging
 	function logDebug(message, data = null) {
 		const debugLog = document.getElementById('debug-log');
@@ -162,7 +313,8 @@
 	function formatPriceInRands(price) {
 		return `R ${price.toFixed(2)}`;
 	}
-	// Debug function for adding to cart
+	//  function for adding to cart
+
 	async function addToCart(productId) {
 		const quantityInput = document.getElementById(`quantity-${productId}`);
 		const quantity = parseInt(quantityInput.value);
@@ -173,7 +325,7 @@
 		try {
 			const response = await fetch(`/cart/add`, {
 				method: 'POST',
-				credentials: 'include', // Include cookies for CORS
+				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -189,6 +341,7 @@
 			}
 			const data = await response.json();
 			logDebug('Added to cart successfully', data);
+			// Fetch updated cart data and update UI
 			await updateCartUI();
 			alert('Product added to cart!');
 		} catch (error) {
@@ -204,7 +357,7 @@
 		try {
 			const response = await fetch(`/cart/${itemId}`, {
 				method: 'DELETE',
-				credentials: 'include', // Include cookies for CORS
+				credentials: 'include',
 				mode: 'cors',
 			});
 			if(!response.ok) {
@@ -212,12 +365,13 @@
 				throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
 			}
 			logDebug('Removed from cart successfully');
-			await updateCartUI();
+			await updateCartUI(); // This will also update the badge
 		} catch (error) {
 			logDebug('Error removing from cart:', error.message);
 			alert(`Failed to remove item from cart: ${error.message}`);
 		}
 	}
+	// Function to update the cart UI
 	// Function to update the cart UI
 	// Function to update the cart UI
 	async function updateCartUI() {
@@ -227,7 +381,7 @@
 			logDebug('Fetching cart data...');
 			const response = await fetch(`http://localhost:8003/cart`, {
 				method: 'GET',
-				credentials: 'include' // This ensures cookies are sent with the request
+				credentials: 'include'
 			});
 			logDebug('Response received', {
 				status: response.status,
@@ -246,25 +400,55 @@
 			}
 			const cartData = await response.json();
 			logDebug('Cart data received', cartData);
+			// Update the cart badge
+			updateCartBadge(cartData.items);
+			// Fetch product details for each cart item
+			const cartItemsWithDetails = await Promise.all(cartData.items.map(async (item) => {
+				const productResponse = await fetch(`/products/${item.product_id}`, {
+					credentials: 'include'
+				});
+				const productData = await productResponse.json();
+				return {
+					...item,
+					productDetails: productData
+				};
+			}));
 			// Clear previous cart HTML
 			let cartHTML = '<h3>Your Cart</h3>';
-			if(cartData.items.length === 0) {
+			if(cartItemsWithDetails.length === 0) {
 				cartHTML += '<p>Your cart is empty</p>';
+				updateCartBadge([]); // Update badge to show 0
 			} else {
 				cartHTML += '<div class="cart-items">';
-				cartData.items.forEach(item => {
+				cartItemsWithDetails.forEach(item => {
 					cartHTML += `
-                        <div class="cart-item">
-                            <span>${item.product_id}</span> <!-- You might want to fetch the product name -->
-                            <span>Quantity: ${item.quantity}</span>
-                            <span>Price: ${formatPriceInRands(item.price)}</span>
-                            <button onclick="removeFromCart(${item.id})" class="btn btn-danger btn-sm">Remove</button>
+                    <div class="cart-item">
+                        <div class="d-flex align-items-center" style="gap: 15px;">
+                            <img src="${item.productDetails.image_url}" 
+                                alt="${item.productDetails.name}" 
+                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                            <div class="d-flex flex-column">
+                                <strong>${item.productDetails.name}</strong>
+                                <div class="d-flex align-items-center" style="gap: 20px;">
+                                    <span>Quantity: ${item.quantity}</span>
+                                    <span>Price: ${formatPriceInRands(item.price)}</span>
+                                    <button onclick="removeFromCart(${item.id})" 
+                                        class="btn btn-danger btn-sm">
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    `;
+                    </div>
+                `;
 				});
 				cartHTML += '</div>';
 			}
-			cartHTML += `<div class="cart-total">Total: ${formatPriceInRands(cartData.total)}</div>`;
+			cartHTML += `
+            <div class="cart-total mt-3 border-top pt-3">
+                Total: ${formatPriceInRands(cartData.total)}
+            </div>
+        `;
 			// Insert the updated HTML
 			cartContainer.innerHTML = cartHTML;
 		} catch (error) {
@@ -301,17 +485,19 @@
 			container.innerHTML = products.map(product => `
                     <div class="col">
                         <div class="card h-100">
-                            <img src="${product.image_url}" class="card-img-top" alt="${product.name}">
+							<div id="imgcontainer">
+                            <img id="myimg" src="${product.image_url}" class="card-img-top" alt="${product.name}" style="">
+							</div>
                             <div class="card-body">
-                                <h5 class="card-title">${product.name}</h5>
-                                <p class="card-text">${product.description}</p>
-                                <p class="card-text"><strong>${formatPriceInRands(product.price)}</strong></p>
+                                <h5 class="card-title" style="text-align: center">${product.name}</h5>
+                                <p class="card-text" style="text-align: center">${product.description}</p>
+                                <p class="card-text" style="text-align: center"><strong>${formatPriceInRands(product.price)}</strong></p>
                                 <div class="quantity-control">
                                     <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, -1)">-</button>
-                                    <input type="number" id="quantity-${product.id}" value="1" min="1" class="form-control">
+                                    <input type="number" id="quantity-${product.id}" value="1" min="1" class="form-control-cart">
                                     <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, 1)">+</button>
                                 </div>
-                                <button onclick="addToCart(${product.id})" class="btn btn-primary w-100">Add to Cart</button>
+                                <button onclick="addToCart(${product.id})" class="btn btn-primary w-30" style="display: block; margin: 0 auto; background-color: #ff5e00; border-color: #ff5e00">Add to Cart</button>
                             </div>
                         </div>
                     </div>

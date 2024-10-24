@@ -95,7 +95,7 @@ async def login(
     )
 
     # Explicitly return the role in the response, along with the access token
-    return {"access_token": access_token, "token_type": "bearer", "role": user.role}
+    return {"access_token": access_token, "token_type": "bearer", "role": user.role, "username": user.username, "email": user.email}
 
 
 @app.post("/auth/logout")
