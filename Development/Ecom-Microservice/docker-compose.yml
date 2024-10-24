@@ -86,6 +86,23 @@ services:
     networks:
       - ecommerce-network
 
+  payment_service:
+      build:
+        context: ./payment_service
+      ports:
+        - "8004:8000"
+      environment:
+        - DATABASE_URL=postgresql://fastapi:fastapipassword@db:5432/ecommerce_db
+        - PAYPAL_CLIENT_ID=AVYZzxOit_f7vRlQwXav5iXZc-PuTS7atIyXBMP1wdsX9ifFwhTKrQBjU7jOQ-Zat7NwXWsizkNYIuuS
+        - PAYPAL_CLIENT_SECRET=EI9_c7T6lssSHu6t6qJafddPr6KPbKuE2vGyh3xUpmWVV9QbLvJwiRnwufBIVvr8RYWbDYnRMRn5n7ew
+      volumes:
+        - ./payment_service:/app
+      depends_on:
+        db:
+          condition: service_healthy
+      networks:
+        - ecommerce-network
+
   nginx:
     build:
       context: ./nginx
@@ -99,6 +116,7 @@ services:
       - product_service
       - seller_service
       - cart_service
+      - payment_service
     networks:
       - ecommerce-network
 

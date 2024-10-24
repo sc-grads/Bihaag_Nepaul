@@ -255,6 +255,17 @@ I implemented the auth_service and the contents are as follows:
  ┣ 📜auth.db
  ┗ 📜Dockerfile
 
+📦payment_service
+ ┣ 📂app
+ ┃ ┣ 📜database.py
+ ┃ ┣ 📜main.py
+ ┃ ┣ 📜models.py
+ ┃ ┣ 📜schemas.py
+ ┃ ┗ 📜__init__.py
+ ┣ 📜.env
+ ┣ 📜Dockerfile
+ ┗ 📜requirements.txt
+
 Templates contains the following:
 📦templates
  ┣ 📂static

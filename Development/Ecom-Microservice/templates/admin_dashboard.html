@@ -10,7 +10,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #353535;
+            background-color: #1d1d1e;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%235d5c5e' fill-opacity='0.4'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
             padding-top: 20px;
         }
         .container {
@@ -28,7 +29,7 @@
         }
         .card-img-top {
             height: 200px;
-            width: 100%;
+            width: 300px;
             object-fit: cover;
         }
         .card-body {
@@ -96,23 +97,32 @@
             color: white;
             border: none;
         }
+
+        #addAdminBtn {
+            background-color: darkorange;
+        }
+
+
     </style>
 </head>
 <body>
     <div class="container mt-5">
-        <div class="card shadow-lg border-0 mb-5">
-            <div class="card-header bg-primary text-white text-center py-3">
-                <h2 class="mb-0">Product Catalog</h2>
+        <div style="background-color: #ffffff;" class="card shadow-lg border-0 mb-5">
+            <div class="card-header text-white text-center py-3" style="background-color: #ff5e00;">
+                <h2 class="mb-0">ADMIN DASHBOARD</h2>
             </div>
             <div class="card-body">
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <span  class="input-group-text"><i class="bi bi-search"></i></span>
                             <input type="search" id="productSearch" class="form-control" placeholder="Search products...">
                         </div>
                     </div>
                     <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                        <button id="addAdminBtn" class="btn btn-primary btn-lg" onclick="window.location.href='/register_admin.html'">
+                            <i class="bi bi-plus-circle me-2"></i>Add Admin
+                        </button>
                         <button id="addProductBtn" class="btn btn-primary btn-lg">
                             <i class="bi bi-plus-circle me-2"></i>Add New Product
                         </button>

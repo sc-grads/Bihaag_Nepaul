@@ -4,291 +4,12 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Product Catalog</title>
-	<!-- Bootstrap CSS -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-	<!-- Bootstrap Icons -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
-	<!-- Custom CSS -->
-	<style>
-	.body {
-		background-color: #09070c;
-		background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20L0 20z' fill='%23454348' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
-	}
-
-	.custom-card {
-		border-radius: 15px;
-	}
-
-	.cart-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 10px;
-		margin-left: 20px;
-		border-bottom: 1px solid #eee;
-	}
-
-	.cart-total {
-		padding: 10px;
-		font-weight: bold;
-		text-align: right;
-	}
-
-	.card-img-top {
-		width: 100%;
-		height: 220px;
-		/* Fixed height */
-		/* This will crop the image to fit the container */
-		border-radius: 4px;
-	}
-
-	#imgcontainer {
-		position: relative;
-		border-width: solid;
-		overflow: hidden;
-		border-radius: 30px;
-	}
-
-	#myimg {
-		transform-origin: center center;
-		transform-origin: 20px 20px;
-		height: 280px;
-		transform: scale(1);
-		cursor: pointer;
-		object-fit: cover;
-	}
-
-	.quantity-control {
-		display: flex;
-		align-items: center;
-		margin-bottom: 10px;
-	}
-
-	.quantity-control button {
-		width: 30px;
-		height: 30px;
-		padding: 0;
-	}
-
-	.quantity-control input {
-		width: 50px;
-		text-align: center;
-		margin: 0 5px;
-	}
-
-	#debug-log {
-		position: fixed;
-		bottom: 0;
-		right: 0;
-		width: 200px;
-		max-height: 200px;
-		overflow-y: auto;
-		background: rgba(0, 0, 0, 0.8);
-		color: rgba(255, 255, 255, 0);
-		padding: 10px;
-		font-family: monospace;
-		font-size: 12px;
-		z-index: 1000;
-		display: none;
-	}
-
-	/* New styles for cart icon */
-	.cart-icon-container {
-		position: fixed;
-		top: 10px;
-		right: 20px;
-		z-index: 1000;
-	}
-
-	.cart-icon {
-		position: relative;
-		cursor: pointer;
-		font-size: 24px;
-		background: #ffffff;
-		border-radius: 50%;
-		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-		width: 40px;
-		height: 40px;
-		padding-left: 8px;
-	}
-
-	.cart-badge {
-		position: absolute;
-		top: -8px;
-		right: -14px;
-		background: #ff0000;
-		color: white;
-		border-radius: 50%;
-		padding: 4px 8px;
-		font-size: 12px;
-		font-weight: bold;
-	}
-
-	/* Cart modal styles */
-	.cart-modal {
-		display: none;
-		position: fixed;
-		top: 60px;
-		right: 20px;
-		width: 450px;
-		background: white;
-		border-radius: 10px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-		z-index: 1000;
-		max-height: 80vh;
-		overflow-y: auto;
-	}
-
-	.cart-modal.show {
-		display: block;
-	}
-
-	/* Input focus styles */
-	input:focus {
-		border-color: #ff5e00;
-		/* Change the border color to your desired color */
-		outline: none;
-		/* Optional: remove the default outline */
-	}
-
-	.user-email {
-		color: #000000;
-		cursor: pointer;
-	}
-
-	.user-email:hover {
-		text-decoration: underline;
-		color: #ff5e00;
-		transition: 1s;
-	}
-
-	.card-header {
-		background: #ff5e00;
-		text-align: center;
-		color: #eee;
-	}
-
-	.quantity-control {
-		margin-left: 96px;
-	}
-
-	.card-body {
-		background-color: rgba(255, 255, 255, 0.8)
-	}
-
-	.form-select-brand {
-		width: 200px;
-	}
-
-	.mb-0 {
-		font-weight: bold;
-	}
-
-	.card{
-            border: solid;
-            border-radius: 15px;
-            overflow: hidden;
-			border-color: #ff7b5a0e;
-		transition: transform 1.3s ease, border-color 1s ease, border-width 0.3s ease;
-	}
-
-	
-	.loading-button {
-		height: 50px;
-		width: 50px;
-		background: rgba(0, 0, 0, 0);
-		border-radius: 50%;
-		border-top: 2px solid #f2591d;
-		border-right: 2px solid transparent;
-		border-bottom:none;
-		border-left:none;
-		animation: spinner5 700ms linear infinite;
-		display: none;
-		margin-left: 320px;
-	}
-
-@keyframes spinner5 {
-    to {
-      transform: rotate(360deg);
-    }
-}
-
-	.card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-			border-color: #ff7e4a;
-        }
-	</style>
+	<title>Document</title>
 </head>
 
-<body class="body">
-	<!-- Cart Icon -->
-	<div class="cart-icon-container">
-		<div class="cart-icon" onclick="toggleCart()">
-			<i class="bi bi-cart"></i>
-			<span class="cart-badge">0</span>
-		</div>
-	</div>
-	<!-- Cart Modal -->
-	<div id="cart-modal" class="cart-modal">
-		<div id="cart-container" class="p-3">
-			<!-- Cart contents will be dynamically inserted here -->
-		</div>
-	</div>
-	<div class="container mt-5">
-		<div class="card shadow-lg border-0 mb-5 custom-card">
-			<div class="card-header">
-				<h2 class="mb-0">PRODUCT CATALOG</h2>
-			</div>
-			<div class="card-body">
-				<div class="row mb-4">
-					<div class="col-md-6">
-						<div class="input-group" style="width: 350px;">
-							<span class="input-group-text" style="color: #eee; background-color: #ff7322; border-radius: 40px;"><i class="bi bi-search"></i></span>
-							<input type="text" style="border-radius: 50px; left: 10px;" class="form-control" id="searchInput" placeholder="Search products..." oninput="searchProducts()">
-							<div id="searchResults" class="mt-2"></div>
-						</div>
-					</div>
-					<div class="col-md-6 text-md-end mt-3 mt-md-0">
-						<img class="user-icon" src="static/images/user.png" alt="User Icon" style="width: 30px; height: 30px; margin-right: 10px;">
-						<span id="userEmail" class="user-email" onclick="window.location.href='profile.html';"></span>
-						<a href="/auth/logout" class="btn btn-outline-danger">Logout</a>
-					</div>
-				</div>
-				<div class="row mb-4">
-					<div class="col-md-4">
-						<select id="brandFilter" class="form-select" style="width: 150px; margin-left: 380px; margin-top: -62px" onchange="filterByBrand()">
-							<option value="">Select Brand</option>
-							<option value="Brand1">Brand 1</option>
-							<option value="Brand2">Brand 2</option>
-						</select>
-					</div>
-					<div class="col-md-4">
-						<select id="yearFilter" class="form-select" style="margin-left: 180px; width: 150px; margin-top: -62px;" onchange="filterByYear()">
-							<option value="">Select Year</option>
-							<option value="2022">2022</option>
-							<option value="2023">2023</option>
-							<option value="2024">2024</option>
-						</select>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-12">
-						<div id="product-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-							<!-- Products will be dynamically inserted here -->
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div id="debug-log"></div>
-	<!-- Bootstrap JS and dependencies -->
-	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
-	<!-- Cart and Product Management Scripts -->
+<body>
 	<script>
+	// Function to update the cart badge counter
 	document.addEventListener('DOMContentLoaded', function() {
 		// Get user email from localStorage
 		const userEmail = localStorage.getItem('email');
@@ -302,7 +23,6 @@
 		}
 	});
 	//cart-----------------------------------------start
-
 	function updateCartBadge(cartItems) {
 		const cartBadge = document.querySelector('.cart-badge');
 		if(cartBadge) {
@@ -316,6 +36,7 @@
 			}, 200);
 		}
 	}
+
 	function toggleCart() {
 		const cartModal = document.getElementById('cart-modal');
 		cartModal.classList.toggle('show');
@@ -349,7 +70,6 @@
 		return `R ${price.toFixed(2)}`;
 	}
 	//  function for adding to cart
-
 	async function addToCart(productId) {
 		const quantityInput = document.getElementById(`quantity-${productId}`);
 		const quantity = parseInt(quantityInput.value);
@@ -471,7 +191,6 @@
                                         class="btn btn-danger btn-sm">
                                         Remove
                                     </button>
-									<button onclick="initiatePayment()" class="btn btn-success w-100">Proceed to Checkout</button>
                                 </div>
                             </div>
                         </div>
@@ -483,7 +202,6 @@
 			cartHTML += `
             <div class="cart-total mt-3 border-top pt-3">
                 Total: ${formatPriceInRands(cartData.total)}
-				<button class="loading-button"></button>
             </div>
         `;
 			// Insert the updated HTML
@@ -618,44 +336,6 @@
 			productContainer.innerHTML += productCard;
 		});
 	}
-
-		async function initiatePayment() {
-		try {
-			// Get the cart data first to ensure the cart is not empty
-			const cartResponse = await fetch('http://localhost:8003/cart', {
-				method: 'GET',
-				credentials: 'include'
-			});
-
-			document.querySelector('.loading-button').style.display = 'block';
-
-			const cartData = await cartResponse.json();
-
-			if (cartData.items.length === 0) {
-				alert('Your cart is empty!');
-				return;
-			}
-
-			// Initiate payment by calling the backend to create a payment session
-			const response = await fetch('/payment/create', {
-				method: 'POST',
-				credentials: 'include'
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to initiate payment');
-			}
-
-			const data = await response.json();
-			
-			// Redirect to PayPal approval page
-			window.location.href = data.approval_url;
-		} catch (error) {
-			console.error('Error initiating payment:', error);
-			alert('Error during checkout: ' + error.message);
-		}
-	}
-
 	// Function to set up search functionality
 	function setupSearch() {
 		const searchInput = document.getElementById('searchInput');
@@ -734,6 +414,36 @@
 			searchTerm,
 			visibleProducts
 		});
+	}
+
+	// Frontend example
+	async function initiatePayment() {
+	// Create payment
+	const response = await fetch('/payment/create', {
+		method: 'POST',
+		credentials: 'include'
+	});
+	const data = await response.json();
+	
+	// Redirect to PayPal
+	window.location.href = data.approval_url;
+	}
+
+	// On success page
+	async function completePayment() {
+	const urlParams = new URLSearchParams(window.location.search);
+	const paymentId = urlParams.get('paymentId');
+	const payerId = urlParams.get('PayerID');
+	
+	const response = await fetch(`/payment/execute/${paymentId}?payer_id=${payerId}`, {
+		method: 'GET',
+		credentials: 'include'
+	});
+	
+	if (response.ok) {
+		// Handle successful payment
+		window.location.href = '/order-confirmation';
+	}
 	}
 	/////////////////////////////////////
 	// Initialize the page

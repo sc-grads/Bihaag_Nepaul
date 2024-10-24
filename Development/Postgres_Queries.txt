@@ -29,3 +29,5 @@ TRUNCATE TABLE cart_items;
 DELETE TABLE products;
 
 SELECT * FROM products;
+
+SELECT * FROM payments;
