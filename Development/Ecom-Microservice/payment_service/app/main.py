@@ -1,5 +1,5 @@
 # payment_service/main.py
-from fastapi import Cookie, FastAPI, HTTPException, Depends
+from fastapi import Cookie, FastAPI, HTTPException, Depends, Response
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
 import httpx
@@ -152,6 +152,7 @@ async def get_payment_status(
         raise HTTPException(status_code=404, detail="Payment not found")
         
     return {"status": payment.status}
+
 
 
 
