@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
 
 class PaymentBase(BaseModel):
@@ -31,3 +31,14 @@ class OrderResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class OrderItemResponse(BaseModel):
+    name: str
+    quantity: int
+
+class OrderHistoryResponse(BaseModel):
+    id: int
+    date: datetime
+    total: float
+    items: List[OrderItemResponse]

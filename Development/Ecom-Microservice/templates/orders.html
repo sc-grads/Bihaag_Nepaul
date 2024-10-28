@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            background-color: #09070c;
+		    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20L0 20z' fill='%23454348' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+	    }
+
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+
+        .order {
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background-color: #f1f3f5;
+        }
+
+        .order h3 {
+            color: #495057;
+        }
+
+        .order p {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+
+        .status-completed {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .no-orders {
+            text-align: center;
+            font-style: italic;
+            color: #6c757d;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .back-button {
+            display: block;
+            margin-bottom: 20px;
+            left: 20px;
+            width: 18%;
+            background-color: #f2591d;
+            border: none;
+        }
+
+        .order-history-header {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Go Back Button -->
+        <a href="javascript:history.back()" class="btn btn-secondary back-button">&larr; Go Back</a>
+
+        <h1 class="order-history-header">Your Order History</h1>
+        <div id="order-history" class="order-history">
+            <p class="loading">Loading your orders...</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const orderHistoryContainer = document.getElementById('order-history');
+
+            try {
+                const response = await fetch('/orders/', {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error fetching order history: ${response.statusText}`);
+                }
+
+                const orders = await response.json();
+                if (orders.length === 0) {
+                    orderHistoryContainer.innerHTML = '<p class="no-orders">No orders found.</p>';
+                } else {
+                    const ordersHTML = orders.map(order => `
+                        <div class="order">
+                            <h3>Order ID: ${order.id}</h3>
+                            <p><strong>Total Amount:</strong> R${order.total_amount.toFixed(2)}</p>
+                            <p><strong>Status:</strong> 
+                                <span class="${order.status === 'Completed' ? 'status-completed' : 'status-pending'}">
+                                    ${order.status}
+                                </span>
+                            </p>
+                            <p><strong>Created At:</strong> ${new Date(order.created_at).toLocaleDateString()}</p>
+                        </div>
+                    `).join('');
+                    orderHistoryContainer.innerHTML = ordersHTML;
+                }
+            } catch (error) {
+                orderHistoryContainer.innerHTML = `<p class="text-danger">${error.message}</p>`;
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

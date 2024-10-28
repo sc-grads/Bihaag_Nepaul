@@ -62,7 +62,8 @@
 	.quantity-control {
 		display: flex;
 		align-items: center;
-		margin-bottom: 10px;
+		margin-top: 15px;
+		margin-bottom: 12px;
 	}
 
 	.quantity-control button {
@@ -75,6 +76,8 @@
 		width: 50px;
 		text-align: center;
 		margin: 0 5px;
+		border: #7a7a7a solid 1px;
+		border-radius: 10px;
 	}
 
 	#debug-log {
@@ -185,15 +188,14 @@
 		font-weight: bold;
 	}
 
-	.card{
-            border: solid;
-            border-radius: 15px;
-            overflow: hidden;
-			border-color: #ff7b5a0e;
+	.card {
+		border: solid;
+		border-radius: 15px;
+		overflow: hidden;
+		border-color: #ff7b5a0e;
 		transition: transform 1.3s ease, border-color 1s ease, border-width 0.3s ease;
 	}
 
-	
 	.loading-button {
 		height: 50px;
 		width: 50px;
@@ -201,24 +203,25 @@
 		border-radius: 50%;
 		border-top: 2px solid #f2591d;
 		border-right: 2px solid transparent;
-		border-bottom:none;
-		border-left:none;
+		border-bottom: none;
+		border-left: none;
 		animation: spinner5 700ms linear infinite;
 		display: none;
 		margin-left: 320px;
 	}
 
-@keyframes spinner5 {
-    to {
-      transform: rotate(360deg);
-    }
-}
+	@keyframes spinner5 {
+		to {
+			transform: rotate(360deg);
+		}
+	}
 
 	.card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-			border-color: #ff7e4a;
-        }
+		transform: translateY(-5px);
+		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+		border-color: #ff7e4a;
+	}
+
 	</style>
 </head>
 
@@ -229,6 +232,11 @@
 			<i class="bi bi-cart"></i>
 			<span class="cart-badge">0</span>
 		</div>
+	</div>
+	<div class="order-history-icon-container">
+		<a  href="orders.html">
+			<i class="bi bi-clock-history"  title="Order History" style="font-size: 30px; position: absolute; margin-left: 1210px; margin-top: 30px; color: #f2591d;"></i>
+		</a>
 	</div>
 	<!-- Cart Modal -->
 	<div id="cart-modal" class="cart-modal">
@@ -302,7 +310,6 @@
 		}
 	});
 	//cart-----------------------------------------start
-
 	function updateCartBadge(cartItems) {
 		const cartBadge = document.querySelector('.cart-badge');
 		if(cartBadge) {
@@ -316,6 +323,7 @@
 			}, 200);
 		}
 	}
+
 	function toggleCart() {
 		const cartModal = document.getElementById('cart-modal');
 		cartModal.classList.toggle('show');
@@ -349,7 +357,6 @@
 		return `R ${price.toFixed(2)}`;
 	}
 	//  function for adding to cart
-
 	async function addToCart(productId) {
 		const quantityInput = document.getElementById(`quantity-${productId}`);
 		const quantity = parseInt(quantityInput.value);
@@ -471,7 +478,6 @@
                                         class="btn btn-danger btn-sm">
                                         Remove
                                     </button>
-									<button onclick="initiatePayment()" class="btn btn-success w-100">Proceed to Checkout</button>
                                 </div>
                             </div>
                         </div>
@@ -479,13 +485,15 @@
                 `;
 				});
 				cartHTML += '</div>';
+				// Add Proceed to Checkout button after the cart items
+				cartHTML += `
+                <div class="cart-total mt-3 border-top pt-3">
+                    Total: ${formatPriceInRands(cartData.total)}
+                    <button class="loading-button"></button>
+                </div>
+                <button onclick="initiatePayment()" class="btn btn-success w-100 mt-3">Proceed to Checkout</button>
+            `;
 			}
-			cartHTML += `
-            <div class="cart-total mt-3 border-top pt-3">
-                Total: ${formatPriceInRands(cartData.total)}
-				<button class="loading-button"></button>
-            </div>
-        `;
 			// Insert the updated HTML
 			cartContainer.innerHTML = cartHTML;
 		} catch (error) {
@@ -618,44 +626,83 @@
 			productContainer.innerHTML += productCard;
 		});
 	}
+	async function initiatePayment() {
+    try {
+        // Show loading indication
+        document.querySelector('.loading-button').style.display = 'block';
 
-		async function initiatePayment() {
-		try {
-			// Get the cart data first to ensure the cart is not empty
-			const cartResponse = await fetch('http://localhost:8003/cart', {
-				method: 'GET',
-				credentials: 'include'
-			});
+        // Fetch cart data to ensure it's not empty
+        const cartResponse = await fetch('http://localhost:8003/cart', {
+            method: 'GET',
+            credentials: 'include'
+        });
 
-			document.querySelector('.loading-button').style.display = 'block';
+        const cartData = await cartResponse.json();
+        if (cartData.items.length === 0) {
+            alert('Your cart is empty!');
+            document.querySelector('.loading-button').style.display = 'none';
+            return;
+        }
 
-			const cartData = await cartResponse.json();
+        // Create a detailed cart summary object with product names
+        const cartSummary = {
+            total_items: cartData.items.reduce((sum, item) => sum + item.quantity, 0),
+            cart_details: await Promise.all(cartData.items.map(async item => {
+                // Fetch product details for each item to get the name
+                const productResponse = await fetch(`http://localhost:8000/products/${item.product_id}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                const productData = await productResponse.json();
 
-			if (cartData.items.length === 0) {
-				alert('Your cart is empty!');
-				return;
-			}
+                return {
+                    product_id: item.product_id,
+                    quantity: item.quantity,
+                    name: item.product_name // Include the product name here
+                };
+            }))
+        };
 
-			// Initiate payment by calling the backend to create a payment session
-			const response = await fetch('/payment/create', {
-				method: 'POST',
-				credentials: 'include'
-			});
+        // Set the cart summary as a cookie
+        document.cookie = `cart_summary=${encodeURIComponent(JSON.stringify(cartSummary))}; path=/; max-age=3600; secure; samesite=Lax`;
 
-			if (!response.ok) {
-				throw new Error('Failed to initiate payment');
-			}
+        // Retrieve and parse the cart_summary cookie for verification
+        const cookieValue = getCookie('cart_summary'); // Assuming getCookie is defined
+        if (cookieValue) {
+            const decodedCookie = decodeURIComponent(cookieValue);
+            try {
+                const parsedCartSummary = JSON.parse(decodedCookie);
+                console.log('Parsed Cart Summary:', parsedCartSummary);
+            } catch (error) {
+                console.error('Error parsing cart summary:', error);
+            }
+        }
 
-			const data = await response.json();
-			
-			// Redirect to PayPal approval page
-			window.location.href = data.approval_url;
-		} catch (error) {
-			console.error('Error initiating payment:', error);
-			alert('Error during checkout: ' + error.message);
-		}
+        // Initiate payment by calling backend to create a payment session
+        const response = await fetch('/payment/create', {
+            method: 'POST',
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            throw new Error('Failed to initiate payment');
+        }
+        const data = await response.json();
+        // Redirect to PayPal approval page
+        window.location.href = data.approval_url;
+    } catch (error) {
+        console.error('Error initiating payment:', error);
+        alert('Error during checkout: ' + error.message);
+    } finally {
+        document.querySelector('.loading-button').style.display = 'none';
+    }
+}
+
+	// Function to get the value of a specific cookie by name
+	function getCookie(name) {
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${name}=`);
+		if(parts.length === 2) return parts.pop().split(';').shift();
 	}
-
 	// Function to set up search functionality
 	function setupSearch() {
 		const searchInput = document.getElementById('searchInput');

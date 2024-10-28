@@ -4298,3 +4298,9 @@ secure: Set to True, meaning the cookie will only be transmitted over secure (HT
 samesite: Set to "Lax", a security measure to mitigate Cross-Site Request Forgery (CSRF) risks.
 Status:
 You had just completed writing the logic to update the cart_summary cookie after successfully removing an item from the cart. Your next steps involve testing and confirming the correct behavior of the cookie updates.
+
+////////////////////////////////////////////////////////////////////// cd 
+
+cd development
+
+cd ecom-microservice

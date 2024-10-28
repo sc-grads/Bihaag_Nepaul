@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #09070c;
+		    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20L0 20z' fill='%23454348' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+	    }
+        .success-container {
+            max-width: 600px;
+            margin: 3rem auto;
+            padding: 2rem;
+            text-align: center;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .success-icon {
+            color: #4CAF50;
+            font-size: 60px;
+            margin-bottom: 1.5rem;
+        }
+        h1 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        .details {
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+        .details p {
+
+            margin: 0.8rem 0;
+        }
+        .cart-items h3 {
+            margin: 1rem 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #ececec;
+            text-align: center;
+            
+        }
+        .button {
+            display: inline-block;
+            padding: 0.9rem 1.6rem;
+            background-color: #ff5722;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            margin-top: 1.5rem;
+        }
+        .button:hover {
+            background-color: #e64a19;
+        }
+        .debug-info {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .cart-order {
+            background-color: #4CAF50;
+            width: fit-content;
+            padding: 0.0rem 1rem;
+            border-radius: 30px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">✓</div>
+        <h1>Payment Successful!</h1>
+        
+        <div class="details">
+            <p><strong>Order ID:</strong> <span id="order_id"></span></p>
+            <p><strong>Payment ID:</strong> <span id="payment_id"></span></p>
+            <p><strong>Total Amount:</strong> $<span id="total_amount"></span></p>
+            
+            <div class="cart-items">
+                <div class="cart-order">
+                <h3>Order Details:</h3>
+                </div>
+                <div id="cart_items_list"></div>
+            </div>
+        </div>
+
+        <a href="/product_list.html" class="button">Return to Home</a>
+    </div>
+
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) {
+                return decodeURIComponent(parts.pop().split(';').shift());
+            }
+            return null;
+        }
+
+        function safeJSONParse(str) {
+            try {
+                return JSON.parse(str);
+            } catch (e) {
+                console.error('Error parsing JSON:', e);
+                return null;
+            }
+        }
+
+        function updateCartItemsList() {
+            const cartItemsList = document.querySelector('#cart_items_list');
+            if (!cartItemsList) return;
+
+            const cartSummaryStr = getCookie('cart_summary');
+            if (!cartSummaryStr) {
+                console.error('No cart summary cookie found');
+                cartItemsList.innerHTML = 'No items found';
+                return;
+            }
+
+            const cartSummary = safeJSONParse(cartSummaryStr);
+            if (!cartSummary || !cartSummary.cart_details) {
+                console.error('Invalid cart summary format');
+                cartItemsList.innerHTML = 'Error loading cart items';
+                return;
+            }
+
+            const itemsHTML = cartSummary.cart_details
+                .map(item => {
+                    const name = item.name || `Product ${item.product_id}`;
+                    return `<div class="cart-item">${name} (Product ID: ${item.product_id}) × ${item.quantity}</div>`;
+                })
+                .join('');
+
+            cartItemsList.innerHTML = itemsHTML || '<p>No items found</p>';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            document.getElementById('order_id').textContent = urlParams.get('order_id');
+            document.getElementById('payment_id').textContent = urlParams.get('payment_id');
+            document.getElementById('total_amount').textContent = urlParams.get('total_amount');
+
+            updateCartItemsList();
+        });
+    </script>
+</body>
+</html>

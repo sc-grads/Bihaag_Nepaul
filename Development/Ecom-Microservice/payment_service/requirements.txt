@@ -7,3 +7,4 @@ uvicorn
 python-dotenv
 pydantic
 python-multipart
+jinja2

@@ -26,8 +26,24 @@ SELECT * FROM cart_items;
 
 TRUNCATE TABLE cart_items;
 
+DROP TABLE cart_items;
+
 DELETE TABLE products;
 
 SELECT * FROM products;
 
 SELECT * FROM payments;
+
+SELECT * FROM orders;
+
+SELECT * FROM order_items;
+
+
+-- Disable foreign key checks
+ALTER TABLE orders DROP CONSTRAINT orders_payment_id_fkey; 
+
+-- Truncate the payments table
+TRUNCATE TABLE payments;
+
+-- Re-enable foreign key checks
+ALTER TABLE orders ADD CONSTRAINT orders_payment_id_fkey FOREIGN KEY (payment_id) REFERENCES payments(payment_id);
