@@ -1,0 +1,7 @@
+pyjwt
+python-jose[cryptography]
+passlib
+python-multipart
+pydantic
+fastapi
+python-dotenv

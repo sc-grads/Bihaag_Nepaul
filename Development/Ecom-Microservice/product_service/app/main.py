@@ -1,3 +1,5 @@
+#product_service/app/main.py
+
 from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -8,9 +10,13 @@ from typing import List
 import os
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import func
+from fastapi import Depends, HTTPException, Request
+from .auth_middleware import ServiceEnum, verify_permission
+
 
 
 app = FastAPI()
+
 
 # Set up Jinja2 templates
 templates = Jinja2Templates(directory="templates")
@@ -47,7 +53,8 @@ async def create_product(
     brand: str = Form(...),
     quantity: int = Form(1),  # New field for quantity with default of 1
     image: UploadFile = File(None),
-    db: Session = Depends(database.get_db)
+    db: Session = Depends(database.get_db),
+    _: bool = Depends(verify_permission("create", ServiceEnum.PRODUCT))
 ):
     image_url = None
     if image and image.filename:
@@ -74,9 +81,16 @@ async def create_product(
 
 # Route to read all products
 @app.get("/products/", response_model=List[schemas.Product])
-def read_products(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)):
+async def get_products(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(database.get_db),
+    _: bool = Depends(verify_permission("view", ServiceEnum.PRODUCT))
+):
     products = db.query(models.Product).offset(skip).limit(limit).all()
     return products
+
+
 
 # Route to read a single product by ID
 @app.get("/products/{product_id}", response_model=schemas.Product)
@@ -108,7 +122,8 @@ async def update_product(
     is_bestseller: str = Form('0'),
     is_featured: str = Form('0'),
     image: UploadFile = File(None),
-    db: Session = Depends(database.get_db)
+    db: Session = Depends(database.get_db),
+    _: bool = Depends(verify_permission("edit", ServiceEnum.PRODUCT))
 ):
     db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if db_product is None:
@@ -141,13 +156,19 @@ async def update_product(
 
 # Route to delete a product
 @app.delete("/products/{product_id}", response_model=schemas.Product)
-def delete_product(product_id: int, db: Session = Depends(database.get_db)):
+async def delete_product(
+    product_id: int, 
+    db: Session = Depends(database.get_db), 
+    _: bool = Depends(verify_permission("delete", ServiceEnum.PRODUCT))  # Requires delete permission
+):
     db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
+    
     db.delete(db_product)
     db.commit()
     return db_product
+
 
 # Route to search for products
 @app.get("/products/search/", response_model=List[schemas.Product])

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Permissions Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="container mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">User Permissions Management</h1>
+        
+        <div class="mb-4">
+            <label class="block mb-2">Select User</label>
+            <select id="userSelect" class="w-full p-2 border rounded">
+                <!-- Users will be populated dynamically -->
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="block mb-2">Select Service</label>
+            <select id="serviceSelect" class="w-full p-2 border rounded">
+                <option value="CART">Cart</option>
+                <option value="PRODUCT">Product</option>
+                <option value="SELLER">Seller</option>
+                <option value="PAYMENT">Payment</option>
+                <option value="AUTH">Auth</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="block mb-2">Permissions</label>
+            <div id="permissionsContainer" class="grid grid-cols-2 gap-2">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" value="create" class="permission-checkbox">
+                    <span class="ml-2">Create</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="checkbox" value="view" class="permission-checkbox">
+                    <span class="ml-2">View</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="checkbox" value="edit" class="permission-checkbox">
+                    <span class="ml-2">Edit</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="checkbox" value="delete" class="permission-checkbox">
+                    <span class="ml-2">Delete</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="flex space-x-4">
+            <button id="updatePermissionsBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Update Permissions
+            </button>
+        </div>
+
+        <div id="messageContainer" class="mt-4 text-center"></div>
+    </div>
+
+    <script>
+        const userSelect = document.getElementById('userSelect');
+        const serviceSelect = document.getElementById('serviceSelect');
+        const permissionCheckboxes = document.querySelectorAll('.permission-checkbox');
+        const updatePermissionsBtn = document.getElementById('updatePermissionsBtn');
+        const messageContainer = document.getElementById('messageContainer');
+
+        // Fetch users on page load
+        async function fetchUsers() {
+            try {
+                const response = await axios.get('/users');
+                const users = response.data;
+                userSelect.innerHTML = users.map(user => 
+                    `<option value="${user.id}">${user.username} (${user.email})</option>`
+                ).join('');
+            } catch (error) {
+                messageContainer.innerHTML = `<p class="text-red-500">Error fetching users: ${error.message}</p>`;
+            }
+        }
+
+        // Fetch current user permissions
+        async function fetchUserPermissions() {
+            const userId = userSelect.value;
+            const service = serviceSelect.value;
+
+            try {
+                const response = await axios.get(`/permissions/users/${userId}`);
+                const userPermissions = response.data.permissions;
+
+                // Reset checkboxes
+                permissionCheckboxes.forEach(checkbox => {
+                    checkbox.checked = userPermissions.some(
+                        perm => perm.service === service && perm.name === checkbox.value
+                    );
+                });
+            } catch (error) {
+                messageContainer.innerHTML = `<p class="text-red-500">Error fetching permissions: ${error.message}</p>`;
+            }
+        }
+
+        // Update user permissions
+        async function updatePermissions() {
+            const userId = userSelect.value;
+            const service = serviceSelect.value;
+
+            const selectedPermissions = Array.from(permissionCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+
+            try {
+                // First revoke all permissions for the service
+                const currentPermissions = await (await axios.get(`/permissions/users/${userId}`)).data.permissions;
+                for (let perm of currentPermissions.filter(p => p.service === service)) {
+                    await axios.post(`/permissions/users/${userId}/revoke`, {
+                        service: service,
+                        permission_name: perm.name
+                    });
+                }
+
+                // Then add selected permissions
+                for (let permName of selectedPermissions) {
+                    await axios.post(`/permissions/users/${userId}/add`, {
+                        service: service,
+                        permission_name: permName
+                    });
+                }
+
+                messageContainer.innerHTML = `
+                    <p class="text-green-500">Permissions updated successfully!</p>
+                `;
+            } catch (error) {
+                messageContainer.innerHTML = `<p class="text-red-500">Error updating permissions: ${error.message}</p>`;
+            }
+        }
+
+        // Event Listeners
+        userSelect.addEventListener('change', fetchUserPermissions);
+        serviceSelect.addEventListener('change', fetchUserPermissions);
+        updatePermissionsBtn.addEventListener('click', updatePermissions);
+
+        // Initialize
+        fetchUsers();
+    </script>
+</body>
+</html>

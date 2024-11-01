@@ -7,6 +7,7 @@ Each service is connected to a postgress db which runs as a service in its own c
  ┣ 📂auth_service 
  ┣ 📂nginx
  ┣ 📂product_service 
+ ┣ 📂payment_service 
  ┣ 📂seller_service 
  ┣ 📂templates
  ┣ 📂cart_service
@@ -37,26 +38,73 @@ http {
 
     access_log /var/log/nginx/access.log main;
     error_log /var/log/nginx/error.log warn;
+    proxy_set_header Authorization $http_authorization;
+    proxy_pass_header Authorization;
 
     sendfile on;
     tcp_nopush on;
     tcp_nodelay on;
     keepalive_timeout 65;
-    gzip on;                      # Enable gzip compression
+    gzip on;
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
 
     server {
         listen 80;
 
         root /usr/share/nginx/html;
-        index home.html;
+        index index.html;
+
+        # Payment success handling
+        location /payment/success {
+            # First proxy the request to complete the payment
+            proxy_pass http://payment_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # After successful payment (200 status), redirect to success page
+            proxy_intercept_errors on;
+            
+            # CORS headers
+            add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        }
+
+        # Named location for payment success redirect
+        location @payment_success {
+            return 302 /payment_success.html;
+        }
+
+        # Regular payment endpoints
+        location /payment/ {
+            proxy_pass http://payment_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            if ($request_method = 'OPTIONS') {
+                add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+                return 204;
+            }
+
+            add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        }
 
         location /static/ {
             alias /usr/share/nginx/html/static/;
             expires 1h;
             add_header Cache-Control "public";
 
-            # Specific rules for video files
             location ~* \.(mp4|webm)$ {
                 add_header Content-Disposition "inline";
                 add_header Accept-Ranges bytes;
@@ -96,19 +144,60 @@ http {
         location /cart/ {
             proxy_pass http://cart_service:8000;
 
-            # Handle preflight (OPTIONS) requests
             if ($request_method = 'OPTIONS') {
                 add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE' always;
                 add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
-                return 204;  # No content for preflight response
+                return 204;
             }
 
-            # Add CORS headers for actual requests
             add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
             add_header 'Access-Control-Allow-Credentials' 'true' always;
             add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        }
+
+        location /home {
+            proxy_pass http://product_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /user/ {
+            proxy_pass http://auth_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        }
+
+        location /orders/ {
+            proxy_pass http://payment_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # Handle CORS for order requests
+            if ($request_method = 'OPTIONS') {
+                add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+                return 204;
+            }
+
+            add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
             add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
         }
 
@@ -126,7 +215,6 @@ http {
         add_header X-XSS-Protection "1; mode=block";
     }
 }
-
 
 docker-compose.yml:
 
@@ -182,6 +270,7 @@ services:
       - ./product_service:/app
       - ./product_service/uploaded_images:/app/uploaded_images
       - ./templates:/app/templates
+      - ./auth_service:/app/auth_service
     depends_on:
       db:
         condition: service_healthy
@@ -218,6 +307,23 @@ services:
     networks:
       - ecommerce-network
 
+  payment_service:
+      build:
+        context: ./payment_service
+      ports:
+        - "8004:8000"
+      environment:
+        - DATABASE_URL=postgresql://fastapi:fastapipassword@db:5432/ecommerce_db
+        - PAYPAL_CLIENT_ID=AVYZzxOit_f7vRlQwXav5iXZc-PuTS7atIyXBMP1wdsX9ifFwhTKrQBjU7jOQ-Zat7NwXWsizkNYIuuS
+        - PAYPAL_CLIENT_SECRET=EI9_c7T6lssSHu6t6qJafddPr6KPbKuE2vGyh3xUpmWVV9QbLvJwiRnwufBIVvr8RYWbDYnRMRn5n7ew
+      volumes:
+        - ./payment_service:/app
+      depends_on:
+        db:
+          condition: service_healthy
+      networks:
+        - ecommerce-network
+
   nginx:
     build:
       context: ./nginx
@@ -231,6 +337,7 @@ services:
       - product_service
       - seller_service
       - cart_service
+      - payment_service
     networks:
       - ecommerce-network
 
@@ -240,20 +347,24 @@ networks:
 
 volumes:
   postgres_data:
-
+  
 I implemented the auth_service and the contents are as follows:
 
 📦auth_service
  ┣ 📂app
- ┣ ┣ 📜 __init__.py
+ ┃ ┣ 📂templates
+ ┃ ┣ 📜auth.py
  ┃ ┣ 📜database.py
+ ┃ ┣ 📜google_auth.py
  ┃ ┣ 📜main.py
  ┃ ┣ 📜models.py
+ ┃ ┣ 📜rbac.py
  ┃ ┣ 📜schemas.py
- ┃ ┗ 📜auth.py
- ┣ 📜requirements.txt
+ ┃ ┗ 📜__init__.py
+ ┣ 📜.env
  ┣ 📜auth.db
- ┗ 📜Dockerfile
+ ┣ 📜Dockerfile
+ ┗ 📜requirements.txt
 
 📦payment_service
  ┣ 📂app
@@ -270,23 +381,31 @@ Templates contains the following:
 📦templates
  ┣ 📂static
  ┃ ┣ 📂css
+ ┃ ┃ ┣ 📜home_style.css
  ┃ ┃ ┗ 📜style.css
  ┃ ┣ 📂images
- ┃ ┃ ┗ 📜abstract-timekeeper.svg
- ┃ ┗ 📂js
+ ┃ ┃ ┣ 📜abstract-timekeeper.svg
+ ┃ ┃ ┣ 📜Sound_Wave.svg
+ ┃ ┃ ┗ 📜user.png
+ ┃ ┣ 📂js
+ ┃ ┃ ┣ 📜home_autoplay.js
  ┃ ┃ ┗ 📜script.js
- ┣ 📂videos
- ┃ ┗ 📜vinyl.mp4
+ ┃ ┗ 📂videos
+ ┃ ┃ ┗ 📜vinyl.mp4
+ ┣ 📜admin_dashboard.html
  ┣ 📜base.html
- ┣ 📜dummi.html
  ┣ 📜home.html
  ┣ 📜index.html
  ┣ 📜login.html
+ ┣ 📜orders.html
+ ┣ 📜payment_success.html
  ┣ 📜product_edit.html
  ┣ 📜product_form.html
  ┣ 📜product_list.html
+ ┣ 📜product_list_script.html
  ┣ 📜profile.html
- ┗ 📜register.html
+ ┣ 📜register.html
+ ┗ 📜register_admin.html
 
 📦product_service
  ┣ 📂app

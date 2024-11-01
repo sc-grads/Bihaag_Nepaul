@@ -7,11 +7,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 import logging
 
+
+
+
+
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # Set the desired number of minutes here
 
 # CORS settings
@@ -26,6 +32,10 @@ app.add_middleware(
 # Templates setup
 templates = Jinja2Templates(directory="templates")
 
+# Populate permissions in the database at startup
+with database.SessionLocal() as db:
+    database.create_permissions(db) 
+
 # Ensure the database tables are created
 models.Base.metadata.create_all(bind=database.engine)
 
@@ -39,11 +49,12 @@ def register_user(
     username: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
-    role: schemas.RoleEnum = Form(default=schemas.RoleEnum.USER),  # Include role with default
+    role: schemas.RoleEnum = Form(default=schemas.RoleEnum.USER),
     db: Session = Depends(database.get_db)
 ):
     try:
         logger.debug(f"Attempting to register user: {username}, {email}, role: {role}")
+        
         db_user = db.query(models.User).filter(models.User.email == email).first()
         if db_user:
             logger.warning(f"Email already registered: {email}")
@@ -55,12 +66,26 @@ def register_user(
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
-        
+
+        # Assign permissions based on the user's role
+        auth.assign_permissions(new_user, db)
+
+        # Prepare the response with permissions
+        permissions_list = [user_permission.permission.name for user_permission in new_user.permissions]
         logger.info(f"Successfully registered user: {username}, {email}, role: {role}")
-        return new_user
+
+        return {
+            "id": new_user.id,
+            "username": new_user.username,
+            "email": new_user.email,
+            "role": new_user.role,
+            "permissions": permissions_list
+        }
     except Exception as e:
         logger.error(f"Error registering user: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
 
 @app.post("/auth/login")
 async def login(

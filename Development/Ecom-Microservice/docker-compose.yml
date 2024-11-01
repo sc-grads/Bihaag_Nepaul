@@ -50,6 +50,7 @@ services:
       - ./product_service:/app
       - ./product_service/uploaded_images:/app/uploaded_images
       - ./templates:/app/templates
+      - ./auth_service:/app/auth_service
     depends_on:
       db:
         condition: service_healthy

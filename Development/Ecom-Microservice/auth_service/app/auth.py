@@ -8,7 +8,7 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from . import models, database
 from fastapi import APIRouter, Depends, Request
-from authlib.integrations.starlette_client import OAuth
+
 from fastapi.responses import JSONResponse, RedirectResponse
 import os
 
@@ -111,3 +111,31 @@ def get_admin_user(current_user: models.User = Depends(get_current_user)):
     if current_user.role != schemas.RoleEnum.ADMIN:
         raise HTTPException(status_code=403, detail="Not authorized to perform this action")
     return current_user
+
+def assign_permissions(user: models.User, db_session: Session):
+    if user.role == models.UserRole.ADMIN:
+        # Assign all permissions for admin
+        permissions = db_session.query(models.Permission).all()
+    else:
+        # Map regular user permissions
+        service_permissions = {
+            models.ServiceEnum.CART: ["create", "view", "edit", "delete"],
+            models.ServiceEnum.PRODUCT: ["view"],
+            models.ServiceEnum.PAYMENT: ["create", "view", "edit", "delete"]
+        }
+        
+        permissions = []
+        for service, perms in service_permissions.items():
+            service_perms = db_session.query(models.Permission).filter(
+                models.Permission.service == service,
+                models.Permission.name.in_(perms)
+            ).all()
+            permissions.extend(service_perms)
+
+    # Assign permissions to user
+    for permission in permissions:
+        user_permission = models.UserPermission(user_id=user.id, permission_id=permission.id)
+        db_session.add(user_permission)
+    
+    db_session.commit()
+

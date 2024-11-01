@@ -10,9 +10,8 @@ alembic
 python-jose
 passlib
 httpx
-
-
-
+pydantic[email]
+email-validator
 
 
 

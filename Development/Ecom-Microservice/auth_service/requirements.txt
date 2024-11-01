@@ -18,3 +18,5 @@ requests-oauthlib
 requests
 alembic
 jwt
+pydantic[email]
+email-validator

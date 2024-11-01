@@ -235,7 +235,7 @@
 	</div>
 	<div class="order-history-icon-container">
 		<a  href="orders.html">
-			<i class="bi bi-clock-history"  title="Order History" style="font-size: 30px; position: absolute; margin-left: 1210px; margin-top: 30px; color: #f2591d;"></i>
+			<i class="bi bi-clock-history"  title="Order History" style="font-size: 30px; position: absolute; margin-left: 1222px; margin-top: 30px; color: #f2591d;"></i>
 		</a>
 	</div>
 	<!-- Cart Modal -->
@@ -513,45 +513,62 @@
 	}
 	// Function to load products
 	async function loadProducts() {
-		const container = document.getElementById('product-container');
-		logDebug('Loading products...');
-		try {
-			const response = await fetch('/products/', {
-				credentials: 'include', // Include cookies for CORS
-				mode: 'cors',
-			});
-			if(!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			const products = await response.json();
-			logDebug('Products loaded successfully', {
-				count: products.length
-			});
-			container.innerHTML = products.map(product => `
-                    <div class="col">
-                        <div class="card h-100">
-							<div id="imgcontainer">
-                            <img id="myimg" src="${product.image_url}" class="card-img-top" alt="${product.name}" style="">
-							</div>
-                            <div class="card-body">
-                                <h5 class="card-title" style="text-align: center">${product.name}</h5>
-                                <p class="card-text" style="text-align: center">${product.description}</p>
-                                <p class="card-text" style="text-align: center"><strong>${formatPriceInRands(product.price)}</strong></p>
-                                <div class="quantity-control">
-                                    <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, -1)">-</button>
-                                    <input type="number" id="quantity-${product.id}" value="1" min="1" class="form-control-cart">
-                                    <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, 1)">+</button>
-                                </div>
-                                <button onclick="addToCart(${product.id})" class="btn btn-primary w-30" style="display: block; margin: 0 auto; background-color: #ff5e00; border-color: #ff5e00">Add to Cart</button>
-                            </div>
-                        </div>
+    const container = document.getElementById('product-container');
+    logDebug('Loading products...');
+    
+    try {
+        // Retrieve the token from local storage
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('No authentication token found. Please log in.');
+        }
+
+        // Make the fetch request with the Authorization header
+        const response = await fetch('/products/', {
+            headers: {
+                'Authorization': `Bearer ${token}`, // Include the token in Authorization header
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include', // Include cookies for CORS
+            mode: 'cors',
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const products = await response.json();
+        logDebug('Products loaded successfully', {
+            count: products.length
+        });
+
+        // Populate the container with product data
+        container.innerHTML = products.map(product => `
+            <div class="col">
+                <div class="card h-100">
+                    <div id="imgcontainer">
+                        <img id="myimg" src="${product.image_url}" class="card-img-top" alt="${product.name}">
                     </div>
-                `).join('');
-		} catch (error) {
-			logDebug('Error loading products:', error.message);
-			container.innerHTML = `<p class="col-12 text-center">Failed to load products: ${error.message}</p>`;
-		}
-	}
+                    <div class="card-body">
+                        <h5 class="card-title" style="text-align: center">${product.name}</h5>
+                        <p class="card-text" style="text-align: center">${product.description}</p>
+                        <p class="card-text" style="text-align: center"><strong>${formatPriceInRands(product.price)}</strong></p>
+                        <div class="quantity-control">
+                            <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, -1)">-</button>
+                            <input type="number" id="quantity-${product.id}" value="1" min="1" class="form-control-cart">
+                            <button class="btn btn-outline-secondary" onclick="adjustQuantity(${product.id}, 1)">+</button>
+                        </div>
+                        <button onclick="addToCart(${product.id})" class="btn btn-primary w-30" style="display: block; margin: 0 auto; background-color: #ff5e00; border-color: #ff5e00">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+    } catch (error) {
+        logDebug('Error loading products:', error.message);
+        container.innerHTML = `<p class="col-12 text-center">Failed to load products: ${error.message}</p>`;
+    }
+}
 	async function filterByBrand() {
 		const brandFilter = document.getElementById('brandFilter').value;
 		let url = '/products';

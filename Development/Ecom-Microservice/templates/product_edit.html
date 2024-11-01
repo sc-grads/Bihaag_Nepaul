@@ -5,7 +5,8 @@
 {% block content %}
 <div class="container mt-4">
     <h2>Edit Product</h2>
-    <form action="/products/{{ product.id }}/edit" method="POST" enctype="multipart/form-data">
+    <form id="edit-product-form" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{{ product.id }}">
         <div class="form-group mb-3">
             <label for="name">Name:</label>
             <input type="text" class="form-control" id="name" name="name" value="{{ product.name }}" required>
@@ -66,4 +67,37 @@
         <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
     </form>
 </div>
+
+<script>
+    document.getElementById('edit-product-form').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const token = localStorage.getItem('token');
+        const formData = new FormData(this); // Get the form data
+
+        try {
+            const response = await fetch(`/products/${formData.get('id')}/edit`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                },
+                body: formData // Send the form data
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            // Handle success response (e.g., redirect or show a message)
+            alert('Product updated successfully!');
+            window.location.href = '/admin_dashboard.html'; // Redirect to the products list
+
+        } catch (error) {
+            console.error('Error updating product:', error);
+            alert('Failed to update product. You do not have sufficient permissions.');
+        }
+    });
+</script>
 {% endblock %}

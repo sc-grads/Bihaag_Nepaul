@@ -1,0 +1,747 @@
+Heres my current auth_service with RBAC and permissions added:
+auth.py:
+
+from typing import Optional
+from passlib.context import CryptContext
+from jose import JWTError, jwt
+from datetime import datetime, timedelta
+from . import schemas
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from . import models, database
+from fastapi import APIRouter, Depends, Request
+from authlib.integrations.starlette_client import OAuth
+from fastapi.responses import JSONResponse, RedirectResponse
+import os
+
+SECRET_KEY = "e3aac17d09746a3effe0dd1b414b9e3e8d64b30a53d2e27b1b5f69e4ed35d2e0"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+def verify_password(plain_password, hashed_password):
+    """Verifies a plain password against its hashed version."""
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    """Hashes the password."""
+    return pwd_context.hash(password)
+
+def authenticate_user(db: Session, email: str, password: str):
+    """Authenticates a user based on their email and password."""
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user or not verify_password(password, user.hashed_password):
+        return False
+    return user
+
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    to_encode.update({"role": data.get("role", "user")})  # Include role in token
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+async def verify_token_and_permissions(token: str, required_roles: list[str]) -> dict:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        role: str = payload.get("role")
+        
+        if email is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials"
+            )
+        
+        if role not in required_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not enough permissions"
+            )
+            
+        return {"email": email, "role": role}
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials"
+        )
+
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)):
+    """Retrieves the current user from the token."""
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+        token_data = schemas.TokenData(email=email)
+    except JWTError:
+        raise credentials_exception
+    
+    user = db.query(models.User).filter(models.User.email == token_data.email).first()
+    if user is None:
+        raise credentials_exception
+    return user
+
+async def get_current_active_user(current_user: models.User = Depends(get_current_user)):
+    """Ensures the current user is active."""
+    if not current_user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
+
+async def get_current_user_role(current_user: models.User = Depends(get_current_user)):
+    """Retrieves the role of the current user."""
+    return current_user.role
+
+def get_user_role(user: models.User) -> schemas.RoleEnum:
+    """Retrieves the role of a user."""
+    return user.role
+
+def get_admin_user(current_user: models.User = Depends(get_current_user)):
+    """Ensures the user has an admin role."""
+    if current_user.role != schemas.RoleEnum.ADMIN:
+        raise HTTPException(status_code=403, detail="Not authorized to perform this action")
+    return current_user
+
+def assign_permissions(user: models.User, db_session: Session):
+    if user.role == models.UserRole.ADMIN:
+        # Assign all permissions for admin
+        permissions = db_session.query(models.Permission).all()
+    else:
+        # Map regular user permissions
+        service_permissions = {
+            models.ServiceEnum.CART: ["create", "view", "edit", "delete"],
+            models.ServiceEnum.PRODUCT: ["view"],
+            models.ServiceEnum.PAYMENT: ["create", "view", "edit", "delete"]
+        }
+        
+        permissions = []
+        for service, perms in service_permissions.items():
+            service_perms = db_session.query(models.Permission).filter(
+                models.Permission.service == service,
+                models.Permission.name.in_(perms)
+            ).all()
+            permissions.extend(service_perms)
+
+    # Assign permissions to user
+    for permission in permissions:
+        user_permission = models.UserPermission(user_id=user.id, permission_id=permission.id)
+        db_session.add(user_permission)
+    
+    db_session.commit()
+
+
+database.py:
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
+import os
+from sqlalchemy.exc import IntegrityError
+  # Import your Permission and ServiceEnum models
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+def create_permissions(db_session: Session):
+    from .models import Permission, ServiceEnum
+    # Define permissions per service
+    service_permissions = {
+        ServiceEnum.CART: ["create", "view", "edit", "delete"],
+        ServiceEnum.PRODUCT: ["create", "view", "edit", "delete"],
+        ServiceEnum.SELLER: ["create", "view", "edit", "delete"],
+        ServiceEnum.PAYMENT: ["create", "view", "edit", "delete"],
+        ServiceEnum.AUTH: ["create", "view", "edit", "delete"]
+    }
+    
+    admin_permissions = {
+        ServiceEnum.CART: ["create", "view", "edit", "delete"],
+        ServiceEnum.PRODUCT: ["create", "view", "edit", "delete"],
+        ServiceEnum.SELLER: ["create", "view", "edit", "delete"],
+        ServiceEnum.PAYMENT: ["create", "view", "edit", "delete"],
+        ServiceEnum.AUTH: ["create", "view", "edit", "delete"]
+    }
+
+    # Create all permissions in the database
+    for service, perms in service_permissions.items():
+        for perm in perms:
+            permission = Permission(name=perm, service=service)
+            db_session.add(permission)
+    
+    try:
+        db_session.commit()
+    except IntegrityError:
+        db_session.rollback()
+        print("Permissions already exist")
+
+
+main.py:
+from fastapi import FastAPI, Depends, HTTPException, Request, status, Form, Response
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from app import models, schemas, database, auth
+from datetime import timedelta
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+app = FastAPI()
+ACCESS_TOKEN_EXPIRE_MINUTES = 30  # Set the desired number of minutes here
+
+# CORS settings
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this to restrict origins as needed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Templates setup
+templates = Jinja2Templates(directory="templates")
+
+# Populate permissions in the database at startup
+with database.SessionLocal() as db:
+    database.create_permissions(db) 
+
+# Ensure the database tables are created
+models.Base.metadata.create_all(bind=database.engine)
+
+@app.get("/auth/register")
+async def get_register_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
+# Updated /auth/register route to include user roles
+@app.post("/auth/register", response_model=schemas.UserOut)
+def register_user(
+    username: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    role: schemas.RoleEnum = Form(default=schemas.RoleEnum.USER),
+    db: Session = Depends(database.get_db)
+):
+    try:
+        logger.debug(f"Attempting to register user: {username}, {email}, role: {role}")
+        
+        db_user = db.query(models.User).filter(models.User.email == email).first()
+        if db_user:
+            logger.warning(f"Email already registered: {email}")
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        hashed_password = auth.get_password_hash(password)
+        new_user = models.User(username=username, email=email, hashed_password=hashed_password, role=role)
+        
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+
+        # Assign permissions based on the user's role
+        auth.assign_permissions(new_user, db)
+
+        # Prepare the response with permissions
+        permissions_list = [user_permission.permission.name for user_permission in new_user.permissions]
+        logger.info(f"Successfully registered user: {username}, {email}, role: {role}")
+
+        return {
+            "id": new_user.id,
+            "username": new_user.username,
+            "email": new_user.email,
+            "role": new_user.role,
+            "permissions": permissions_list
+        }
+    except Exception as e:
+        logger.error(f"Error registering user: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+
+@app.post("/auth/login")
+async def login(
+    response: Response,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(database.get_db)
+):
+    # Authenticate the user
+    user = auth.authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Create the access token with expiration and role included
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = auth.create_access_token(
+        data={"sub": user.email, "role": user.role},  # Include user role in the token
+        expires_delta=access_token_expires
+    )
+    
+    # Set the user_id as an HttpOnly cookie (to prevent client-side access)
+    response.set_cookie(
+        key="user_id",
+        value=str(user.id),
+        httponly=True,  # HttpOnly flag makes it inaccessible via JavaScript
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # Set cookie expiration
+        secure=True,  # Use secure flag in production (HTTPS)
+        samesite="Lax"  # Adjust based on your security needs (Lax, Strict, or None)
+    )
+
+    # Explicitly return the role in the response, along with the access token
+    return {"access_token": access_token, "token_type": "bearer", "role": user.role, "username": user.username, "email": user.email}
+
+
+@app.post("/auth/logout")
+async def logout(response: Response):
+    response.delete_cookie(key="user_id")
+    return {"message": "Logout successful"}
+
+@app.get("/user/{user_id}", response_model=schemas.UserOut)
+async def get_user_profile(user_id: int):
+    db = database.get_db()
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@app.get("/users/me", response_model=schemas.UserOut)
+async def read_users_me(current_user: models.User = Depends(auth.get_current_user)):
+    return current_user
+
+
+middleware.py:
+from fastapi import Request, HTTPException, Depends
+from sqlalchemy.orm import Session
+from .database import get_db
+from .models import Permission, UserPermission, ServiceEnum
+import functools
+
+def check_permissions(action: str, service: str):
+    def decorator(func):
+        @functools.wraps(func)
+        async def wrapper(request: Request, db: Session = Depends(get_db)):
+            # Ensure user is properly set in request context
+            if not hasattr(request, 'user') or request.user is None:
+                raise HTTPException(status_code=401, detail="User not authenticated")
+
+            user_id = request.user.id  # Assuming user object is attached to the request
+            method = request.method.lower()
+
+            # Get service from the ServiceEnum
+            try:
+                service_enum = ServiceEnum[service.upper()]
+            except KeyError:
+                raise HTTPException(status_code=400, detail="Invalid service specified")
+
+            # Get user's permissions for this service
+            user_permissions = (
+                db.query(UserPermission)
+                .join(Permission)
+                .filter(
+                    UserPermission.user_id == user_id,
+                    Permission.service == service_enum
+                )
+                .all()
+            )
+            
+            permissions = {p.permission.name for p in user_permissions}
+
+            # Define required permission for each method
+            required_permissions = {
+                "get": "view",
+                "post": "create",
+                "put": "edit",
+                "delete": "delete"
+            }
+
+            required_perm = required_permissions.get(method)
+            if required_perm is None:
+                raise HTTPException(status_code=405, detail="Method not allowed")
+
+            # Check if the user has the required permission
+            if required_perm not in permissions:
+                raise HTTPException(
+                    status_code=403, 
+                    detail=f"Not enough permissions for {method} operation in {service} service"
+                )
+
+            # Proceed to call the original function
+            return await func(request, db)
+        return wrapper
+    return decorator
+
+
+models.py:
+
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, UniqueConstraint
+from sqlalchemy.orm import relationship
+import enum
+
+from .database import Base
+
+class ServiceEnum(str, enum.Enum):
+    CART = "cart"
+    PRODUCT = "product"
+    SELLER = "seller"
+    PAYMENT = "payment"
+    AUTH = "auth"
+
+class Permission(Base):
+    __tablename__ = "permissions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=False, index=True)  # Remove unique constraint
+    service = Column(Enum(ServiceEnum), nullable=False)
+
+    # Make the combination of name and service unique
+    __table_args__ = (
+        UniqueConstraint('name', 'service', name='unique_permission_per_service'),
+    )
+    
+    users = relationship("UserPermission", back_populates="permission")
+
+class UserRole(str, enum.Enum):
+    USER = "user"
+    ADMIN = "admin"
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    role = Column(Enum(UserRole), default=UserRole.USER)
+    
+    permissions = relationship("UserPermission", back_populates="user")
+
+class UserPermission(Base):
+    __tablename__ = "user_permissions"
+
+    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    permission_id = Column(Integer, ForeignKey('permissions.id'), primary_key=True)
+
+    user = relationship("User", back_populates="permissions")
+    permission = relationship("Permission", back_populates="users")
+
+ schemas.py:
+from typing import List, Optional
+from pydantic import BaseModel, EmailStr
+from enum import Enum
+
+# Enum for user roles
+class RoleEnum(str, Enum):
+    USER = "user"
+    ADMIN = "admin"
+
+# --- User Schemas ---
+
+# Schema for creating a new user
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+    role: RoleEnum = RoleEnum.USER  # Default to 'user' role
+
+# Schema for outputting user details
+class UserOut(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+    role: RoleEnum  # Include user role in the output
+    permissions: List[str]  # Change this to a list of strings
+
+    class Config:
+        orm_mode = True
+
+# Schema for user login
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+# --- Token Schemas ---
+
+# Schema for authentication tokens
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+# Schema for token data (used during authentication)
+class TokenData(BaseModel):
+    email: Optional[str] = None
+
+# --- Permission Schemas ---
+
+# Schema for creating permissions (if needed in API)
+class PermissionCreate(BaseModel):
+    name: str  # Permission name like 'create', 'edit', etc.
+
+# Schema for outputting permissions
+class PermissionOut(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+# --- UserPermission Schemas ---
+
+# This schema can be used to link users with permissions
+class UserPermissionOut(BaseModel):
+    user_id: int
+    permission_id: int
+
+    class Config:
+        orm_mode = True
+
+
+///controlled nginx.conf:
+
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log /var/log/nginx/access.log main;
+    error_log /var/log/nginx/error.log warn;
+    proxy_set_header Authorization $http_authorization;
+    proxy_pass_header Authorization;
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    server {
+        listen 80;
+
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # Payment success handling
+        location /payment/success {
+            # First proxy the request to complete the payment
+            proxy_pass http://payment_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # After successful payment (200 status), redirect to success page
+            proxy_intercept_errors on;
+            
+            # CORS headers
+            add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        }
+
+        # Named location for payment success redirect
+        location @payment_success {
+            return 302 /payment_success.html;
+        }
+
+        # Regular payment endpoints
+        location /payment/ {
+            proxy_pass http://payment_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            if ($request_method = 'OPTIONS') {
+                add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+                return 204;
+            }
+
+            add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        }
+
+        location /static/ {
+            alias /usr/share/nginx/html/static/;
+            expires 1h;
+            add_header Cache-Control "public";
+
+            location ~* \.(mp4|webm)$ {
+                add_header Content-Disposition "inline";
+                add_header Accept-Ranges bytes;
+            }
+        }
+
+        location /uploaded_images/ {
+            proxy_pass http://product_service:8000/uploaded_images/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        location /auth/ {
+            proxy_pass http://auth_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /products/ {
+            proxy_pass http://product_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /sellers/ {
+            proxy_pass http://seller_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /cart/ {
+            proxy_pass http://cart_service:8000;
+
+            if ($request_method = 'OPTIONS') {
+                add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+                return 204;
+            }
+
+            add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        }
+
+        location /home {
+            proxy_pass http://product_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /user/ {
+            proxy_pass http://auth_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        }
+
+        location /orders/ {
+            proxy_pass http://payment_service:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # Handle CORS for order requests
+            if ($request_method = 'OPTIONS') {
+                add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+                return 204;
+            }
+
+            add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        }
+
+        location /permissions/users/ {
+            proxy_pass http://auth_service:8000;  # Update this with the correct service name
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # Handle CORS for permission requests
+            if ($request_method = 'OPTIONS') {
+                add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+                return 204;  # Respond with a 204 No Content for preflight requests
+            }
+
+            # CORS headers for actual requests
+            add_header 'Access-Control-Allow-Origin' 'http://localhost:8080' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        }
+
+        location / {
+            try_files $uri $uri/ /home.html;
+        }
+
+        location = /product_edit.html {
+            root /usr/share/nginx/html;
+        }
+
+        location = /home.html {
+            root /usr/share/nginx/html;
+        }
+
+        # Security headers
+        add_header X-Content-Type-Options nosniff;
+        add_header X-Frame-Options DENY;
+        add_header X-XSS-Protection "1; mode=block";
+    }
+}
+

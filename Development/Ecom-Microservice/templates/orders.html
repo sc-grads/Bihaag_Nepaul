@@ -104,7 +104,7 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Error fetching order history: ${response.statusText}`);
+                    throw new Error(`No Orders Found`);
                 }
 
                 const orders = await response.json();
